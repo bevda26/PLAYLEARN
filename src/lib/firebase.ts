@@ -11,8 +11,8 @@ const firebaseConfig: FirebaseOptions = {
 };
 
 // A check to make sure all firebase config values are present
-if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.projectId || firebaseConfig.apiKey === "YOUR_API_KEY_HERE") {
-  console.error('Firebase config is not set. Please add your Firebase credentials to .env.local');
+if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.projectId) {
+  console.error('Firebase config is not set. Please add your Firebase credentials to .env file');
 }
 
 
