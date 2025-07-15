@@ -3,8 +3,9 @@
 
 import { AppHeader } from '@/components/layout/app-header';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Construction, Upload } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
+import { Construction, Wand2, Loader2, Sparkles, FileText } from 'lucide-react';
 import Link from 'next/link';
 
 export default function QuestBuilderPage() {
@@ -18,41 +19,71 @@ export default function QuestBuilderPage() {
             The QuestLearn Builder
           </h1>
           <p className="text-lg text-foreground/80 mt-2">
-            A powerful tool to craft intricate, multi-step learning adventures.
+            A powerful suite of tools to craft intricate learning adventures.
           </p>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
             <Card className="bg-card/50 backdrop-blur-sm border-primary/20">
                 <CardHeader>
-                    <CardTitle className="text-2xl text-accent font-headline">Under Construction</CardTitle>
+                    <CardTitle className="text-2xl text-accent font-headline flex items-center gap-2">
+                        <Sparkles className="w-6 h-6" />
+                        AI-Powered Generation
+                    </CardTitle>
                     <CardDescription>
-                        This advanced Quest Builder is being forged by the realm's finest architects. It will soon allow you to create multi-part quest arcs from complex data files, like the `class6-math-chapter1` module.
+                        Generate a complete, multi-activity quest from a single learning objective. The AI will handle the creative work.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="p-8 text-center bg-background/50 rounded-lg">
-                        <Construction className="w-16 h-16 mx-auto text-muted-foreground" />
-                        <p className="mt-4 text-muted-foreground">Check back later for powerful new features!</p>
-                    </div>
+                    <form className="space-y-4">
+                        <Textarea
+                            placeholder="Enter a learning objective, e.g., 'Understand the difference between odd and even numbers' or 'Learn about the phases of the moon'"
+                            rows={3}
+                            className="bg-background/50"
+                        />
+                        <Button type="submit" className="w-full" disabled>
+                            <Wand2 className="mr-2 h-5 w-5" />
+                            Generate Quest (Coming Soon)
+                        </Button>
+                    </form>
                 </CardContent>
             </Card>
 
-            <Card className="bg-card/50 backdrop-blur-sm border-primary/20">
-                <CardHeader>
-                    <CardTitle className="text-2xl text-accent font-headline">Manual Registration</CardTitle>
-                    <CardDescription>
-                       For simple, single-component quests, you can still use the original Forge tool. This is useful for quickly adding new standalone challenges.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="flex justify-center items-center h-full">
-                   <Link href="/admin/quest-forge">
-                        <Button size="lg">
-                            Go to the Old Forge
-                        </Button>
-                   </Link>
-                </CardContent>
-            </Card>
+            <div className="space-y-8">
+                <Card className="bg-card/50 backdrop-blur-sm border-primary/20">
+                    <CardHeader>
+                        <CardTitle className="text-2xl text-accent font-headline flex items-center gap-2">
+                            <FileText className="w-6 h-6" />
+                            Full Module Processing
+                        </CardTitle>
+                        <CardDescription>
+                            This advanced tool will eventually allow you to process complex data files, like your `class6-math-chapter1` module, into a full quest arc.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="p-8 text-center bg-background/50 rounded-lg">
+                            <Construction className="w-16 h-16 mx-auto text-muted-foreground" />
+                            <p className="mt-4 text-muted-foreground">This feature is under construction.</p>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card className="bg-card/50 backdrop-blur-sm border-primary/20">
+                    <CardHeader>
+                        <CardTitle className="text-2xl text-accent font-headline">Manual Registration</CardTitle>
+                        <CardDescription>
+                           For simple, single-component quests, you can still use the original Forge tool.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex justify-center items-center">
+                       <Link href="/admin/quest-forge">
+                            <Button size="lg">
+                                Go to the Old Forge
+                            </Button>
+                       </Link>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
       </main>
     </div>
