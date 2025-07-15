@@ -6,7 +6,7 @@ import { RPGInterface } from '@/components/quest/rpg-interface';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { ArrowLeft, Clock, Award } from 'lucide-react';
+import { ArrowLeft, Clock, Award, Loader2 } from 'lucide-react';
 import type { QuestModule } from '@/lib/types';
 import { MagicalButton } from '@/components/ui/magical-button';
 import type { NextPage } from 'next';
@@ -14,6 +14,9 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Skeleton } from '@/components/ui/skeleton';
 import { PlaceholderQuestComponent } from '@/components/quest/placeholder-quest';
+import { useAuth } from '@/contexts/auth-context';
+import { completeQuest } from '@/lib/quests';
+import { useToast } from '@/hooks/use-toast';
 
 function QuestNotFound() {
     return (
@@ -60,9 +63,12 @@ type QuestPlayerPageProps = {
 
 const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
   const { questId } = params;
+  const { user } = useAuth();
+  const { toast } = useToast();
 
   const [quest, setQuest] = useState<QuestModule | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isCompleting, setIsCompleting] = useState(false);
 
   useEffect(() => {
     if (!questId) return;
@@ -82,6 +88,28 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
 
     fetchQuest();
   }, [questId]);
+
+  const handleCompleteQuest = async () => {
+    if (!user || !quest) return;
+    setIsCompleting(true);
+    try {
+        await completeQuest(user.uid, quest.id, quest.metadata.xpReward);
+        toast({
+            title: "Quest Complete!",
+            description: `You earned ${quest.metadata.xpReward} XP!`,
+        });
+        // TODO: Redirect or show a completion summary
+    } catch (error) {
+        console.error("Failed to complete quest:", error);
+        toast({
+            title: "Error Completing Quest",
+            description: "Could not save your progress. Please try again.",
+            variant: 'destructive',
+        });
+    } finally {
+        setIsCompleting(false);
+    }
+  };
 
   if (loading) {
     return <QuestLoadingSkeleton />;
@@ -123,7 +151,13 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
           </CardContent>
         </Card>
         <div className="mt-8 text-center">
-            <MagicalButton>Complete Quest</MagicalButton>
+            <MagicalButton onClick={handleCompleteQuest} disabled={isCompleting || !user}>
+                {isCompleting ? (
+                    <><Loader2 className="animate-spin" /> Completing...</>
+                ) : (
+                    "Complete Quest"
+                )}
+            </MagicalButton>
         </div>
       </main>
     </div>

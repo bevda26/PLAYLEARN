@@ -4,9 +4,10 @@
 import React, { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { onAuthStateChanged, type User } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
-import { doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { doc, onSnapshot } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { UserProfile } from '@/lib/types';
+import { useUserProgressStore } from '@/stores/user-progress-store';
 
 interface AuthContextType {
   user: User | null;
@@ -25,17 +26,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Zustand store actions
+  const subscribeToUserProgress = useUserProgressStore(state => state.subscribeToUserProgress);
+  const resetUserProgress = useUserProgressStore(state => state.resetProgress);
+
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       setUser(user);
-      if (!user) {
+      if (user) {
+        // When user logs in, subscribe to their progress
+        subscribeToUserProgress(user.uid);
+      } else {
+        // When user logs out, clear their profile and reset progress store
         setUserProfile(null);
+        resetUserProgress();
         setLoading(false);
       }
     });
 
     return () => unsubscribeAuth();
-  }, []);
+  }, [subscribeToUserProgress, resetUserProgress]);
 
   useEffect(() => {
     if (user) {
@@ -44,7 +54,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (docSnap.exists()) {
           setUserProfile(docSnap.data() as UserProfile);
         } else {
-          // This case might happen briefly if the profile creation is slow
           setUserProfile(null); 
         }
         setLoading(false);

@@ -1,61 +1,70 @@
 import { create } from 'zustand';
+import { onSnapshot, doc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import type { UserProgress } from '@/lib/types';
 
-interface UserProgressState {
-  level: number;
-  xp: number;
+// XP needed to advance to the next level, indexed by current level (level 1 -> 2 is at index 1)
+const LEVEL_XP_MAP: { [key: number]: number } = {
+  1: 100,
+  2: 250,
+  3: 500,
+  4: 1000,
+  5: 2000,
+};
+
+interface UserProgressState extends UserProgress {
   xpToNextLevel: number;
-  health: number;
-  setHealth: (health: number) => void;
-  addXp: (amount: number) => void;
+  subscribeToUserProgress: (uid: string) => () => void;
   resetProgress: () => void;
 }
 
-const LEVEL_XP_MAP = [100, 250, 500, 1000, 2000]; // XP needed to reach next level
+// Store this unsubscribe function outside of the store's state
+let unsubscribe: (() => void) | null = null;
 
-const calculateLevel = (totalXp: number) => {
-  let level = 1;
-  let xpForNext = LEVEL_XP_MAP[0];
-  let accumulatedXp = 0;
-
-  for (let i = 0; i < LEVEL_XP_MAP.length; i++) {
-    if (totalXp >= accumulatedXp + LEVEL_XP_MAP[i]) {
-      level++;
-      accumulatedXp += LEVEL_XP_MAP[i];
-    } else {
-      break;
-    }
-  }
-  return { level, accumulatedXp };
-};
-
-
-export const useUserProgressStore = create<UserProgressState>((set, get) => ({
-  level: 1,
+export const useUserProgressStore = create<UserProgressState>((set) => ({
+  // Default initial state
+  userId: '',
   xp: 0,
-  xpToNextLevel: LEVEL_XP_MAP[0],
+  level: 1,
   health: 100,
+  questsCompleted: {},
+  xpToNextLevel: LEVEL_XP_MAP[1],
 
-  setHealth: (health) => set({ health }),
-
-  addXp: (amount) => {
-    const currentTotalXp = get().xp + (get().level > 1 ? LEVEL_XP_MAP.slice(0, get().level - 1).reduce((a, b) => a + b, 0) : 0);
-    const newTotalXp = currentTotalXp + amount;
+  subscribeToUserProgress: (uid: string) => {
+    // Unsubscribe from any previous listener
+    if (unsubscribe) {
+      unsubscribe();
+    }
     
-    const { level: newLevel, accumulatedXp } = calculateLevel(newTotalXp);
-    const xpInCurrentLevel = newTotalXp - accumulatedXp;
-    const xpToNextLevel = LEVEL_XP_MAP[newLevel - 1] || Infinity;
-
-    set({
-      level: newLevel,
-      xp: xpInCurrentLevel,
-      xpToNextLevel: xpToNextLevel,
+    const docRef = doc(db, 'user-progress', uid);
+    
+    unsubscribe = onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const progress = docSnap.data() as Omit<UserProgress, 'userId'>;
+        set({
+          userId: uid,
+          ...progress,
+          xpToNextLevel: LEVEL_XP_MAP[progress.level] || Infinity,
+        });
+      }
     });
+    
+    // Return the unsubscribe function so components can clean up
+    return unsubscribe;
   },
   
-  resetProgress: () => set({
-    level: 1,
-    xp: 0,
-    xpToNextLevel: LEVEL_XP_MAP[0],
-    health: 100
-  }),
+  resetProgress: () => {
+    if (unsubscribe) {
+      unsubscribe();
+      unsubscribe = null;
+    }
+    set({
+      userId: '',
+      level: 1,
+      xp: 0,
+      xpToNextLevel: LEVEL_XP_MAP[1],
+      health: 100,
+      questsCompleted: {},
+    });
+  },
 }));

@@ -23,13 +23,13 @@ export interface UserProfile {
   displayName: string;
   avatar: string;
   title: string;
-  publicStats: {
-    questsCompleted: number;
-    xp: number;
-    level: number;
-  };
-  settings: {
-    sound: boolean;
-    notifications: boolean;
-  };
+  createdAt: Timestamp;
+}
+
+export interface UserProgress {
+  userId: string;
+  xp: number;
+  level: number;
+  health: number;
+  questsCompleted: { [questId: string]: Timestamp };
 }
