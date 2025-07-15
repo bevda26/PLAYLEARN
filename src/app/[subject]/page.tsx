@@ -1,18 +1,24 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, use } from 'react';
 import { mockQuests } from '@/lib/mock-data';
 import { QuestCard } from '@/components/quest/quest-card';
 import { QuestRecommendations } from '@/components/quest/quest-recommendations';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import type { NextPage } from 'next';
 
-export default function QuestDiscoveryPage({ params }: { params: { subject: string } }) {
+type QuestDiscoveryPageProps = {
+  params: { subject: string };
+};
+
+const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params }) => {
+  const { subject } = use(Promise.resolve(params));
   const [recommendedQuestIds, setRecommendedQuestIds] = useState<string[]>([]);
   
-  const availableQuests = useMemo(() => mockQuests.filter(q => q.subject === params.subject), [params.subject]);
+  const availableQuests = useMemo(() => mockQuests.filter(q => q.subject === subject), [subject]);
 
-  const subjectTitle = useMemo(() => params.subject.charAt(0).toUpperCase() + params.subject.slice(1), [params.subject]);
+  const subjectTitle = useMemo(() => subject.charAt(0).toUpperCase() + subject.slice(1), [subject]);
   
   const subjectThemes: Record<string, { from: string; to: string }> = {
       math: { from: '#4A148C', to: '#222129' },
@@ -21,7 +27,7 @@ export default function QuestDiscoveryPage({ params }: { params: { subject: stri
       history: { from: '#B8860B', to: '#222129' },
   }
   
-  const theme = subjectThemes[params.subject] || { from: '#333', to: '#111' };
+  const theme = subjectThemes[subject] || { from: '#333', to: '#111' };
 
   if (availableQuests.length === 0) {
     return (
@@ -79,3 +85,5 @@ export default function QuestDiscoveryPage({ params }: { params: { subject: stri
     </div>
   );
 }
+
+export default QuestDiscoveryPage;

@@ -6,7 +6,8 @@ import Link from 'next/link';
 import { ArrowLeft, Clock, Award } from 'lucide-react';
 import type { QuestModule } from '@/lib/types';
 import { MagicalButton } from '@/components/ui/magical-button';
-import React from 'react';
+import React, { use } from 'react';
+import type { NextPage } from 'next';
 
 function QuestNotFound() {
     return (
@@ -21,11 +22,16 @@ function QuestNotFound() {
     )
 }
 
+type QuestPlayerPageProps = {
+  params: { subject: string, questId: string };
+};
 
-export default function QuestPlayerPage({ params }: { params: { subject: string, questId: string } }) {
+const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
+  const { subject, questId } = use(Promise.resolve(params));
+
   const quest: QuestModule | undefined = React.useMemo(() => 
-    mockQuests.find(q => q.id === params.questId && q.subject === params.subject),
-    [params.questId, params.subject]
+    mockQuests.find(q => q.id === questId && q.subject === subject),
+    [questId, subject]
   );
 
   if (!quest) {
@@ -70,3 +76,5 @@ export default function QuestPlayerPage({ params }: { params: { subject: string,
     </div>
   );
 }
+
+export default QuestPlayerPage;
