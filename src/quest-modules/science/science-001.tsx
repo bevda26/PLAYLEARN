@@ -7,12 +7,28 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { CheckCircle, XCircle, FlaskConical } from 'lucide-react';
+import type { QuestModule } from '@/lib/types';
+
+// Exported metadata for the Drop-and-Go system
+export const questModule: Omit<QuestModule, 'createdAt' | 'componentPath'> = {
+  id: 'science-001',
+  title: "Alchemist's Apprentice: Potion Brewing",
+  subject: 'science',
+  difficulty: 'beginner',
+  questType: 'experiment',
+  metadata: {
+    description: 'Learn the basics of chemical reactions by brewing a simple healing potion.',
+    estimatedTime: 20,
+    xpReward: 150,
+    itemRewards: ['health_potion'],
+  },
+};
 
 const quizQuestions = [
     {
         question: "What is the result of mixing a strong acid and a strong base?",
-        options: ["A bigger acid", "A neutral solution (salt and water)", "An explosion", "They don't mix"],
-        correctAnswer: "A neutral solution (salt and water)",
+        options: ["A bigger acid", "A newtral solution (salt and water)", "An explosion", "They don't mix"],
+        correctAnswer: "A newtral solution (salt and water)",
     },
 ];
 

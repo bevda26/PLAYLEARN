@@ -6,6 +6,23 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { CheckCircle, XCircle } from 'lucide-react';
+import type { QuestModule } from '@/lib/types';
+
+// Exported metadata for the Drop-and-Go system
+export const questModule: Omit<QuestModule, 'createdAt' | 'componentPath'> = {
+  id: 'math-001',
+  title: "The Dragon's Hoard: Counting Gold",
+  subject: 'math',
+  difficulty: 'beginner',
+  questType: 'challenge',
+  metadata: {
+    description: 'The great dragon sleeps! Help the villagers count its vast treasure before it awakes.',
+    estimatedTime: 15,
+    xpReward: 100,
+    itemRewards: ['health_potion'],
+  },
+};
+
 
 const DragonHoardQuest = () => {
     const [answer, setAnswer] = useState('');
