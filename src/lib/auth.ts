@@ -1,11 +1,10 @@
-
 // src/lib/auth.ts
 import { 
   onAuthStateChanged, 
   GoogleAuthProvider, 
   signInWithPopup,
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
+  signInWithEmailAndPassword as signInWithEmailAndPasswordFirebase,
   signOut,
   type User
 } from 'firebase/auth';
@@ -74,14 +73,12 @@ export const signUpWithEmailAndPassword = async (email: string, password: string
     return userCredential.user;
 };
 
-export const signInWithEmailAndPasswordInternal = async (email: string, password: string): Promise<User> => {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+export const signInWithEmailAndPassword = async (email: string, password: string): Promise<User> => {
+    const userCredential = await signInWithEmailAndPasswordFirebase(auth, email, password);
     // Ensure documents exist for users who signed in but might not have them
     await createUserDocuments(userCredential.user); 
     return userCredential.user;
 };
-
-export { signInWithEmailAndPassword };
 
 export const signOutUser = async () => {
   try {
