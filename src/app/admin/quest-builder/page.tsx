@@ -10,23 +10,70 @@ import { Construction, Wand2, Loader2, Sparkles, FileText, Bot } from 'lucide-re
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import type { ProcessModuleOutput } from '@/ai/flows/module-processor-flow';
+import { processModule } from '@/ai/flows/module-processor-flow';
+import { generateQuest, type GeneratedQuest } from '@/ai/flows/quest-generation-flow';
+import { registerQuestModule } from '@/lib/auto-integration/route-generator';
 
 export default function QuestBuilderPage() {
   const [learningObjective, setLearningObjective] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
-  
+  const [generatedQuest, setGeneratedQuest] = useState<GeneratedQuest | null>(null);
+
   const [moduleCode, setModuleCode] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [processedData, setProcessedData] = useState<ProcessModuleOutput | null>(null);
   
   const { toast } = useToast();
 
+  const handleGenerateQuest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!learningObjective) return;
+    setIsGenerating(true);
+    setGeneratedQuest(null);
+    try {
+      const result = await generateQuest({ learningObjective });
+      setGeneratedQuest(result);
+       toast({
+        title: "Quest Generated!",
+        description: "The AI has crafted a new quest structure for you.",
+      });
+    } catch (error: any) {
+       toast({
+        title: "Generation Failed",
+        description: error.message || "Could not generate quest.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const handleProcessModule = async () => {
-    // This will be implemented in the next step
-    toast({
-        title: "Processing In Progress...",
-        description: "This feature is not yet fully wired up."
-    })
+    if (!moduleCode) return;
+    setIsProcessing(true);
+    setProcessedData(null);
+    try {
+      // Step 1: Process with AI to get structured data
+      const processedOutput = await processModule({ moduleCode });
+      setProcessedData(processedOutput);
+      
+      // Step 2: Register the structured data in Firestore
+      await registerQuestModule(processedOutput);
+
+      toast({
+        title: "Module Processed & Registered!",
+        description: `Quest "${processedOutput.title}" is now live.`,
+      });
+
+    } catch (error: any) {
+        toast({
+            title: "Processing Failed",
+            description: error.message || "Could not process and register the module.",
+            variant: "destructive"
+        })
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -55,7 +102,7 @@ export default function QuestBuilderPage() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form className="space-y-4">
+                    <form onSubmit={handleGenerateQuest} className="space-y-4">
                         <Textarea
                             placeholder="Enter a learning objective, e.g., 'Understand the difference between odd and even numbers' or 'Learn about the phases of the moon'"
                             rows={3}
@@ -63,12 +110,25 @@ export default function QuestBuilderPage() {
                             value={learningObjective}
                             onChange={(e) => setLearningObjective(e.target.value)}
                         />
-                        <Button type="submit" className="w-full" disabled>
-                            <Wand2 className="mr-2 h-5 w-5" />
-                            Generate Quest (Coming Soon)
+                        <Button type="submit" className="w-full" disabled={isGenerating || !learningObjective}>
+                            {isGenerating ? (
+                                <><Loader2 className="animate-spin" /> Generating...</>
+                            ) : (
+                                <><Wand2 className="mr-2 h-5 w-5" /> Generate Quest</>
+                            )}
                         </Button>
                     </form>
                 </CardContent>
+                 {generatedQuest && (
+                    <CardFooter className="mt-4">
+                        <div className="w-full p-4 bg-primary/10 rounded-lg border border-primary/30">
+                            <h4 className="font-bold text-lg text-accent mb-2">Generated Quest Outline:</h4>
+                            <pre className="text-xs whitespace-pre-wrap bg-background/50 p-2 rounded">
+                                {JSON.stringify(generatedQuest, null, 2)}
+                            </pre>
+                        </div>
+                    </CardFooter>
+                )}
             </Card>
 
             <div className="space-y-8">
@@ -79,7 +139,7 @@ export default function QuestBuilderPage() {
                             Full Module Processing
                         </CardTitle>
                         <CardDescription>
-                           Paste the entire code for a quest module (like your `class6-math-chapter1.js` file) and the AI will extract the necessary data.
+                           Paste the entire code for a quest module (like your `class6-math-chapter1.js` file) and the AI will extract the necessary data and register it.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -95,7 +155,7 @@ export default function QuestBuilderPage() {
                                 {isProcessing ? (
                                     <><Loader2 className="animate-spin" /> Processing...</>
                                 ) : (
-                                    <><Bot className="mr-2" /> Process Module with AI</>
+                                    <><Bot className="mr-2" /> Process & Register Module</>
                                 )}
                             </Button>
                         </div>
@@ -103,7 +163,7 @@ export default function QuestBuilderPage() {
                     {processedData && (
                         <CardFooter className="mt-4">
                            <div className="w-full p-4 bg-primary/10 rounded-lg border border-primary/30">
-                               <h4 className="font-bold text-lg text-accent mb-2">Processed Data:</h4>
+                               <h4 className="font-bold text-lg text-accent mb-2">Successfully Processed & Registered:</h4>
                                <pre className="text-xs whitespace-pre-wrap bg-background/50 p-2 rounded">
                                    {JSON.stringify(processedData, null, 2)}
                                </pre>
