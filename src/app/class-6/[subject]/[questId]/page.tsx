@@ -121,7 +121,8 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
                 description: `You are now known as: ${result.newTitle}`,
             })
         }
-        // TODO: Redirect or show a completion summary
+        // No need to set isCompleting to false, as the user should be encouraged to navigate away
+        // or the button will remain disabled, preventing re-submission.
     } catch (error) {
         console.error("Failed to complete quest:", error);
         toast({
@@ -129,8 +130,7 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
             description: "Could not save your progress. Please try again.",
             variant: 'destructive',
         });
-    } finally {
-        setIsCompleting(false);
+        setIsCompleting(false); // Allow retry on error
     }
   };
   
