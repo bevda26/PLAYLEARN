@@ -134,8 +134,10 @@ export default function LoginPage() {
                         </div>
                     </div>
                     <MagicalButton variant="outline" onClick={handleGoogleSignIn}>
-                        <GoogleIcon className="mr-2 h-4 w-4" />
-                        Google
+                        <>
+                            <GoogleIcon className="mr-2 h-4 w-4" />
+                            Google
+                        </>
                     </MagicalButton>
                 </CardContent>
             </Card>
