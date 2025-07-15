@@ -28,7 +28,7 @@ export default function CastleHomepage() {
   return (
     <div className="relative min-h-screen w-full bg-[#110E1B] flex flex-col">
       <Image
-        src="https://placehold.co/1920x1080/000000/FFFFFF.png?text=+"
+        src="https://images.unsplash.com/photo-1618349479340-e59132499534?q=80&w=1920&h=1080&fit=crop"
         alt="Mystical Castle Background"
         fill
         className="absolute inset-0 z-0 object-cover opacity-30"
