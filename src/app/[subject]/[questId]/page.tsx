@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ArrowLeft, Clock, Award } from 'lucide-react';
 import type { QuestModule } from '@/lib/types';
 import { MagicalButton } from '@/components/ui/magical-button';
+import React from 'react';
 
 function QuestNotFound() {
     return (
@@ -22,7 +23,10 @@ function QuestNotFound() {
 
 
 export default function QuestPlayerPage({ params }: { params: { subject: string, questId: string } }) {
-  const quest: QuestModule | undefined = mockQuests.find(q => q.id === params.questId && q.subject === params.subject);
+  const quest: QuestModule | undefined = React.useMemo(() => 
+    mockQuests.find(q => q.id === params.questId && q.subject === params.subject),
+    [params.questId, params.subject]
+  );
 
   if (!quest) {
     return <QuestNotFound />;
