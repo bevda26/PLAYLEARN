@@ -48,10 +48,10 @@ const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params }) => {
   const subjectTitle = useMemo(() => subject.charAt(0).toUpperCase() + subject.slice(1), [subject]);
   
   const subjectThemes: Record<string, { from: string; to: string }> = {
-      math: { from: '#4A148C', to: '#222129' },
-      science: { from: '#1E3A8A', to: '#222129' },
-      language: { from: '#059669', to: '#222129' },
-      history: { from: '#B8860B', to: '#222129' },
+      math: { from: 'hsl(var(--primary))', to: 'hsl(var(--background))' },
+      science: { from: '#1E3A8A', to: 'hsl(var(--background))' },
+      language: { from: '#059669', to: 'hsl(var(--background))' },
+      history: { from: '#B8860B', to: 'hsl(var(--background))' },
   }
   
   const theme = subjectThemes[subject] || { from: '#333', to: '#111' };
@@ -123,3 +123,5 @@ const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params }) => {
 }
 
 export default QuestDiscoveryPage;
+
+    

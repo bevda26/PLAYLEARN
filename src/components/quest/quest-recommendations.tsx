@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -7,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Lightbulb } from 'lucide-react';
+import { Lightbulb, Loader2 } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
 
 interface QuestRecommendationsProps {
@@ -37,14 +38,17 @@ export function QuestRecommendations({ availableQuests, onRecommendations }: Que
     onRecommendations([]);
 
     try {
+      // Format the quests for the AI prompt
+      const questStrings = availableQuests.map(q => `${q.id}: ${q.title} - ${q.metadata.description}`);
+      
       const result = await recommendQuests({
         learningGoals,
         moduleContent: 'Generic module content for all quests', // This could be more specific in a real implementation
-        availableQuests: availableQuests.map(q => `${q.id}: ${q.title} - ${q.metadata.description}`),
+        availableQuests: questStrings,
       });
 
-      // Extract just the IDs
-      const recommendedIds = result.recommendedQuests.map(q => q.split(':')[0]);
+      // The AI returns quest strings like "math-001: The Dragon's Hoard...". We need to extract just the ID part.
+      const recommendedIds = result.recommendedQuests.map(q => q.split(':')[0].trim());
       
       setRecommendation(result);
       onRecommendations(recommendedIds);
@@ -87,8 +91,15 @@ export function QuestRecommendations({ availableQuests, onRecommendations }: Que
             rows={3}
             className="bg-background/50 border-primary/50"
           />
-          <Button type="submit" disabled={isLoading}>
-            {isLoading ? 'Advising...' : 'Get Recommendations'}
+          <Button type="submit" disabled={isLoading || availableQuests.length === 0}>
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Advising...
+              </>
+            ) : (
+              'Get Recommendations'
+            )}
           </Button>
         </form>
 
@@ -110,3 +121,5 @@ export function QuestRecommendations({ availableQuests, onRecommendations }: Que
     </Card>
   );
 }
+
+    
