@@ -48,13 +48,13 @@ const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params }) => {
   const subjectTitle = useMemo(() => subject.charAt(0).toUpperCase() + subject.slice(1), [subject]);
   
   const subjectThemes: Record<string, { from: string; to: string }> = {
-      math: { from: 'hsl(var(--primary))', to: 'hsl(var(--background))' },
-      science: { from: 'hsl(var(--secondary))', to: 'hsl(var(--background))' },
-      language: { from: '#059669', to: 'hsl(var(--background))' },
-      history: { from: '#B8860B', to: 'hsl(var(--background))' },
+      math: { from: 'hsl(var(--primary))', to: 'hsl(var(--accent))' },
+      science: { from: '#0284c7', to: '#e0e7ff' },
+      language: { from: 'hsl(var(--secondary))', to: '#fef3c7' },
+      history: { from: '#a16207', to: 'hsl(var(--border))' },
   }
   
-  const theme = subjectThemes[subject] || { from: '#333', to: '#111' };
+  const theme = subjectThemes[subject] || { from: 'hsl(var(--background))', to: 'hsl(var(--background))' };
 
   if (!isLoading && availableQuests.length === 0) {
     return (
