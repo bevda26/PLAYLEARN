@@ -1,3 +1,4 @@
+
 // src/app/admin/quest-builder/page.tsx
 'use client';
 
@@ -112,9 +113,13 @@ export default function QuestBuilderPage() {
                         />
                         <Button type="submit" className="w-full" disabled={isGenerating || !learningObjective}>
                             {isGenerating ? (
-                                <><Loader2 className="animate-spin" /> Generating...</>
+                                <>
+                                    <Loader2 className="animate-spin" /> Generating...
+                                </>
                             ) : (
-                                <><Wand2 className="mr-2 h-5 w-5" /> Generate Quest</>
+                                <>
+                                    <Wand2 className="mr-2 h-5 w-5" /> Generate Quest
+                                </>
                             )}
                         </Button>
                     </form>
@@ -153,9 +158,13 @@ export default function QuestBuilderPage() {
                            />
                             <Button className="w-full" onClick={handleProcessModule} disabled={isProcessing || !moduleCode}>
                                 {isProcessing ? (
-                                    <><Loader2 className="animate-spin" /> Processing...</>
+                                    <>
+                                        <Loader2 className="animate-spin" /> Processing...
+                                    </>
                                 ) : (
-                                    <><Bot className="mr-2" /> Process & Register Module</>
+                                    <>
+                                        <Bot className="mr-2" /> Process & Register Module
+                                    </>
                                 )}
                             </Button>
                         </div>
