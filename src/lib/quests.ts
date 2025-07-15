@@ -1,9 +1,9 @@
 // src/lib/quests.ts
 'use server';
 
-import { doc, runTransaction, serverTimestamp } from 'firebase/firestore';
+import { doc, runTransaction, serverTimestamp, setDoc } from 'firebase/firestore';
 import { db } from './firebase';
-import type { UserProgress } from './types';
+import type { QuestModule, UserProgress } from './types';
 
 // XP needed to advance to the next level (level 1 -> 2 is at index 1)
 const LEVEL_XP_MAP: { [key: number]: number } = {
@@ -57,5 +57,24 @@ export async function completeQuest(userId: string, questId: string, xpGained: n
   } catch (e) {
     console.error("Quest completion transaction failed: ", e);
     throw e; // Re-throw the error to be caught by the caller
+  }
+}
+
+/**
+ * Creates a new quest document in the 'quest-modules' collection.
+ * @param questData - The data for the new quest module.
+ */
+export async function registerQuestModule(questData: QuestModule) {
+  const questRef = doc(db, 'quest-modules', questData.id);
+  
+  try {
+    await setDoc(questRef, {
+      ...questData,
+      createdAt: serverTimestamp(),
+    });
+    console.log(`Quest module ${questData.id} registered successfully.`);
+  } catch (error) {
+    console.error("Error registering quest module: ", error);
+    throw error;
   }
 }

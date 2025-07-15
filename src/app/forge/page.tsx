@@ -3,39 +3,63 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Lightbulb, Loader2, Sparkles, BookCheck, Swords, Puzzle } from 'lucide-react';
-import type { GeneratedQuest } from '@/ai/flows/quest-generation-flow';
-import { generateQuest } from '@/ai/flows/quest-generation-flow';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { Hammer, Loader2, Sparkles, Wand2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
-
-const activityIcons: Record<string, React.ElementType> = {
-  'multiple_choice': BookCheck,
-  'role_playing': Swords,
-  'problem_solving': Puzzle,
-};
+import type { QuestModule } from '@/lib/types';
+import { registerQuestModule } from '@/lib/quests';
 
 export default function QuestForgePage() {
-  const [learningObjective, setLearningObjective] = useState('');
-  const [generatedQuest, setGeneratedQuest] = useState<GeneratedQuest | null>(null);
+  const [formData, setFormData] = useState<Partial<QuestModule>>({
+    id: '',
+    title: '',
+    subject: 'math',
+    difficulty: 'beginner',
+    questType: 'challenge',
+    componentPath: '',
+    metadata: {
+      description: '',
+      estimatedTime: 15,
+      xpReward: 100,
+    },
+  });
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleGenerateQuest = async () => {
-    if (!learningObjective.trim()) {
-      toast({ title: 'Please enter a learning objective.', variant: 'destructive' });
-      return;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    if (name in formData.metadata!) {
+      setFormData(prev => ({
+        ...prev,
+        metadata: { ...prev.metadata!, [name]: name === 'estimatedTime' || name === 'xpReward' ? parseInt(value) : value },
+      }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
     }
+  };
+
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setIsLoading(true);
-    setGeneratedQuest(null);
     try {
-      const result = await generateQuest({ learningObjective });
-      setGeneratedQuest(result);
-    } catch (error) {
-      console.error('Failed to generate quest:', error);
-      toast({ title: 'Failed to generate quest. Please try again.', variant: 'destructive' });
+      // Basic validation
+      if (!formData.id || !formData.title || !formData.componentPath) {
+        throw new Error("ID, Title, and Component Path are required.");
+      }
+      await registerQuestModule(formData as QuestModule);
+      toast({ title: 'Quest Registered!', description: `Quest "${formData.title}" has been added to the chronicles.` });
+    } catch (error: any) {
+      console.error('Failed to register quest:', error);
+      toast({ title: 'Failed to register quest.', description: error.message, variant: 'destructive' });
     } finally {
       setIsLoading(false);
     }
@@ -56,68 +80,106 @@ export default function QuestForgePage() {
           <h1 className="font-headline text-5xl md:text-6xl font-bold text-mystic-gold drop-shadow-[0_4px_4px_rgba(0,0,0,0.7)]">
             PlayLearn Forge
           </h1>
-          <p className="text-lg text-slate-300 mt-2">Your AI-powered educational game creator</p>
+          <p className="text-lg text-slate-300 mt-2">Manually register new quest modules into the system.</p>
         </div>
 
         <Card className="bg-card/60 backdrop-blur-lg border border-primary/20 shadow-2xl shadow-primary/10">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-2xl text-accent font-headline">
-              <Lightbulb />
-              Describe your learning objective
+              <Wand2 />
+              Register New Quest Module
             </CardTitle>
-            <CardDescription>Enter a topic or a learning goal, and the AI will forge a quest for you.</CardDescription>
+            <CardDescription>Enter the details for a new quest. This will create a new entry in the 'quest-modules' collection.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid w-full gap-4">
-              <Textarea
-                placeholder="e.g., 'Teach the basics of photosynthesis' or 'Practice identifying nouns and verbs'"
-                value={learningObjective}
-                onChange={(e) => setLearningObjective(e.target.value)}
-                rows={4}
-                className="bg-background/50"
-              />
-              <Button onClick={handleGenerateQuest} disabled={isLoading} size="lg">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="id">Quest ID</Label>
+                  <Input id="id" name="id" placeholder="e.g., math-004" value={formData.id} onChange={handleInputChange} required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="title">Quest Title</Label>
+                  <Input id="title" name="title" placeholder="The Alchemist's Riddle" value={formData.title} onChange={handleInputChange} required />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                  <Label htmlFor="componentPath">Component Path</Label>
+                  <Input id="componentPath" name="componentPath" placeholder="e.g., math/math-004.tsx" value={formData.componentPath} onChange={handleInputChange} required />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea id="description" name="description" placeholder="A brief, adventurous description..." value={formData.metadata?.description} onChange={handleInputChange} />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="subject">Subject</Label>
+                  <Select name="subject" value={formData.subject} onValueChange={(v) => handleSelectChange('subject', v)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="math">Math</SelectItem>
+                      <SelectItem value="science">Science</SelectItem>
+                      <SelectItem value="language">Language</SelectItem>
+                      <SelectItem value="history">History</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="difficulty">Difficulty</Label>
+                   <Select name="difficulty" value={formData.difficulty} onValueChange={(v) => handleSelectChange('difficulty', v)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="beginner">Beginner</SelectItem>
+                      <SelectItem value="intermediate">Intermediate</SelectItem>
+                      <SelectItem value="advanced">Advanced</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="questType">Quest Type</Label>
+                  <Select name="questType" value={formData.questType} onValueChange={(v) => handleSelectChange('questType', v)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="investigation">Investigation</SelectItem>
+                      <SelectItem value="experiment">Experiment</SelectItem>
+                      <SelectItem value="challenge">Challenge</SelectItem>
+                      <SelectItem value="mastery">Mastery</SelectItem>
+                      <SelectItem value="boss">Boss</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="xpReward">XP Reward</Label>
+                  <Input id="xpReward" name="xpReward" type="number" value={formData.metadata?.xpReward} onChange={handleInputChange} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="estimatedTime">Estimated Time (min)</Label>
+                  <Input id="estimatedTime" name="estimatedTime" type="number" value={formData.metadata?.estimatedTime} onChange={handleInputChange} />
+                </div>
+              </div>
+
+              <Button type="submit" disabled={isLoading} size="lg" className="w-full">
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Forging Quest...
+                    Registering...
                   </>
                 ) : (
                   <>
-                    <Sparkles className="mr-2 h-5 w-5" />
-                    Generate Quest
+                    <Hammer className="mr-2 h-5 w-5" />
+                    Register Quest
                   </>
                 )}
               </Button>
-            </div>
+            </form>
           </CardContent>
         </Card>
-
-        {generatedQuest && (
-          <Card className="mt-8 bg-card/60 backdrop-blur-lg border border-primary/20 shadow-2xl shadow-primary/10 animate-in fade-in-50 duration-500">
-            <CardHeader>
-              <CardTitle className="text-3xl text-mystic-gold font-headline">{generatedQuest.title}</CardTitle>
-              <CardDescription>{generatedQuest.description}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <h3 className="text-xl font-bold mb-4 text-accent font-headline">Activities</h3>
-              <div className="space-y-6">
-                {generatedQuest.activities.map((activity, index) => {
-                  const Icon = activityIcons[activity.type] || Puzzle;
-                  return (
-                    <div key={index} className="p-4 bg-primary/10 rounded-lg border border-primary/30">
-                      <h4 className="flex items-center font-bold text-lg mb-2">
-                        <Icon className="w-5 h-5 mr-3 text-accent" />
-                        {activity.title}
-                      </h4>
-                      <p className="text-foreground/80 ml-8">{activity.description}</p>
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        )}
       </main>
     </div>
   );

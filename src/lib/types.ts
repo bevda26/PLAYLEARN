@@ -14,7 +14,7 @@ export interface QuestModule {
     xpReward: number;
     unlockRequirements?: string[];
   };
-  createdAt: Timestamp;
+  createdAt?: Timestamp;
 }
 
 export interface UserProfile {
