@@ -28,7 +28,7 @@ export interface UserProfile {
   email: string | null;
   displayName: string;
   avatar: string;
-  title: string;
+  title:string;
   unlockedAchievements: { [achievementId: string]: Timestamp };
   createdAt: Timestamp;
 }
@@ -39,4 +39,5 @@ export interface UserProgress {
   level: number;
   health: number;
   questsCompleted: { [questId: string]: Timestamp };
+  inventory: string[]; // e.g., ['health_potion', 'golden_key']
 }

@@ -28,6 +28,7 @@ export const useUserProgressStore = create<UserProgressState>((set) => ({
   level: 1,
   health: 100,
   questsCompleted: {},
+  inventory: [],
   xpToNextLevel: LEVEL_XP_MAP[1],
 
   subscribeToUserProgress: (uid: string) => {
@@ -44,6 +45,7 @@ export const useUserProgressStore = create<UserProgressState>((set) => ({
         set({
           userId: uid,
           ...progress,
+          inventory: progress.inventory || [], // Ensure inventory is at least an empty array
           xpToNextLevel: LEVEL_XP_MAP[progress.level] || Infinity,
         });
       }
@@ -65,6 +67,7 @@ export const useUserProgressStore = create<UserProgressState>((set) => ({
       xpToNextLevel: LEVEL_XP_MAP[1],
       health: 100,
       questsCompleted: {},
+      inventory: [],
     });
   },
 }));

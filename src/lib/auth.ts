@@ -1,3 +1,4 @@
+
 // src/lib/auth.ts
 import { 
   onAuthStateChanged, 
@@ -48,6 +49,7 @@ const createUserDocuments = async (user: User) => {
         level: 1,
         health: 100,
         questsCompleted: {},
+        inventory: [], // Initialize empty inventory
       });
     } catch (error) {
       console.error("Error creating user progress: ", error);
