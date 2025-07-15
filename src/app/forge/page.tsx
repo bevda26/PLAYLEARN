@@ -15,18 +15,18 @@ import type { QuestModule } from '@/lib/types';
 import { registerQuestModule } from '@/lib/auto-integration/route-generator';
 
 export default function QuestForgePage() {
-  const [formData, setFormData] = useState<Partial<QuestModule>>({
-    id: '',
-    title: '',
-    subject: 'math',
+  const [formData, setFormData] = useState<Omit<QuestModule, 'createdAt'>>({
+    id: 'science-001',
+    title: "Alchemist's Apprentice: Potion Brewing",
+    subject: 'science',
     difficulty: 'beginner',
-    questType: 'challenge',
-    componentPath: '',
+    questType: 'experiment',
+    componentPath: 'science/science-001.tsx',
     metadata: {
-      description: '',
-      estimatedTime: 15,
-      xpReward: 100,
-      itemRewards: [],
+      description: 'Learn the basics of chemical reactions by brewing a simple healing potion.',
+      estimatedTime: 20,
+      xpReward: 150,
+      itemRewards: ['health_potion'],
     },
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -51,7 +51,7 @@ export default function QuestForgePage() {
   };
 
   const handleSelectChange = (name: string, value: string) => {
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value as any }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -62,7 +62,7 @@ export default function QuestForgePage() {
       if (!formData.id || !formData.title || !formData.componentPath) {
         throw new Error("ID, Title, and Component Path are required.");
       }
-      await registerQuestModule(formData as Omit<QuestModule, 'createdAt'>);
+      await registerQuestModule(formData);
       toast({ title: 'Quest Registered!', description: `Quest "${formData.title}" has been added to the chronicles.` });
     } catch (error: any) {
       console.error('Failed to register quest:', error);
@@ -125,7 +125,7 @@ export default function QuestForgePage() {
                 <div className="space-y-2">
                   <Label htmlFor="subject">Subject</Label>
                   <Select name="subject" value={formData.subject} onValueChange={(v) => handleSelectChange('subject', v)}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger><SelectValue /></SelectValue>
                     <SelectContent>
                       <SelectItem value="math">Math</SelectItem>
                       <SelectItem value="science">Science</SelectItem>
@@ -137,7 +137,7 @@ export default function QuestForgePage() {
                 <div className="space-y-2">
                   <Label htmlFor="difficulty">Difficulty</Label>
                    <Select name="difficulty" value={formData.difficulty} onValueChange={(v) => handleSelectChange('difficulty', v)}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger><SelectValue /></SelectValue>
                     <SelectContent>
                       <SelectItem value="beginner">Beginner</SelectItem>
                       <SelectItem value="intermediate">Intermediate</SelectItem>
@@ -148,7 +148,7 @@ export default function QuestForgePage() {
                 <div className="space-y-2">
                   <Label htmlFor="questType">Quest Type</Label>
                   <Select name="questType" value={formData.questType} onValueChange={(v) => handleSelectChange('questType', v)}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger><SelectValue /></SelectValue>
                     <SelectContent>
                       <SelectItem value="investigation">Investigation</SelectItem>
                       <SelectItem value="experiment">Experiment</SelectItem>
