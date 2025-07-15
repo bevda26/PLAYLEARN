@@ -98,7 +98,7 @@ export const AppHeader = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-64">
                   <DropdownMenuLabel>{userProfile.displayName}</DropdownMenuLabel>
-                  <DropdownMenuItem>Title: {userProfile.title}</DropdownMenuItem>
+                  <DropdownMenuLabel className="text-sm font-normal text-muted-foreground -mt-2">Title: {userProfile.title}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
 
                   <DialogTrigger asChild>

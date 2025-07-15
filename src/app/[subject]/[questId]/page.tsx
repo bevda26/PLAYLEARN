@@ -73,7 +73,7 @@ type QuestPlayerPageProps = {
 
 const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
   const { questId } = params;
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const { toast } = useToast();
 
   const [quest, setQuest] = useState<QuestModule | null>(null);
@@ -100,10 +100,10 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
   }, [questId]);
 
   const handleCompleteQuest = async () => {
-    if (!user || !quest) return;
+    if (!user || !quest || !userProfile) return;
     setIsCompleting(true);
     try {
-        const result = await completeQuest(user.uid, quest);
+        const result = await completeQuest(user.uid, userProfile, quest);
         
         let toastDescription = `You earned ${quest.metadata.xpReward} XP!`;
         if (result?.itemsAwarded && result.itemsAwarded.length > 0) {
@@ -114,6 +114,13 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
             title: "Quest Complete!",
             description: toastDescription,
         });
+
+        if (result?.newTitle) {
+            toast({
+                title: "Title Unlocked!",
+                description: `You are now known as: ${result.newTitle}`,
+            })
+        }
         // TODO: Redirect or show a completion summary
     } catch (error) {
         console.error("Failed to complete quest:", error);
@@ -180,7 +187,7 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
           </CardContent>
         </Card>
         <div className="mt-8 text-center">
-            <MagicalButton onClick={handleCompleteQuest} disabled={isCompleting || !user}>
+            <MagicalButton onClick={handleCompleteQuest} disabled={isCompleting || !user || !userProfile}>
                 {isCompleting ? (
                     <><Loader2 className="animate-spin" /> Completing...</>
                 ) : (

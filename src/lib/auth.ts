@@ -12,8 +12,6 @@ import {
 import { app, db, auth } from './firebase'; 
 import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 
-const googleProvider = new GoogleAuthProvider();
-
 // Function to create user documents if they don't exist
 const createUserDocuments = async (user: User) => {
   // Create public user profile

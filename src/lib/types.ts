@@ -32,7 +32,7 @@ export interface UserProfile {
   email: string | null;
   displayName: string;
   avatar: string;
-  title:string;
+  title: string;
   unlockedAchievements: { [achievementId: string]: Timestamp };
   createdAt: Timestamp;
 }
