@@ -14,6 +14,7 @@ export const mockQuests: QuestModule[] = [
       description: 'The great dragon sleeps! Help the villagers count its vast treasure before it awakes.',
       estimatedTime: 15,
       xpReward: 100,
+      itemRewards: ['health_potion'],
     },
   },
   {
@@ -27,6 +28,7 @@ export const mockQuests: QuestModule[] = [
       description: 'Unlock the secrets of the Geomancer by identifying powerful geometric shapes in the ancient ruins.',
       estimatedTime: 25,
       xpReward: 250,
+      itemRewards: ['scroll_of_wisdom'],
     },
   },
    {
@@ -40,6 +42,7 @@ export const mockQuests: QuestModule[] = [
       description: 'Break the Lich King\'s curse by solving the derivative spells that bind the kingdom.',
       estimatedTime: 60,
       xpReward: 1000,
+      itemRewards: ['dragon_scale', 'golden_key'],
     },
   },
   // Science Quests
@@ -54,6 +57,7 @@ export const mockQuests: QuestModule[] = [
       description: 'Learn the basics of chemical reactions by brewing a simple healing potion.',
       estimatedTime: 20,
       xpReward: 150,
+      itemRewards: ['health_potion'],
     },
   },
   {
@@ -67,6 +71,7 @@ export const mockQuests: QuestModule[] = [
       description: 'Chart the paths of the constellations to decipher the Stargazer\'s ancient prophecy.',
       estimatedTime: 30,
       xpReward: 300,
+      itemRewards: ['scroll_of_wisdom'],
     },
   },
   // Language Quests

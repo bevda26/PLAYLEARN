@@ -1,4 +1,3 @@
-
 // src/components/dashboard/progress-chart.tsx
 'use client';
 
