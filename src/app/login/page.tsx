@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
+import { MagicalButton } from '@/components/ui/magical-button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -92,7 +92,7 @@ export default function LoginPage() {
                         </TabsList>
                         <TabsContent value="login">
                             <form onSubmit={handleEmailSignIn}>
-                                <div className="space-y-4">
+                                <div className="space-y-4 pt-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="email-login">Email</Label>
                                         <Input id="email-login" type="email" placeholder="m@example.com" value={email} onChange={e => setEmail(e.target.value)} required />
@@ -101,13 +101,13 @@ export default function LoginPage() {
                                         <Label htmlFor="password-login">Password</Label>
                                         <Input id="password-login" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
                                     </div>
-                                    <Button type="submit" className="w-full">Login</Button>
+                                    <MagicalButton type="submit" variant="primary">Login</MagicalButton>
                                 </div>
                             </form>
                         </TabsContent>
                         <TabsContent value="signup">
                             <form onSubmit={handleEmailSignUp}>
-                                <div className="space-y-4">
+                                <div className="space-y-4 pt-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="email-signup">Email</Label>
                                         <Input id="email-signup" type="email" placeholder="m@example.com" value={email} onChange={e => setEmail(e.target.value)} required />
@@ -120,7 +120,7 @@ export default function LoginPage() {
                                         <Label htmlFor="confirm-password-signup">Confirm Password</Label>
                                         <Input id="confirm-password-signup" type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required />
                                     </div>
-                                    <Button type="submit" className="w-full">Create Account</Button>
+                                    <MagicalButton type="submit" variant="primary">Create Account</MagicalButton>
                                 </div>
                             </form>
                         </TabsContent>
@@ -133,10 +133,10 @@ export default function LoginPage() {
                             <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
                         </div>
                     </div>
-                    <Button variant="outline" className="w-full" onClick={handleGoogleSignIn}>
+                    <MagicalButton variant="outline" onClick={handleGoogleSignIn}>
                         <GoogleIcon className="mr-2 h-4 w-4" />
                         Google
-                    </Button>
+                    </MagicalButton>
                 </CardContent>
             </Card>
         </div>

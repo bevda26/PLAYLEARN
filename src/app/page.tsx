@@ -3,7 +3,7 @@ import { mockQuests } from "@/lib/mock-data";
 import Link from "next/link";
 import { Library, Zap, BookOpen, Swords, FlaskConical, Castle, Construction } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { MagicalButton } from "@/components/ui/magical-button";
 import { AppHeader } from "@/components/layout/app-header";
 import { Sparkles } from "lucide-react";
 import { CastleScene } from "@/components/3d/castle-scene";
@@ -76,12 +76,12 @@ export default function CastleHomepage() {
           ))}
         </div>
 
-        <Link href="/admin/quest-builder">
-          <Button size="lg" className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-lg px-8 py-6 rounded-lg shadow-lg hover:shadow-primary/40 transition-shadow">
+        <MagicalButton asChild>
+          <Link href="/admin/quest-builder">
               <Construction className="mr-3 h-5 w-5" />
               Go to the Quest Builder
-          </Button>
-        </Link>
+          </Link>
+        </MagicalButton>
       </main>
     </div>
   );
