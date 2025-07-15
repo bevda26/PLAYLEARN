@@ -28,21 +28,21 @@ export default function CastleHomepage() {
   return (
     <div className="relative min-h-screen w-full bg-[#110E1B] flex flex-col" data-ai-hint="fantasy castle night">
       <Image
-        src="https://images.unsplash.com/photo-1618349479340-e59132499534?q=80&w=1920&h=1080&fit=crop"
+        src="https://images.unsplash.com/photo-1539651044670-315229da9d2f?q=80&w=1920&h=1080&fit=crop"
         alt="Mystical Castle Background"
         fill
         className="absolute inset-0 z-0 object-cover opacity-30"
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#110E1B]/50 to-[#110E1B] z-10"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#110E1B]/50 to-[#110E1B] z-0"></div>
       
       <AppHeader />
 
-      <main className="relative z-20 flex flex-col items-center justify-center text-center text-parchment-white flex-grow px-4">
+      <main className="relative z-10 flex flex-col items-center justify-center text-center text-parchment-white flex-grow px-4">
         
         <SparklingCrown />
 
         <h1 className="text-5xl md:text-7xl font-bold font-headline mb-4 bg-gradient-to-r from-orange-400 via-purple-500 to-indigo-600 bg-clip-text text-transparent drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
-          KINGDOM ACADEMY
+          OUR PLAYLEARN
         </h1>
         <p className="text-lg md:text-xl max-w-2xl text-slate-300 mb-6">
           ENTER THE MYSTICAL REALM WHERE LEARNING BECOMES<br/> AN EPIC RPG ADVENTURE!
@@ -67,7 +67,7 @@ export default function CastleHomepage() {
         </div>
       </main>
 
-       <footer className="relative z-20 w-full p-4 mt-12 mb-4">
+       <footer className="relative z-10 w-full p-4 mt-12 mb-4">
         <div className="max-w-4xl mx-auto flex justify-around items-center">
             <div className="text-center w-48 h-24 flex flex-col justify-center items-center bg-black/30 backdrop-blur-sm p-4 rounded-lg border border-primary/20">
                 <p className="font-bold text-3xl text-mystic-gold">∞</p>

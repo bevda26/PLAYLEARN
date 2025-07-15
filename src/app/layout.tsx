@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'Kingdom Academy - Epic RPG Learning Platform',
-  description: 'A revolutionary educational gaming platform where learning feels like playing an epic RPG game.',
+  title: 'Our PlayLearn - Epic RPG Learning Platform',
+  description: 'A revolutionary educational gaming platform where learning is an adventure.',
 };
 
 export default function RootLayout({

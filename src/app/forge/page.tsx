@@ -54,7 +54,7 @@ export default function QuestForgePage() {
       <main className="w-full max-w-3xl z-10 mt-10">
         <div className="text-center mb-10">
           <h1 className="font-headline text-5xl md:text-6xl font-bold text-mystic-gold drop-shadow-[0_4px_4px_rgba(0,0,0,0.7)]">
-            Quest Kingdom Forge
+            Our PlayLearn Forge
           </h1>
           <p className="text-lg text-slate-300 mt-2">Your AI-powered educational game creator</p>
         </div>
