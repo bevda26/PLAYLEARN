@@ -157,7 +157,7 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
       <main className="w-full max-w-4xl z-10">
         <Card className="bg-card/60 backdrop-blur-lg border-2 border-primary/30 shadow-2xl shadow-primary/10">
           <CardHeader className="text-center border-b-2 border-primary/20">
-            <Link href={`/${quest.subject}`} className="flex items-center gap-2 text-accent hover:underline mb-4 w-fit mx-auto">
+            <Link href={`/class-6/${quest.subject}`} className="flex items-center gap-2 text-accent hover:underline mb-4 w-fit mx-auto">
               <ArrowLeft size={16} />
               Return to the {quest.subject.charAt(0).toUpperCase() + quest.subject.slice(1)} Kingdom
             </Link>

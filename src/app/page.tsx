@@ -68,7 +68,7 @@ export default function CastleHomepage() {
           {subjects.map(subject => (
             <KingdomPortal 
               key={subject}
-              subject={subject}
+              subject={`class-6/${subject}`}
               title={subjectMetadata[subject].title}
               icon={subjectMetadata[subject].icon}
               questCount={getQuestCount(subject)}

@@ -98,7 +98,7 @@ const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params }) => {
                   <QuestCard
                     key={quest.id}
                     id={quest.id}
-                    subject={quest.subject}
+                    subject={`class-6/${quest.subject}`}
                     title={quest.title}
                     difficulty={quest.difficulty}
                     questType={quest.questType}
@@ -123,5 +123,3 @@ const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params }) => {
 }
 
 export default QuestDiscoveryPage;
-
-    
