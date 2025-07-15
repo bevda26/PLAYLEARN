@@ -6,7 +6,7 @@ import { RPGInterface } from '@/components/quest/rpg-interface';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { ArrowLeft, Clock, Award, Loader2, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Clock, Award, Loader2, AlertTriangle, Gift } from 'lucide-react';
 import type { QuestModule } from '@/lib/types';
 import { MagicalButton } from '@/components/ui/magical-button';
 import type { NextPage } from 'next';
@@ -103,10 +103,16 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
     if (!user || !quest) return;
     setIsCompleting(true);
     try {
-        await completeQuest(user.uid, quest.id, quest.metadata.xpReward);
+        await completeQuest(user.uid, quest);
+        
+        let toastDescription = `You earned ${quest.metadata.xpReward} XP!`;
+        if (quest.metadata.itemRewards && quest.metadata.itemRewards.length > 0) {
+            toastDescription += ` You received: ${quest.metadata.itemRewards.join(', ')}!`;
+        }
+
         toast({
             title: "Quest Complete!",
-            description: `You earned ${quest.metadata.xpReward} XP!`,
+            description: toastDescription,
         });
         // TODO: Redirect or show a completion summary
     } catch (error) {
@@ -151,7 +157,7 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
             <p className="text-sm uppercase tracking-widest text-accent">{quest.questType} Quest</p>
             <CardTitle className="font-headline text-5xl text-mystic-gold">{quest.title}</CardTitle>
             <CardDescription className="text-foreground/80 mt-2 max-w-2xl mx-auto">{quest.metadata.description}</CardDescription>
-            <div className="flex justify-center items-center gap-4 mt-4">
+            <div className="flex justify-center items-center gap-4 flex-wrap mt-4">
               <Badge variant="outline" className="border-accent/50 capitalize text-accent">{quest.difficulty}</Badge>
               <div className="flex items-center gap-2 text-foreground/80">
                 <Clock size={16} />
@@ -161,6 +167,12 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
                 <Award size={16} className="text-mystic-gold" />
                 <span>{quest.metadata.xpReward} XP</span>
               </div>
+              {quest.metadata.itemRewards && quest.metadata.itemRewards.length > 0 && (
+                <div className="flex items-center gap-2 text-foreground/80">
+                  <Gift size={16} className="text-accent" />
+                  <span>{quest.metadata.itemRewards.join(', ')}</span>
+                </div>
+              )}
             </div>
           </CardHeader>
           <CardContent className="p-6 md:p-8">

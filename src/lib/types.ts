@@ -12,6 +12,7 @@ export interface QuestModule {
     description: string;
     estimatedTime: number; // in minutes
     xpReward: number;
+    itemRewards?: string[]; // e.g., ['health_potion', 'golden_key']
     unlockRequirements?: string[];
   };
   createdAt?: Timestamp;

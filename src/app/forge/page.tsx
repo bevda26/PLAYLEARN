@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { Hammer, Loader2, Sparkles, Wand2 } from 'lucide-react';
+import { Hammer, Loader2, Wand2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import type { QuestModule } from '@/lib/types';
@@ -26,6 +26,7 @@ export default function QuestForgePage() {
       description: '',
       estimatedTime: 15,
       xpReward: 100,
+      itemRewards: [],
     },
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -34,9 +35,15 @@ export default function QuestForgePage() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     if (name in formData.metadata!) {
+      let parsedValue: any = value;
+        if (name === 'estimatedTime' || name === 'xpReward') {
+            parsedValue = parseInt(value) || 0;
+        } else if (name === 'itemRewards') {
+            parsedValue = value.split(',').map(s => s.trim()).filter(Boolean);
+        }
       setFormData(prev => ({
         ...prev,
-        metadata: { ...prev.metadata!, [name]: name === 'estimatedTime' || name === 'xpReward' ? parseInt(value) : value },
+        metadata: { ...prev.metadata!, [name]: parsedValue },
       }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
@@ -162,6 +169,11 @@ export default function QuestForgePage() {
                   <Label htmlFor="estimatedTime">Estimated Time (min)</Label>
                   <Input id="estimatedTime" name="estimatedTime" type="number" value={formData.metadata?.estimatedTime} onChange={handleInputChange} />
                 </div>
+              </div>
+              
+              <div className="space-y-2">
+                  <Label htmlFor="itemRewards">Item Rewards (comma-separated)</Label>
+                  <Input id="itemRewards" name="itemRewards" placeholder="e.g., health_potion,scroll_of_wisdom" value={formData.metadata?.itemRewards?.join(',')} onChange={handleInputChange} />
               </div>
 
               <Button type="submit" disabled={isLoading} size="lg" className="w-full">
