@@ -103,11 +103,11 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
     if (!user || !quest) return;
     setIsCompleting(true);
     try {
-        await completeQuest(user.uid, quest);
+        const result = await completeQuest(user.uid, quest);
         
         let toastDescription = `You earned ${quest.metadata.xpReward} XP!`;
-        if (quest.metadata.itemRewards && quest.metadata.itemRewards.length > 0) {
-            toastDescription += ` You received: ${quest.metadata.itemRewards.join(', ')}!`;
+        if (result?.itemsAwarded && result.itemsAwarded.length > 0) {
+            toastDescription += ` You received: ${result.itemsAwarded.join(', ')}!`;
         }
 
         toast({

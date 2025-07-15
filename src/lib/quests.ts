@@ -1,3 +1,4 @@
+
 // src/lib/quests.ts
 'use server';
 
@@ -15,9 +16,11 @@ const LEVEL_XP_MAP: { [key: number]: number } = {
   5: 2000,
 };
 
-export async function completeQuest(userId: string, quest: QuestModule) {
+export async function completeQuest(userId: string, quest: QuestModule): Promise<{ itemsAwarded: string[] } | void> {
   const progressRef = doc(db, 'user-progress', userId);
   const profileRef = doc(db, 'user-profiles', userId);
+  
+  let itemsAwarded: string[] = [];
 
   try {
     await runTransaction(db, async (transaction) => {
@@ -53,7 +56,8 @@ export async function completeQuest(userId: string, quest: QuestModule) {
       
       // Add item rewards to inventory if they exist
       if (quest.metadata.itemRewards && quest.metadata.itemRewards.length > 0) {
-        newProgressData.inventory = arrayUnion(...quest.metadata.itemRewards);
+        itemsAwarded = quest.metadata.itemRewards;
+        newProgressData.inventory = arrayUnion(...itemsAwarded);
       }
 
       transaction.update(progressRef, newProgressData);
@@ -62,6 +66,8 @@ export async function completeQuest(userId: string, quest: QuestModule) {
     // After the transaction is successful, check for achievements
     // This is done outside the transaction to avoid contention
     await checkForNewAchievements(userId);
+
+    return { itemsAwarded };
 
   } catch (e) {
     console.error("Quest completion transaction failed: ", e);

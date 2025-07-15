@@ -1,5 +1,8 @@
+
 import type { ComponentType } from 'react';
 import type { Timestamp } from 'firebase/firestore';
+
+export type ItemId = string; // e.g., 'health_potion', 'golden_key'
 
 export interface QuestModule {
   id: string;
@@ -12,7 +15,7 @@ export interface QuestModule {
     description: string;
     estimatedTime: number; // in minutes
     xpReward: number;
-    itemRewards?: string[]; // e.g., ['health_potion', 'golden_key']
+    itemRewards?: ItemId[]; 
     unlockRequirements?: string[];
   };
   createdAt?: Timestamp;
@@ -40,5 +43,5 @@ export interface UserProgress {
   level: number;
   health: number;
   questsCompleted: { [questId: string]: Timestamp };
-  inventory: string[]; // e.g., ['health_potion', 'golden_key']
+  inventory: ItemId[];
 }

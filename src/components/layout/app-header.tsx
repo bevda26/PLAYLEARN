@@ -1,7 +1,8 @@
+
 'use client';
 
 import Link from 'next/link';
-import { Crown, BookOpen, ToyBrick, User, Shield, Award } from 'lucide-react';
+import { Crown, BookOpen, ToyBrick, User, Shield, Award, Backpack } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { WizardsChamberIcon } from '@/components/icons/wizards-chamber';
 import { useAuth } from '@/contexts/auth-context';
@@ -10,9 +11,11 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { signOutUser } from '@/lib/auth';
 import { getAchievementById } from '@/lib/achievements';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useUserProgressStore } from '@/stores/user-progress-store';
 
 export const AppHeader = () => {
   const { user, userProfile, loading } = useAuth();
+  const { inventory } = useUserProgressStore();
 
   const unlockedAchievementIds = userProfile?.unlockedAchievements ? Object.keys(userProfile.unlockedAchievements) : [];
 
@@ -63,6 +66,22 @@ export const AppHeader = () => {
                 <DropdownMenuLabel>{userProfile.displayName}</DropdownMenuLabel>
                 <DropdownMenuItem>Title: {userProfile.title}</DropdownMenuItem>
                 <DropdownMenuSeparator />
+
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="text-xs text-muted-foreground">Inventory</DropdownMenuLabel>
+                  {inventory.length > 0 ? (
+                    inventory.map((item, index) => (
+                      <DropdownMenuItem key={index}>
+                        <Backpack className="mr-2 h-4 w-4 text-accent" />
+                        <span>{item.replace(/_/g, ' ')}</span>
+                      </DropdownMenuItem>
+                    ))
+                  ) : (
+                    <DropdownMenuItem disabled>Your backpack is empty</DropdownMenuItem>
+                  )}
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                
                 <TooltipProvider>
                   <DropdownMenuGroup>
                     <DropdownMenuLabel className="text-xs text-muted-foreground">Achievements</DropdownMenuLabel>
