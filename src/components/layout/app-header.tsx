@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { Crown, BookOpen, ToyBrick, User, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
