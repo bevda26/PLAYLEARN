@@ -1,5 +1,5 @@
 // src/lib/auto-integration/route-generator.ts
-
+'use server';
 /**
  * @fileOverview Manages the integration of validated modules into the platform.
  * 
@@ -8,21 +8,30 @@
  * module has been successfully validated.
  */
 
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import type { QuestModule } from '@/lib/types';
 
 /**
- * Updates or creates a Firestore document for a given quest module.
- * @param moduleData - The metadata extracted from the module file.
+ * Creates a new quest document in the 'quest-modules' collection.
+ * This function will be called by the auto-integration watcher or a manual admin tool.
+ * @param questData - The data for the new quest module.
  */
-export async function registerModuleInFirestore(moduleData: Partial<QuestModule>) {
-    console.log(`Registering module: ${moduleData.title}`);
+export async function registerQuestModule(questData: Omit<QuestModule, 'createdAt'>) {
+  // Ensure we don't pass the component itself to Firestore
+  const { component, ...restOfQuestData } = questData as any;
 
-    // In a real implementation, this function would:
-    // 1. Connect to Firestore.
-    // 2. Use the module's ID to create or update a document in `quest-modules`.
-    // 3. Extract metadata from the module file itself (e.g., via static analysis or comments).
-    // 4. Set the `componentPath` field correctly.
-
-    // For now, this is a placeholder.
-    return { success: true, docId: moduleData.id };
+  const questRef = doc(db, 'quest-modules', restOfQuestData.id);
+  
+  try {
+    await setDoc(questRef, {
+      ...restOfQuestData,
+      createdAt: serverTimestamp(),
+    });
+    console.log(`Quest module ${restOfQuestData.id} registered successfully.`);
+    return { success: true, docId: restOfQuestData.id };
+  } catch (error) {
+    console.error("Error registering quest module: ", error);
+    throw error;
+  }
 }

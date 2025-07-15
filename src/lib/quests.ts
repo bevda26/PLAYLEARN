@@ -59,22 +59,3 @@ export async function completeQuest(userId: string, questId: string, xpGained: n
     throw e; // Re-throw the error to be caught by the caller
   }
 }
-
-/**
- * Creates a new quest document in the 'quest-modules' collection.
- * @param questData - The data for the new quest module.
- */
-export async function registerQuestModule(questData: QuestModule) {
-  const questRef = doc(db, 'quest-modules', questData.id);
-  
-  try {
-    await setDoc(questRef, {
-      ...questData,
-      createdAt: serverTimestamp(),
-    });
-    console.log(`Quest module ${questData.id} registered successfully.`);
-  } catch (error) {
-    console.error("Error registering quest module: ", error);
-    throw error;
-  }
-}

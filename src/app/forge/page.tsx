@@ -12,7 +12,7 @@ import { Hammer, Loader2, Sparkles, Wand2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import type { QuestModule } from '@/lib/types';
-import { registerQuestModule } from '@/lib/quests';
+import { registerQuestModule } from '@/lib/auto-integration/route-generator';
 
 export default function QuestForgePage() {
   const [formData, setFormData] = useState<Partial<QuestModule>>({
@@ -55,7 +55,7 @@ export default function QuestForgePage() {
       if (!formData.id || !formData.title || !formData.componentPath) {
         throw new Error("ID, Title, and Component Path are required.");
       }
-      await registerQuestModule(formData as QuestModule);
+      await registerQuestModule(formData as Omit<QuestModule, 'createdAt'>);
       toast({ title: 'Quest Registered!', description: `Quest "${formData.title}" has been added to the chronicles.` });
     } catch (error: any) {
       console.error('Failed to register quest:', error);
