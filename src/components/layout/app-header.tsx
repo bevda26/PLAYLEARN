@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -118,9 +119,11 @@ export const AppHeader = () => {
 
                   <DialogTrigger asChild>
                     <DropdownMenuItem>
-                      <Backpack className="mr-2 h-4 w-4" />
-                      <span>Backpack</span>
-                      <span className="ml-auto text-xs text-muted-foreground">{inventoryCount} items</span>
+                      <>
+                        <Backpack className="mr-2 h-4 w-4" />
+                        <span>Backpack</span>
+                        <span className="ml-auto text-xs text-muted-foreground">{inventoryCount} items</span>
+                      </>
                     </DropdownMenuItem>
                   </DialogTrigger>
                   
