@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, use } from 'react';
 import { mockQuests } from '@/lib/mock-data';
 import { QuestCard } from '@/components/quest/quest-card';
 import { QuestRecommendations } from '@/components/quest/quest-recommendations';
@@ -13,8 +13,11 @@ type QuestDiscoveryPageProps = {
   params: { subject: string };
 };
 
-const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params }) => {
+const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params: paramsProp }) => {
+  // Correctly unwrap the params promise with React.use()
+  const params = use(paramsProp);
   const { subject } = params;
+
   const [recommendedQuestIds, setRecommendedQuestIds] = useState<string[]>([]);
   
   const availableQuests = useMemo(() => mockQuests.filter(q => q.subject === subject), [subject]);

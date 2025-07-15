@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { ArrowLeft, Clock, Award } from 'lucide-react';
 import type { QuestModule } from '@/lib/types';
 import { MagicalButton } from '@/components/ui/magical-button';
-import React, { useMemo } from 'react';
+import React, { useMemo, use } from 'react';
 import type { NextPage } from 'next';
 
 function QuestNotFound() {
@@ -29,7 +29,9 @@ type QuestPlayerPageProps = {
   params: { subject: string, questId: string };
 };
 
-const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
+const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params: paramsProp }) => {
+  // Correctly unwrap the params promise with React.use()
+  const params = use(paramsProp);
   const { subject, questId } = params;
 
   const quest: QuestModule | undefined = useMemo(() => 
