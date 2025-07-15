@@ -8,12 +8,11 @@ import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 export default function QuestDiscoveryPage({ params }: { params: { subject: string } }) {
-  const { subject } = params;
   const [recommendedQuestIds, setRecommendedQuestIds] = useState<string[]>([]);
   
-  const availableQuests = useMemo(() => mockQuests.filter(q => q.subject === subject), [subject]);
+  const availableQuests = useMemo(() => mockQuests.filter(q => q.subject === params.subject), [params.subject]);
 
-  const subjectTitle = useMemo(() => subject.charAt(0).toUpperCase() + subject.slice(1), [subject]);
+  const subjectTitle = useMemo(() => params.subject.charAt(0).toUpperCase() + params.subject.slice(1), [params.subject]);
   
   const subjectThemes: Record<string, { from: string; to: string }> = {
       math: { from: '#4A148C', to: '#222129' },
@@ -22,7 +21,7 @@ export default function QuestDiscoveryPage({ params }: { params: { subject: stri
       history: { from: '#B8860B', to: '#222129' },
   }
   
-  const theme = subjectThemes[subject] || { from: '#333', to: '#111' };
+  const theme = subjectThemes[params.subject] || { from: '#333', to: '#111' };
 
   if (availableQuests.length === 0) {
     return (
