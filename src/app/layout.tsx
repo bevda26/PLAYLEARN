@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'Our PlayLearn - Epic RPG Learning Platform',
+  title: 'PlayLearn - Epic RPG Learning Platform',
   description: 'A revolutionary educational gaming platform where learning is an adventure.',
 };
 

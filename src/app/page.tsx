@@ -42,7 +42,7 @@ export default function CastleHomepage() {
         <SparklingCrown />
 
         <h1 className="text-5xl md:text-7xl font-bold font-headline mb-4 bg-gradient-to-r from-orange-400 via-purple-500 to-indigo-600 bg-clip-text text-transparent drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
-          OUR PLAYLEARN
+          PLAYLEARN
         </h1>
         <p className="text-lg md:text-xl max-w-2xl text-slate-300 mb-6">
           ENTER THE MYSTICAL REALM WHERE LEARNING BECOMES<br/> AN EPIC RPG ADVENTURE!
