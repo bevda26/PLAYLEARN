@@ -1,7 +1,7 @@
 'use client';
 
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Stars, Sparkles } from '@react-three/drei';
+import { OrbitControls, Stars, Sparkles as DreiSparkles } from '@react-three/drei';
 
 function Tower({ position }: { position: [number, number, number] }) {
   return (
@@ -52,7 +52,7 @@ function Castle() {
       <Wall position={[5, 1.5, 0]} args={[0.5, 3, 8]} />
       <Wall position={[-5, 1.5, 0]} args={[0.5, 3, 8]} />
       
-      <Sparkles count={50} scale={10} size={2} speed={0.4} color="#FFC857" />
+      <DreiSparkles count={50} scale={10} size={2} speed={0.4} color="#FFC857" />
     </group>
   );
 }
