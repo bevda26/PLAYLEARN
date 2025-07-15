@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useMemo, use } from 'react';
+import { useState, useMemo } from 'react';
 import { mockQuests } from '@/lib/mock-data';
 import { QuestCard } from '@/components/quest/quest-card';
 import { QuestRecommendations } from '@/components/quest/quest-recommendations';
@@ -12,8 +13,7 @@ type QuestDiscoveryPageProps = {
   params: { subject: string };
 };
 
-const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params: paramsProp }) => {
-  const params = use(Promise.resolve(paramsProp));
+const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params }) => {
   const { subject } = params;
   const [recommendedQuestIds, setRecommendedQuestIds] = useState<string[]>([]);
   

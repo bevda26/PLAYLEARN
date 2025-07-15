@@ -1,3 +1,6 @@
+
+'use client';
+
 import { mockQuests } from '@/lib/mock-data';
 import { RPGInterface } from '@/components/quest/rpg-interface';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,7 +9,7 @@ import Link from 'next/link';
 import { ArrowLeft, Clock, Award } from 'lucide-react';
 import type { QuestModule } from '@/lib/types';
 import { MagicalButton } from '@/components/ui/magical-button';
-import React, { use } from 'react';
+import React, { useMemo } from 'react';
 import type { NextPage } from 'next';
 
 function QuestNotFound() {
@@ -26,11 +29,10 @@ type QuestPlayerPageProps = {
   params: { subject: string, questId: string };
 };
 
-const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params: paramsProp }) => {
-  const params = use(Promise.resolve(paramsProp));
+const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
   const { subject, questId } = params;
 
-  const quest: QuestModule | undefined = React.useMemo(() => 
+  const quest: QuestModule | undefined = useMemo(() => 
     mockQuests.find(q => q.id === questId && q.subject === subject),
     [questId, subject]
   );
