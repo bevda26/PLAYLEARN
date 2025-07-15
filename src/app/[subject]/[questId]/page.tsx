@@ -1,22 +1,22 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { RPGInterface } from '@/components/quest/rpg-interface';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { ArrowLeft, Clock, Award, Loader2 } from 'lucide-react';
+import { ArrowLeft, Clock, Award, Loader2, AlertTriangle } from 'lucide-react';
 import type { QuestModule } from '@/lib/types';
 import { MagicalButton } from '@/components/ui/magical-button';
 import type { NextPage } from 'next';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Skeleton } from '@/components/ui/skeleton';
-import { PlaceholderQuestComponent } from '@/components/quest/placeholder-quest';
 import { useAuth } from '@/contexts/auth-context';
 import { completeQuest } from '@/lib/quests';
 import { useToast } from '@/hooks/use-toast';
+import dynamic from 'next/dynamic';
 
 function QuestNotFound() {
     return (
@@ -54,6 +54,16 @@ function QuestLoadingSkeleton() {
       </main>
     </div>
   )
+}
+
+function QuestModuleError() {
+    return (
+        <div className="text-center p-8 bg-destructive/20 rounded-lg border border-dashed border-destructive text-destructive-foreground">
+            <AlertTriangle className="mx-auto w-12 h-12 mb-4" />
+            <h2 className="text-2xl font-headline mb-4">Quest Module Error</h2>
+            <p>The magical scroll for this quest appears to be corrupted. Our scribes have been notified.</p>
+        </div>
+    )
 }
 
 
@@ -110,6 +120,15 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
         setIsCompleting(false);
     }
   };
+  
+  const QuestContentComponent = useMemo(() => {
+    if (!quest || !quest.componentPath) return () => <QuestModuleError />;
+
+    return dynamic(() => import(`@/quest-modules/${quest.componentPath}`).catch(() => () => <QuestModuleError />), {
+      loading: () => <Skeleton className="h-48 w-full" />,
+      ssr: false,
+    });
+  }, [quest]);
 
   if (loading) {
     return <QuestLoadingSkeleton />;
@@ -118,8 +137,6 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
   if (!quest) {
     return <QuestNotFound />;
   }
-
-  const QuestContentComponent = PlaceholderQuestComponent; // All quests use placeholder for now
 
   return (
     <div className="relative min-h-screen w-full p-4 sm:p-8 flex flex-col items-center justify-center bg-gradient-to-br from-[#1c1a27] via-background to-[#2a2135]">

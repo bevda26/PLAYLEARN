@@ -7,7 +7,7 @@ export interface QuestModule {
   subject: 'math' | 'science' | 'language' | 'history';
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   questType: 'investigation' | 'experiment' | 'challenge' | 'mastery' | 'boss';
-  component?: ComponentType; // Make component optional as it won't be in Firestore
+  componentPath: string; // Path to the quest module component, e.g., 'math/math-001.tsx'
   metadata: {
     description: string;
     estimatedTime: number; // in minutes
