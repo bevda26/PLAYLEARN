@@ -1,6 +1,9 @@
 import Image from "next/image";
 import { KingdomPortal } from "@/components/kingdom/kingdom-portal";
 import { mockQuests } from "@/lib/mock-data";
+import Link from "next/link";
+import { Hammer } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function CastleHomepage() {
   const subjects = ["math", "science", "language", "history"];
@@ -10,7 +13,7 @@ export default function CastleHomepage() {
   }
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-[#4A148C] via-[#1E3A8A] to-background flex flex-col items-center justify-center p-4">
+    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-[#110E1B] via-[#0D0C14] to-background flex flex-col items-center justify-center p-4">
       <Image
         src="https://placehold.co/1920x1080/000000/FFFFFF.png?text=+"
         alt="Mystical Castle Background"
@@ -25,9 +28,18 @@ export default function CastleHomepage() {
         <h1 className="font-headline text-5xl md:text-7xl font-bold text-mystic-gold drop-shadow-[0_4px_4px_rgba(0,0,0,0.7)] mb-4">
           Welcome to QuestLearn
         </h1>
-        <p className="text-lg md:text-xl max-w-2xl text-slate-300 mb-12">
-          Your epic educational RPG adventure begins now. Choose a realm to explore!
+        <p className="text-lg md:text-xl max-w-2xl text-slate-300 mb-8">
+          Your epic educational RPG adventure begins now. Choose a realm to explore or forge your own quest!
         </p>
+
+        <div className="mb-12">
+            <Link href="/forge">
+                <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold text-lg px-8 py-6 rounded-lg shadow-lg hover:shadow-accent/40 transition-shadow">
+                    <Hammer className="mr-3 h-6 w-6" />
+                    Go to the Quest Forge
+                </Button>
+            </Link>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 w-full max-w-6xl">
           <KingdomPortal 
