@@ -2,16 +2,49 @@
 'use client';
 
 import Link from 'next/link';
-import { Crown, BookOpen, ToyBrick, User, Shield, Award, Backpack } from 'lucide-react';
+import { Crown, BookOpen, ToyBrick, User, Shield, Award, Backpack, LogOut, Grid } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { WizardsChamberIcon } from '@/components/icons/wizards-chamber';
 import { useAuth } from '@/contexts/auth-context';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuGroup } from '@/components/ui/dropdown-menu';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { signOutUser } from '@/lib/auth';
 import { getAchievementById } from '@/lib/achievements';
+import { getItemById, type Item } from '@/lib/items';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useUserProgressStore } from '@/stores/user-progress-store';
+import { Card, CardContent } from '@/components/ui/card';
+
+const InventoryDisplay = ({ inventoryIds }: { inventoryIds: string[] }) => {
+  const inventoryItems = inventoryIds.map(getItemById).filter(Boolean) as Item[];
+
+  if (inventoryItems.length === 0) {
+    return <p className="text-muted-foreground">Your backpack is empty. Complete quests to find items!</p>
+  }
+
+  return (
+    <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
+      {inventoryItems.map((item) => (
+        <TooltipProvider key={item.id}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Card className="flex flex-col items-center justify-center p-4 aspect-square bg-primary/10 hover:bg-primary/20 border-primary/20 transition-colors cursor-pointer">
+                <CardContent className="p-0 flex flex-col items-center justify-center gap-2">
+                  <span className="text-4xl">{item.icon}</span>
+                  <p className="text-sm text-center text-foreground truncate">{item.name}</p>
+                </CardContent>
+              </Card>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{item.description}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ))}
+    </div>
+  )
+}
 
 export const AppHeader = () => {
   const { user, userProfile, loading } = useAuth();
@@ -55,63 +88,71 @@ export const AppHeader = () => {
           {loading ? (
             <div className="w-10 h-10 bg-gray-600 rounded-full animate-pulse" />
           ) : user && userProfile ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Avatar>
-                  <AvatarImage src={userProfile.avatar} />
-                  <AvatarFallback>{userProfile.displayName?.[0].toUpperCase()}</AvatarFallback>
-                </Avatar>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-64">
-                <DropdownMenuLabel>{userProfile.displayName}</DropdownMenuLabel>
-                <DropdownMenuItem>Title: {userProfile.title}</DropdownMenuItem>
-                <DropdownMenuSeparator />
+            <Dialog>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Avatar className="cursor-pointer">
+                    <AvatarImage src={userProfile.avatar} />
+                    <AvatarFallback>{userProfile.displayName?.[0].toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-64">
+                  <DropdownMenuLabel>{userProfile.displayName}</DropdownMenuLabel>
+                  <DropdownMenuItem>Title: {userProfile.title}</DropdownMenuItem>
+                  <DropdownMenuSeparator />
 
-                <DropdownMenuGroup>
-                  <DropdownMenuLabel className="text-xs text-muted-foreground">Inventory</DropdownMenuLabel>
-                  {inventory.length > 0 ? (
-                    inventory.map((item, index) => (
-                      <DropdownMenuItem key={index}>
-                        <Backpack className="mr-2 h-4 w-4 text-accent" />
-                        <span>{item.replace(/_/g, ' ')}</span>
-                      </DropdownMenuItem>
-                    ))
-                  ) : (
-                    <DropdownMenuItem disabled>Your backpack is empty</DropdownMenuItem>
-                  )}
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                
-                <TooltipProvider>
+                  <DialogTrigger asChild>
+                    <DropdownMenuItem>
+                      <Backpack className="mr-2 h-4 w-4" />
+                      <span>Backpack</span>
+                      <span className="ml-auto text-xs text-muted-foreground">{inventory.length} items</span>
+                    </DropdownMenuItem>
+                  </DialogTrigger>
+                  
                   <DropdownMenuGroup>
                     <DropdownMenuLabel className="text-xs text-muted-foreground">Achievements</DropdownMenuLabel>
-                    {unlockedAchievementIds.length > 0 ? (
-                      unlockedAchievementIds.map(id => {
-                        const achievement = getAchievementById(id);
-                        if (!achievement) return null;
-                        return (
-                          <Tooltip key={id}>
-                            <TooltipTrigger asChild>
-                              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                <Award className="mr-2 h-4 w-4 text-accent" />
-                                <span>{achievement.name}</span>
-                              </DropdownMenuItem>
-                            </TooltipTrigger>
-                            <TooltipContent side="left">
-                              <p>{achievement.description}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        );
-                      })
-                    ) : (
-                      <DropdownMenuItem disabled>No achievements yet</DropdownMenuItem>
-                    )}
+                    <TooltipProvider>
+                      {unlockedAchievementIds.length > 0 ? (
+                        unlockedAchievementIds.map(id => {
+                          const achievement = getAchievementById(id);
+                          if (!achievement) return null;
+                          return (
+                            <Tooltip key={id}>
+                              <TooltipTrigger asChild>
+                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                  <Award className="mr-2 h-4 w-4 text-accent" />
+                                  <span>{achievement.name}</span>
+                                </DropdownMenuItem>
+                              </TooltipTrigger>
+                              <TooltipContent side="left">
+                                <p>{achievement.description}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          );
+                        })
+                      ) : (
+                        <DropdownMenuItem disabled>No achievements yet</DropdownMenuItem>
+                      )}
+                    </TooltipProvider>
                   </DropdownMenuGroup>
-                </TooltipProvider>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={signOutUser}>Sign Out</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={signOutUser}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2"><Backpack /> Your Backpack</DialogTitle>
+                  <DialogDescription>
+                    All the items you have collected on your adventures.
+                  </DialogDescription>
+                </DialogHeader>
+                <InventoryDisplay inventoryIds={inventory} />
+              </DialogContent>
+            </Dialog>
           ) : (
             <Link href="/login">
               <Button>Login</Button>
