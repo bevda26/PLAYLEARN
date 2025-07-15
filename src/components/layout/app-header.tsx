@@ -1,16 +1,20 @@
 'use client';
 
 import Link from 'next/link';
-import { Crown, BookOpen, ToyBrick, User, Shield } from 'lucide-react';
+import { Crown, BookOpen, ToyBrick, User, Shield, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { WizardsChamberIcon } from '@/components/icons/wizards-chamber';
 import { useAuth } from '@/contexts/auth-context';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuGroup } from '@/components/ui/dropdown-menu';
 import { signOutUser } from '@/lib/auth';
+import { getAchievementById } from '@/lib/achievements';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export const AppHeader = () => {
   const { user, userProfile, loading } = useAuth();
+
+  const unlockedAchievementIds = userProfile?.unlockedAchievements ? Object.keys(userProfile.unlockedAchievements) : [];
 
   return (
     <header className="relative z-20 w-full p-4">
@@ -55,11 +59,37 @@ export const AppHeader = () => {
                   <AvatarFallback>{userProfile.displayName?.[0].toUpperCase()}</AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
+              <DropdownMenuContent align="end" className="w-64">
                 <DropdownMenuLabel>{userProfile.displayName}</DropdownMenuLabel>
+                <DropdownMenuItem>Title: {userProfile.title}</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>{userProfile.email}</DropdownMenuItem>
-                 <DropdownMenuItem>Title: {userProfile.title}</DropdownMenuItem>
+                <TooltipProvider>
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel className="text-xs text-muted-foreground">Achievements</DropdownMenuLabel>
+                    {unlockedAchievementIds.length > 0 ? (
+                      unlockedAchievementIds.map(id => {
+                        const achievement = getAchievementById(id);
+                        if (!achievement) return null;
+                        return (
+                          <Tooltip key={id}>
+                            <TooltipTrigger asChild>
+                              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                <Award className="mr-2 h-4 w-4 text-accent" />
+                                <span>{achievement.name}</span>
+                              </DropdownMenuItem>
+                            </TooltipTrigger>
+                            <TooltipContent side="left">
+                              <p>{achievement.description}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        );
+                      })
+                    ) : (
+                      <DropdownMenuItem disabled>No achievements yet</DropdownMenuItem>
+                    )}
+                  </DropdownMenuGroup>
+                </TooltipProvider>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={signOutUser}>Sign Out</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

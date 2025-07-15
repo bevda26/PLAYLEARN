@@ -17,12 +17,19 @@ export interface QuestModule {
   createdAt?: Timestamp;
 }
 
+export interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+}
+
 export interface UserProfile {
   userId: string;
   email: string | null;
   displayName: string;
   avatar: string;
   title: string;
+  unlockedAchievements: { [achievementId: string]: Timestamp };
   createdAt: Timestamp;
 }
 

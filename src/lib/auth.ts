@@ -27,6 +27,7 @@ const createUserDocuments = async (user: User) => {
         displayName: user.displayName || 'New Adventurer',
         avatar: user.photoURL || `https://placehold.co/128x128/5534A5/FFFFFF.png?text=${(user.email || 'A')[0].toUpperCase()}`,
         title: 'Novice Learner',
+        unlockedAchievements: {},
         createdAt: serverTimestamp(),
       });
     } catch (error) {

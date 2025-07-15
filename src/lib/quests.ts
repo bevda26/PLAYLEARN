@@ -1,9 +1,10 @@
 // src/lib/quests.ts
 'use server';
 
-import { doc, runTransaction, serverTimestamp, setDoc } from 'firebase/firestore';
+import { doc, getDoc, runTransaction, serverTimestamp } from 'firebase/firestore';
 import { db } from './firebase';
-import type { QuestModule, UserProgress } from './types';
+import type { UserProgress, UserProfile } from './types';
+import { checkForNewAchievements } from './achievements';
 
 // XP needed to advance to the next level (level 1 -> 2 is at index 1)
 const LEVEL_XP_MAP: { [key: number]: number } = {
@@ -16,6 +17,7 @@ const LEVEL_XP_MAP: { [key: number]: number } = {
 
 export async function completeQuest(userId: string, questId: string, xpGained: number) {
   const progressRef = doc(db, 'user-progress', userId);
+  const profileRef = doc(db, 'user-profiles', userId);
 
   try {
     await runTransaction(db, async (transaction) => {
@@ -43,7 +45,8 @@ export async function completeQuest(userId: string, questId: string, xpGained: n
         xpForNextLevel = LEVEL_XP_MAP[newLevel];
       }
 
-      const newProgress = {
+      const newProgressData = {
+        ...oldProgress,
         xp: newXp,
         level: newLevel,
         questsCompleted: {
@@ -52,8 +55,22 @@ export async function completeQuest(userId: string, questId: string, xpGained: n
         },
       };
 
-      transaction.update(progressRef, newProgress);
+      transaction.set(progressRef, newProgressData);
     });
+
+    // After the transaction is successful, check for achievements
+    // This is done outside the transaction to avoid contention
+    const updatedProgressSnap = await getDoc(progressRef);
+    const updatedProfileSnap = await getDoc(profileRef);
+
+    if (updatedProgressSnap.exists() && updatedProfileSnap.exists()) {
+      await checkForNewAchievements(
+        userId,
+        updatedProgressSnap.data() as UserProgress,
+        updatedProfileSnap.data() as UserProfile
+      );
+    }
+
   } catch (e) {
     console.error("Quest completion transaction failed: ", e);
     throw e; // Re-throw the error to be caught by the caller
