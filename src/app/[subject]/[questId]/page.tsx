@@ -51,9 +51,9 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params: paramsProp })
       <main className="w-full max-w-4xl z-10">
         <Card className="bg-card/60 backdrop-blur-lg border-2 border-primary/30 shadow-2xl shadow-primary/10">
           <CardHeader className="text-center border-b-2 border-primary/20">
-            <Link href={`/${quest.subject}`} className="flex items-center gap-2 text-accent hover:underline mb-4 w-fit mx-auto">
+            <Link href="/" className="flex items-center gap-2 text-accent hover:underline mb-4 w-fit mx-auto">
               <ArrowLeft size={16} />
-              Back to {quest.subject.charAt(0).toUpperCase() + quest.subject.slice(1)} Kingdom
+              Return to the Castle
             </Link>
             <p className="text-sm uppercase tracking-widest text-accent">{quest.questType} Quest</p>
             <CardTitle className="font-headline text-5xl text-mystic-gold">{quest.title}</CardTitle>
