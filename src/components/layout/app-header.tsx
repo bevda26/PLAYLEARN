@@ -10,7 +10,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { signOutUser } from '@/lib/auth';
 
 export const AppHeader = () => {
-  const { user, loading } = useAuth();
+  const { user, userProfile, loading } = useAuth();
 
   return (
     <header className="relative z-20 w-full p-4">
@@ -46,19 +46,20 @@ export const AppHeader = () => {
         </nav>
         <div className="flex items-center gap-4">
           {loading ? (
-            <div className="w-8 h-8 bg-gray-600 rounded-full animate-pulse" />
-          ) : user ? (
+            <div className="w-10 h-10 bg-gray-600 rounded-full animate-pulse" />
+          ) : user && userProfile ? (
             <DropdownMenu>
               <DropdownMenuTrigger>
                 <Avatar>
-                  <AvatarImage src={user.photoURL || undefined} />
-                  <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
+                  <AvatarImage src={userProfile.avatar} />
+                  <AvatarFallback>{userProfile.displayName?.[0].toUpperCase()}</AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuLabel>{userProfile.displayName}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>{user.email}</DropdownMenuItem>
+                <DropdownMenuItem>{userProfile.email}</DropdownMenuItem>
+                 <DropdownMenuItem>Title: {userProfile.title}</DropdownMenuItem>
                 <DropdownMenuItem onClick={signOutUser}>Sign Out</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

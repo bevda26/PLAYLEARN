@@ -14,3 +14,20 @@ export interface QuestModule {
     unlockRequirements?: string[];
   };
 }
+
+export interface UserProfile {
+  userId: string;
+  email: string | null;
+  displayName: string;
+  avatar: string;
+  title: string;
+  publicStats: {
+    questsCompleted: number;
+    xp: number;
+    level: number;
+  };
+  settings: {
+    sound: boolean;
+    notifications: boolean;
+  };
+}
