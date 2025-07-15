@@ -1,7 +1,7 @@
 import { KingdomPortal } from "@/components/kingdom/kingdom-portal";
 import { mockQuests } from "@/lib/mock-data";
 import Link from "next/link";
-import { Library, Zap, BookOpen, Swords, FlaskConical, Castle } from "lucide-react";
+import { Library, Zap, BookOpen, Swords, FlaskConical, Castle, Construction } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppHeader } from "@/components/layout/app-header";
@@ -76,10 +76,10 @@ export default function CastleHomepage() {
           ))}
         </div>
 
-        <Link href="/forge">
+        <Link href="/admin/quest-builder">
           <Button size="lg" className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-lg px-8 py-6 rounded-lg shadow-lg hover:shadow-primary/40 transition-shadow">
-              <Zap className="mr-3 h-5 w-5" />
-              Go to the Forge
+              <Construction className="mr-3 h-5 w-5" />
+              Go to the Quest Builder
           </Button>
         </Link>
       </main>

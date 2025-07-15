@@ -1,4 +1,4 @@
-// src/app/forge/page.tsx
+// src/app/admin/quest-forge/page.tsx
 'use client';
 
 import { useState } from 'react';
@@ -8,25 +8,26 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { Hammer, Loader2, Wand2 } from 'lucide-react';
+import { Hammer, Loader2, Wand2, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import type { QuestModule } from '@/lib/types';
 import { registerQuestModule } from '@/lib/auto-integration/route-generator';
+import Link from 'next/link';
 
 export default function QuestForgePage() {
   const [formData, setFormData] = useState<Omit<QuestModule, 'createdAt'>>({
-    id: 'science-001',
-    title: "Alchemist's Apprentice: Potion Brewing",
+    id: 'science-002',
+    title: "Stargazer's Prophecy: Celestial Motion",
     subject: 'science',
-    difficulty: 'beginner',
-    questType: 'experiment',
-    componentPath: 'science/science-001.tsx',
+    difficulty: 'intermediate',
+    questType: 'investigation',
+    componentPath: 'science/science-002.tsx',
     metadata: {
-      description: 'Learn the basics of chemical reactions by brewing a simple healing potion.',
-      estimatedTime: 20,
-      xpReward: 150,
-      itemRewards: ['health_potion'],
+      description: 'Chart the paths of the constellations to decipher the Stargazer\'s ancient prophecy.',
+      estimatedTime: 30,
+      xpReward: 300,
+      itemRewards: ['scroll_of_wisdom'],
     },
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -83,6 +84,10 @@ export default function QuestForgePage() {
         data-ai-hint="fantasy forge fire"
       />
       <main className="w-full max-w-3xl z-10 mt-10">
+        <Link href="/admin/quest-builder" className="flex items-center gap-2 text-accent hover:underline mb-8">
+            <ArrowLeft size={16} />
+            Back to Quest Builder
+        </Link>
         <div className="text-center mb-10">
           <h1 className="font-headline text-5xl md:text-6xl font-bold text-mystic-gold drop-shadow-[0_4px_4px_rgba(0,0,0,0.7)]">
             PlayLearn Forge
