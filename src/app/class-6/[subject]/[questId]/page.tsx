@@ -121,8 +121,6 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
                 description: `You are now known as: ${result.newTitle}`,
             })
         }
-        // No need to set isCompleting to false, as the user should be encouraged to navigate away
-        // or the button will remain disabled, preventing re-submission.
     } catch (error) {
         console.error("Failed to complete quest:", error);
         toast({
@@ -130,7 +128,7 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
             description: "Could not save your progress. Please try again.",
             variant: 'destructive',
         });
-        setIsCompleting(false); // Allow retry on error
+        setIsCompleting(false);
     }
   };
   
@@ -189,7 +187,10 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
         <div className="mt-8 text-center">
             <Button onClick={handleCompleteQuest} disabled={isCompleting || !user || !userProfile}>
                 {isCompleting ? (
-                    <Loader2 className="animate-spin" />
+                    <>
+                        <Loader2 className="animate-spin" />
+                        Completing...
+                    </>
                 ) : (
                     "Complete Quest"
                 )}
