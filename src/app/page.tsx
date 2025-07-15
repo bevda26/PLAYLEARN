@@ -1,7 +1,8 @@
 import { KingdomPortal } from "@/components/kingdom/kingdom-portal";
 import { mockQuests } from "@/lib/mock-data";
 import Link from "next/link";
-import { Library, Zap, BookOpen } from "lucide-react";
+import { Library, Zap, BookOpen, Swords, FlaskConical, Castle } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppHeader } from "@/components/layout/app-header";
 import { Sparkles } from "lucide-react";
@@ -18,6 +19,21 @@ const SparklingCrown = () => (
      <Sparkles className="absolute bottom-4 right-2 w-5 h-5 text-white animate-pulse" />
   </div>
 )
+
+const subjectMetadata: { [key: string]: { icon: keyof typeof icons, title: string } } = {
+  math: { icon: "castle", title: "Math Kingdom" },
+  science: { icon: "flask-conical", title: "Science Stronghold" },
+  language: { icon: "book-open", title: "Library of Scribes" },
+  history: { icon: "swords", title: "Chronicle Keep" },
+};
+
+const icons: Record<string, LucideIcon> = {
+  swords: Swords,
+  "flask-conical": FlaskConical,
+  "book-open": BookOpen,
+  castle: Castle,
+};
+
 
 export default function CastleHomepage() {
   const subjects = ["math", "science", "language", "history"];
@@ -44,45 +60,29 @@ export default function CastleHomepage() {
         <h1 className="text-5xl md:text-7xl font-bold font-headline mb-4 bg-gradient-to-r from-orange-400 via-purple-500 to-indigo-600 bg-clip-text text-transparent drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
           PLAYLEARN
         </h1>
-        <p className="text-lg md:text-xl max-w-2xl text-slate-300 mb-6">
-          ENTER THE MYSTICAL REALM WHERE LEARNING BECOMES<br/> AN EPIC RPG ADVENTURE!
-        </p>
-        <p className="text-md md:text-lg max-w-3xl text-slate-400 mb-10">
-          Embark on magical quests, unlock ancient knowledge, and become the hero of your educational journey.
+        <p className="text-lg md:text-xl max-w-2xl text-slate-300 mb-10">
+          Your learning adventure begins now. Choose a realm to explore.
         </p>
 
-        <div className="flex flex-col sm:flex-row items-center gap-4 mb-16">
-            <Link href="/forge">
-                <Button size="lg" className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-lg px-8 py-6 rounded-lg shadow-lg hover:shadow-primary/40 transition-shadow">
-                    <Zap className="mr-3 h-5 w-5" />
-                    Begin Your Quest
-                </Button>
-            </Link>
-            <Link href="/language">
-                <Button size="lg" variant="outline" className="font-bold text-lg px-8 py-6 rounded-lg bg-black/30 border-accent/50 hover:bg-accent/10 text-white">
-                    <BookOpen className="mr-3 h-5 w-5" />
-                    Explore Library Tower
-                </Button>
-            </Link>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto w-full mb-16">
+          {subjects.map(subject => (
+            <KingdomPortal 
+              key={subject}
+              subject={subject}
+              title={subjectMetadata[subject].title}
+              icon={subjectMetadata[subject].icon}
+              questCount={getQuestCount(subject)}
+            />
+          ))}
         </div>
+
+        <Link href="/forge">
+          <Button size="lg" className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-lg px-8 py-6 rounded-lg shadow-lg hover:shadow-primary/40 transition-shadow">
+              <Zap className="mr-3 h-5 w-5" />
+              Go to the Forge
+          </Button>
+        </Link>
       </main>
-
-       <footer className="relative z-10 w-full p-4 mt-12 mb-4">
-        <div className="max-w-4xl mx-auto flex justify-around items-center">
-            <div className="text-center w-48 h-24 flex flex-col justify-center items-center bg-black/30 backdrop-blur-sm p-4 rounded-lg border border-primary/20">
-                <p className="font-bold text-3xl text-mystic-gold">∞</p>
-                <p className="text-xs uppercase text-slate-400 mt-1">Magical Quests</p>
-            </div>
-             <div className="text-center w-48 h-24 flex flex-col justify-center items-center bg-black/30 backdrop-blur-sm p-4 rounded-lg border border-primary/20">
-                <p className="font-bold text-3xl text-mystic-gold">{subjects.length}</p>
-                <p className="text-xs uppercase text-slate-400 mt-1">Kingdom Realms</p>
-            </div>
-            <div className="text-center w-48 h-24 flex flex-col justify-center items-center bg-black/30 backdrop-blur-sm p-4 rounded-lg border border-primary/20">
-                <p className="font-bold text-3xl text-mystic-gold">∞</p>
-                <p className="text-xs uppercase text-slate-400 mt-1">Learning Adventures</p>
-            </div>
-        </div>
-      </footer>
     </div>
   );
 }
