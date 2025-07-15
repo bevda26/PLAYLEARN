@@ -49,7 +49,7 @@ const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params }) => {
   
   const subjectThemes: Record<string, { from: string; to: string }> = {
       math: { from: 'hsl(var(--primary))', to: 'hsl(var(--background))' },
-      science: { from: '#1E3A8A', to: 'hsl(var(--background))' },
+      science: { from: 'hsl(var(--secondary))', to: 'hsl(var(--background))' },
       language: { from: '#059669', to: 'hsl(var(--background))' },
       history: { from: '#B8860B', to: 'hsl(var(--background))' },
   }
@@ -59,8 +59,8 @@ const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params }) => {
   if (!isLoading && availableQuests.length === 0) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-center p-4" style={{ background: `linear-gradient(to bottom, ${theme.from}, ${theme.to})` }}>
-        <h1 className="font-headline text-5xl text-mystic-gold mb-4">The {subjectTitle} Kingdom</h1>
-        <p className="text-xl text-parchment-white mb-8">This realm is still shrouded in mist. No quests are available yet.</p>
+        <h1 className="font-headline text-5xl text-accent mb-4">The {subjectTitle} Kingdom</h1>
+        <p className="text-xl text-foreground/80 mb-8">This realm is still shrouded in mist. No quests are available yet.</p>
         <Link href="/" className="flex items-center gap-2 text-accent hover:underline">
           <ArrowLeft size={20} />
           Return to the Castle
@@ -76,7 +76,7 @@ const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params }) => {
           <ArrowLeft size={20} />
           Back to Castle
         </Link>
-        <h1 className="font-headline text-6xl font-bold text-mystic-gold drop-shadow-[0_4px_4px_rgba(0,0,0,0.7)]">
+        <h1 className="font-headline text-6xl font-bold text-accent drop-shadow-[0_4px_4px_rgba(0,0,0,0.7)]">
           The {subjectTitle} Kingdom
         </h1>
         <p className="text-lg text-foreground/80 mt-2">Embark on a quest to master the secrets of this realm.</p>
@@ -84,7 +84,7 @@ const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params }) => {
       
       <main className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
-            <h2 className="font-headline text-3xl text-parchment-white mb-6">Available Quests</h2>
+            <h2 className="font-headline text-3xl text-foreground mb-6">Available Quests</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {isLoading ? (
               <>
@@ -111,7 +111,7 @@ const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params }) => {
         </div>
 
         <aside className="lg:col-span-1">
-             <h2 className="font-headline text-3xl text-parchment-white mb-6">Need Guidance?</h2>
+             <h2 className="font-headline text-3xl text-foreground mb-6">Need Guidance?</h2>
             <QuestRecommendations 
                 availableQuests={availableQuests}
                 onRecommendations={setRecommendedQuestIds}

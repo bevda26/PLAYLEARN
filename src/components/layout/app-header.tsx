@@ -15,9 +15,15 @@ import { getItemById, type Item } from '@/lib/items';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useUserProgressStore } from '@/stores/user-progress-store';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
-const InventoryDisplay = ({ inventoryIds }: { inventoryIds: string[] }) => {
-  const inventoryItems = inventoryIds.map(getItemById).filter(Boolean) as Item[];
+const InventoryDisplay = ({ inventory }: { inventory: { [itemId: string]: number } }) => {
+  const inventoryItems = Object.entries(inventory)
+    .map(([id, quantity]) => {
+      const item = getItemById(id);
+      return item ? { ...item, quantity } : null;
+    })
+    .filter(Boolean) as (Item & { quantity: number })[];
 
   if (inventoryItems.length === 0) {
     return <p className="text-muted-foreground">Your backpack is empty. Complete quests to find items!</p>
@@ -29,11 +35,16 @@ const InventoryDisplay = ({ inventoryIds }: { inventoryIds: string[] }) => {
         <TooltipProvider key={item.id}>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Card className="flex flex-col items-center justify-center p-4 aspect-square bg-primary/10 hover:bg-primary/20 border-primary/20 transition-colors cursor-pointer">
+              <Card className="relative flex flex-col items-center justify-center p-4 aspect-square bg-primary/10 hover:bg-primary/20 border-primary/20 transition-colors cursor-pointer">
                 <CardContent className="p-0 flex flex-col items-center justify-center gap-2">
                   <span className="text-4xl">{item.icon}</span>
                   <p className="text-sm text-center text-foreground truncate">{item.name}</p>
                 </CardContent>
+                {item.quantity > 1 && (
+                  <Badge variant="secondary" className="absolute -top-2 -right-2 rounded-full h-6 w-6 flex items-center justify-center">
+                    {item.quantity}
+                  </Badge>
+                )}
               </Card>
             </TooltipTrigger>
             <TooltipContent>
@@ -51,12 +62,13 @@ export const AppHeader = () => {
   const { inventory } = useUserProgressStore();
 
   const unlockedAchievementIds = userProfile?.unlockedAchievements ? Object.keys(userProfile.unlockedAchievements) : [];
+  const inventoryCount = Object.values(inventory).reduce((sum, q) => sum + q, 0);
 
   return (
     <header className="relative z-20 w-full p-4">
       <div className="max-w-7xl mx-auto flex justify-between items-center bg-black/20 backdrop-blur-md p-2 rounded-lg border border-primary/20">
         <Link href="/" className="flex items-center gap-2">
-          <Crown className="w-8 h-8 text-mystic-gold" />
+          <Crown className="w-8 h-8 text-accent" />
           <div className="flex flex-col items-start">
             <span className="font-headline text-xl font-bold text-white">PLAYLEARN</span>
             <span className="text-xs text-slate-400 -mt-1 tracking-widest">RPG LEARNING PLATFORM</span>
@@ -107,7 +119,7 @@ export const AppHeader = () => {
                     <DropdownMenuItem>
                       <Backpack className="mr-2 h-4 w-4" />
                       <span>Backpack</span>
-                      <span className="ml-auto text-xs text-muted-foreground">{inventory.length} items</span>
+                      <span className="ml-auto text-xs text-muted-foreground">{inventoryCount} items</span>
                     </DropdownMenuItem>
                   </DialogTrigger>
                   
@@ -152,7 +164,7 @@ export const AppHeader = () => {
                     All the items you have collected on your adventures.
                   </DialogDescription>
                 </DialogHeader>
-                <InventoryDisplay inventoryIds={inventory} />
+                <InventoryDisplay inventory={inventory} />
               </DialogContent>
             </Dialog>
           ) : (

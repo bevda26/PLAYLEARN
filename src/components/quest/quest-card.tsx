@@ -49,10 +49,10 @@ export function QuestCard({
           border-2 border-primary/20
           shadow-lg backdrop-blur-sm
           hover:border-accent
-        `, isRecommended && 'border-mystic-gold ring-2 ring-mystic-gold/50')}
+        `, isRecommended && 'border-accent ring-2 ring-accent/50')}
       >
         {isRecommended && (
-          <div className="absolute -top-3 right-4 px-3 py-1 text-xs rounded-full bg-mystic-gold text-shadow-black font-bold shadow-lg">
+          <div className="absolute -top-3 right-4 px-3 py-1 text-xs rounded-full bg-accent text-accent-foreground font-bold shadow-lg">
             <Star className="w-4 h-4 inline-block -mt-1 mr-1" />
             Recommended
           </div>
@@ -62,7 +62,7 @@ export function QuestCard({
           <p className="text-xs text-accent uppercase tracking-widest font-semibold">
             {questType} Quest
           </p>
-          <h3 className="text-xl font-headline font-bold text-parchment-white my-2 group-hover:text-mystic-gold transition-colors">
+          <h3 className="text-xl font-headline font-bold text-foreground my-2 group-hover:text-accent transition-colors">
             {title}
           </h3>
         </div>
@@ -71,7 +71,7 @@ export function QuestCard({
           <span className={`capitalize py-1 px-3 rounded-full bg-black/40 text-xs border border-white/20 ${config.label === 'Beginner' ? 'text-green-300' : config.label === 'Intermediate' ? 'text-yellow-300' : 'text-red-300'}`}>
             {difficulty}
           </span>
-          <div className="flex items-center gap-1 font-bold text-mystic-gold">
+          <div className="flex items-center gap-1 font-bold text-accent">
             <Zap size={16} />
             <span>{xpReward} XP</span>
           </div>

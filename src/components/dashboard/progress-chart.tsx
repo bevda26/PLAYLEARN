@@ -19,6 +19,7 @@ export const ProgressChart = ({ completedQuests }: ProgressChartProps) => {
       History: 0,
     };
 
+    // We count unique quests, not total completions
     Object.keys(completedQuests).forEach((questId) => {
       if (questId.startsWith('math-')) subjectCounts.Math++;
       else if (questId.startsWith('science-')) subjectCounts.Science++;

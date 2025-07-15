@@ -11,7 +11,7 @@ import { Suspense } from "react";
 
 const SparklingCrown = () => (
   <div className="relative mb-4">
-    <svg width="80" height="80" viewBox="0 0 100 100" className="text-mystic-gold drop-shadow-lg">
+    <svg width="80" height="80" viewBox="0 0 100 100" className="text-accent drop-shadow-lg">
       <path d="M10 30 L 20 70 L 35 40 L 50 70 L 65 40 L 80 70 L 90 30 L 70 50 L 50 30 L 30 50 Z" fill="currentColor" stroke="black" strokeWidth="3" />
     </svg>
     <Sparkles className="absolute -top-2 -left-2 w-8 h-8 text-white animate-pulse" />
@@ -57,8 +57,8 @@ export default function CastleHomepage() {
         
         <SparklingCrown />
 
-        <h1 className="text-5xl md:text-7xl font-bold font-headline mb-4 bg-gradient-to-r from-mystic-gold via-primary to-accent bg-clip-text text-transparent drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
-          PLAYLEARN
+        <h1 className="text-5xl md:text-7xl font-bold font-headline mb-4 bg-gradient-to-r from-accent via-primary to-secondary bg-clip-text text-transparent drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
+          PLAYLEARN.TECH
         </h1>
         <p className="text-lg md:text-xl max-w-2xl text-slate-300 mb-10">
           Your learning adventure begins now. Choose a realm to explore.

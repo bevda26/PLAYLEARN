@@ -74,7 +74,7 @@ export default function QuestForgePage() {
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-gradient-to-b from-[#110E1B] to-[#0D0C14] text-white p-4 sm:p-8 flex justify-center items-start overflow-auto">
+    <div className="relative min-h-screen w-full bg-gradient-to-b from-background to-background/80 text-foreground p-4 sm:p-8 flex justify-center items-start overflow-auto">
        <Image
         src="https://placehold.co/1920x1080/000000/FFFFFF.png?text=+"
         alt="Forge background"
@@ -89,7 +89,7 @@ export default function QuestForgePage() {
             Back to Quest Builder
         </Link>
         <div className="text-center mb-10">
-          <h1 className="font-headline text-5xl md:text-6xl font-bold text-mystic-gold drop-shadow-[0_4px_4px_rgba(0,0,0,0.7)]">
+          <h1 className="font-headline text-5xl md:text-6xl font-bold text-accent drop-shadow-[0_4px_4px_rgba(0,0,0,0.7)]">
             PlayLearn Forge
           </h1>
           <p className="text-lg text-slate-300 mt-2">Manually register new quest modules into the system.</p>

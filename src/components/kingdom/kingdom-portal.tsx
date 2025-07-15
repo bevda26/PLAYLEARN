@@ -34,7 +34,7 @@ export const KingdomPortal: FC<KingdomPortalProps> = ({
           <Icon className="h-10 w-10 text-accent" />
         </div>
         <CardHeader className="p-0 text-center">
-          <CardTitle className="font-headline text-xl text-parchment-white group-hover:text-accent transition-colors duration-300">
+          <CardTitle className="font-headline text-xl text-foreground group-hover:text-accent transition-colors duration-300">
             {title}
           </CardTitle>
         </CardHeader>

@@ -10,13 +10,13 @@ import Link from 'next/link';
 
 export default function QuestBuilderPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-[#110E1B]">
+    <div className="min-h-screen bg-gradient-to-b from-background to-background/80">
       <AppHeader />
       <main className="max-w-7xl mx-auto p-4 sm:p-8">
         <header className="mb-10 text-center">
-          <h1 className="text-5xl font-headline text-mystic-gold flex items-center justify-center gap-4">
+          <h1 className="text-5xl font-headline text-accent flex items-center justify-center gap-4">
             <Construction className="w-12 h-12" />
-            The QuestLearn Builder
+            The PlayLearn Builder
           </h1>
           <p className="text-lg text-foreground/80 mt-2">
             A powerful suite of tools to craft intricate learning adventures.

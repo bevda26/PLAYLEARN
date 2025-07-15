@@ -46,8 +46,8 @@ const createUserDocuments = async (user: User) => {
         xp: 0,
         level: 1,
         health: 100,
-        questsCompleted: {},
-        inventory: [], // Initialize empty inventory
+        questsCompleted: {}, // Initialize empty map
+        inventory: {}, // Initialize empty map for quantities
       });
     } catch (error) {
       console.error("Error creating user progress: ", error);
@@ -57,6 +57,7 @@ const createUserDocuments = async (user: User) => {
 };
 
 export const signInWithGoogle = async () => {
+  const googleProvider = new GoogleAuthProvider();
   try {
     const result = await signInWithPopup(auth, googleProvider);
     await createUserDocuments(result.user);

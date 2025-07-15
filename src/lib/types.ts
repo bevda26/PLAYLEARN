@@ -42,6 +42,8 @@ export interface UserProgress {
   xp: number;
   level: number;
   health: number;
-  questsCompleted: { [questId: string]: Timestamp };
-  inventory: ItemId[];
+  // Track multiple completions with timestamps
+  questsCompleted: { [questId: string]: Timestamp[] }; 
+  // Track item quantities
+  inventory: { [itemId: string]: number };
 }

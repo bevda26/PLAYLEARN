@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { ArrowLeft, Clock, Award, Loader2, AlertTriangle, Gift } from 'lucide-react';
 import type { QuestModule } from '@/lib/types';
-import { MagicalButton } from '@/components/ui/magical-button';
+import { Button } from '@/components/ui/button';
 import type { NextPage } from 'next';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -20,9 +20,9 @@ import dynamic from 'next/dynamic';
 
 function QuestNotFound() {
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center text-center p-4 bg-gradient-to-b from-shadow-black to-background">
-            <h1 className="font-headline text-5xl text-dragon-red mb-4">Quest Not Found</h1>
-            <p className="text-xl text-parchment-white mb-8">The ancient map is misleading. This quest does not exist in our chronicles.</p>
+        <div className="min-h-screen flex flex-col items-center justify-center text-center p-4 bg-gradient-to-b from-background to-background/80">
+            <h1 className="font-headline text-5xl text-destructive mb-4">Quest Not Found</h1>
+            <p className="text-xl text-foreground/80 mb-8">The ancient map is misleading. This quest does not exist in our chronicles.</p>
             <Link href="/" className="flex items-center gap-2 text-accent hover:underline">
                 <ArrowLeft size={20} />
                 Return to the Castle
@@ -33,7 +33,7 @@ function QuestNotFound() {
 
 function QuestLoadingSkeleton() {
   return (
-    <div className="relative min-h-screen w-full p-4 sm:p-8 flex flex-col items-center justify-center bg-gradient-to-br from-[#1c1a27] via-background to-[#2a2135]">
+    <div className="relative min-h-screen w-full p-4 sm:p-8 flex flex-col items-center justify-center bg-gradient-to-br from-background to-background/80">
       <main className="w-full max-w-4xl z-10">
         <Card className="bg-card/60 backdrop-blur-lg border-2 border-primary/30 shadow-2xl shadow-primary/10">
           <CardHeader className="text-center border-b-2 border-primary/20">
@@ -152,7 +152,7 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
   }
 
   return (
-    <div className="relative min-h-screen w-full p-4 sm:p-8 flex flex-col items-center justify-center bg-gradient-to-br from-[#1c1a27] via-background to-[#2a2135]">
+    <div className="relative min-h-screen w-full p-4 sm:p-8 flex flex-col items-center justify-center bg-gradient-to-br from-background via-background to-background/80">
       <RPGInterface />
       <main className="w-full max-w-4xl z-10">
         <Card className="bg-card/60 backdrop-blur-lg border-2 border-primary/30 shadow-2xl shadow-primary/10">
@@ -162,7 +162,7 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
               Return to the {quest.subject.charAt(0).toUpperCase() + quest.subject.slice(1)} Kingdom
             </Link>
             <p className="text-sm uppercase tracking-widest text-accent">{quest.questType} Quest</p>
-            <CardTitle className="font-headline text-5xl text-mystic-gold">{quest.title}</CardTitle>
+            <CardTitle className="font-headline text-5xl text-accent">{quest.title}</CardTitle>
             <CardDescription className="text-foreground/80 mt-2 max-w-2xl mx-auto">{quest.metadata.description}</CardDescription>
             <div className="flex justify-center items-center gap-4 flex-wrap mt-4">
               <Badge variant="outline" className="border-accent/50 capitalize text-accent">{quest.difficulty}</Badge>
@@ -171,7 +171,7 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
                 <span>{quest.metadata.estimatedTime} min</span>
               </div>
               <div className="flex items-center gap-2 text-foreground/80">
-                <Award size={16} className="text-mystic-gold" />
+                <Award size={16} className="text-accent" />
                 <span>{quest.metadata.xpReward} XP</span>
               </div>
               {quest.metadata.itemRewards && quest.metadata.itemRewards.length > 0 && (
@@ -187,13 +187,13 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
           </CardContent>
         </Card>
         <div className="mt-8 text-center">
-            <MagicalButton onClick={handleCompleteQuest} disabled={isCompleting || !user || !userProfile}>
+            <Button onClick={handleCompleteQuest} disabled={isCompleting || !user || !userProfile}>
                 {isCompleting ? (
                     <><Loader2 className="animate-spin" /> Completing...</>
                 ) : (
                     "Complete Quest"
                 )}
-            </MagicalButton>
+            </Button>
         </div>
       </main>
     </div>

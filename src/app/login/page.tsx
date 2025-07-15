@@ -79,9 +79,9 @@ export default function LoginPage() {
             <Card className="w-full max-w-md z-10 bg-card/60 backdrop-blur-lg border-primary/20 shadow-2xl shadow-primary/10">
                 <CardHeader className="text-center">
                     <div className="mx-auto mb-2">
-                        <Crown className="w-12 h-12 text-mystic-gold" />
+                        <Crown className="w-12 h-12 text-accent" />
                     </div>
-                    <CardTitle className="font-headline text-3xl text-mystic-gold">Welcome to PlayLearn</CardTitle>
+                    <CardTitle className="font-headline text-3xl text-accent">Welcome to PlayLearn</CardTitle>
                     <CardDescription>Your epic learning adventure awaits.</CardDescription>
                 </CardHeader>
                 <CardContent>

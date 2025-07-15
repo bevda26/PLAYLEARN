@@ -56,10 +56,10 @@ export default function DashboardPage() {
             description="Experience points earned."
           />
           <AnalyticsCard
-            title="Quests Completed"
+            title="Unique Quests Completed"
             value={totalQuestsCompleted}
             icon={Swords}
-            description="Total quests conquered."
+            description="Total unique quests conquered."
           />
            <AnalyticsCard
             title="Current Title"

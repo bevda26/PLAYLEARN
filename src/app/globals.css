@@ -3,46 +3,46 @@
 @tailwind utilities;
 
 body {
-  font-family: 'PT Sans', sans-serif;
+  font-family: 'Crimson Text', serif;
 }
 
 @layer base {
   :root {
-    --background: 257 13% 13%; /* #222129 */
-    --foreground: 210 40% 98%;
-    --card: 257 13% 18%; /* Slightly lighter than background */
-    --card-foreground: 210 40% 98%;
-    --popover: 257 13% 13%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 255 53% 43%; /* #5534A5 */
-    --primary-foreground: 210 40% 98%;
-    --secondary: 240 4% 16%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 240 4% 16%;
-    --muted-foreground: 240 5% 65%;
-    --accent: 44 100% 67%; /* #FFC857 */
-    --accent-foreground: 257 13% 13%;
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 255 53% 33%; /* Lighter purple for borders */
-    --input: 257 13% 18%;
-    --ring: 44 100% 67%;
+    --background: 30 15% 12%; /* Dark Stone Brown */
+    --foreground: 35 15% 85%;
+    --card: 30 15% 18%; /* Slightly lighter than background */
+    --card-foreground: 35 15% 85%;
+    --popover: 30 15% 12%;
+    --popover-foreground: 35 15% 85%;
+    --primary: 275 47% 40%; /* Mystical Purple */
+    --primary-foreground: 35 15% 95%;
+    --secondary: 122 61% 33%; /* Forest Green */
+    --secondary-foreground: 35 15% 95%;
+    --muted: 30 25% 34%; /* Lighter Stone */
+    --muted-foreground: 35 15% 65%;
+    --accent: 51 100% 50%; /* Gold */
+    --accent-foreground: 30 25% 10%;
+    --destructive: 349 79% 44%; /* Dragon Red */
+    --destructive-foreground: 35 15% 95%;
+    --border: 30 25% 34%;
+    --input: 30 15% 18%;
+    --ring: 51 100% 50%;
     --radius: 0.5rem;
 
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --chart-1: 275 47% 50%;
+    --chart-2: 122 61% 43%;
+    --chart-3: 51 100% 60%;
+    --chart-4: 349 79% 54%;
+    --chart-5: 30 80% 55%;
 
-    --sidebar-background: 257 13% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-background: 30 15% 10%;
+    --sidebar-foreground: 35 15% 95%;
+    --sidebar-primary: 275 47% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 257 13% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 257 13% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 30 15% 15%;
+    --sidebar-accent-foreground: 35 15% 95%;
+    --sidebar-border: 30 15% 15%;
+    --sidebar-ring: 51 100% 60%;
   }
 }
  

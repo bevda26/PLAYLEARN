@@ -2,7 +2,7 @@
 // src/lib/quests.ts
 'use server';
 
-import { doc, getDoc, runTransaction, serverTimestamp, arrayUnion } from 'firebase/firestore';
+import { doc, getDoc, runTransaction, serverTimestamp, arrayUnion, increment } from 'firebase/firestore';
 import { db } from './firebase';
 import type { QuestModule, UserProgress, UserProfile } from './types';
 import { checkForNewAchievements } from './achievements';
@@ -38,11 +38,8 @@ export async function completeQuest(userId: string, profile: UserProfile, quest:
 
       const oldProgress = progressDoc.data() as Omit<UserProgress, 'userId'>;
       
-      // Prevent completing the same quest twice
-      if (oldProgress.questsCompleted[quest.id]) {
-          console.log("Quest already completed.");
-          return;
-      }
+      // We can allow re-doing quests, so we don't block here.
+      // The `questsCompleted` field will now store an array of completion timestamps.
 
       let newXp = oldProgress.xp + quest.metadata.xpReward;
       let newLevel = oldProgress.level;
@@ -58,13 +55,17 @@ export async function completeQuest(userId: string, profile: UserProfile, quest:
       const newProgressData: any = {
         xp: newXp,
         level: newLevel,
-        [`questsCompleted.${quest.id}`]: serverTimestamp(),
+        // Add a new timestamp to the array for this quest
+        [`questsCompleted.${quest.id}`]: arrayUnion(serverTimestamp()),
       };
       
-      // Add item rewards to inventory if they exist
+      // Handle item rewards by incrementing their quantity
       if (quest.metadata.itemRewards && quest.metadata.itemRewards.length > 0) {
         itemsAwarded = quest.metadata.itemRewards;
-        newProgressData.inventory = arrayUnion(...itemsAwarded);
+        for (const itemId of itemsAwarded) {
+          // Use dot notation to increment a field within a map
+          newProgressData[`inventory.${itemId}`] = increment(1);
+        }
       }
       
       transaction.update(progressRef, newProgressData);
