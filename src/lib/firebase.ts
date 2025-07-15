@@ -1,6 +1,7 @@
 // src/lib/firebase.ts
 import { initializeApp, getApps, getApp, type FirebaseOptions } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 
 const firebaseConfig: FirebaseOptions = {
   apiKey: "AIzaSyATWWAiPE6fabMRwSb6UiZbON1o5kfzMaE",
@@ -20,5 +21,6 @@ if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.proj
 // Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const db = getFirestore(app);
+const auth = getAuth(app);
 
-export { app, db };
+export { app, db, auth };

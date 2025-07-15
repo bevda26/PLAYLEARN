@@ -1,6 +1,5 @@
 // src/lib/auth.ts
 import { 
-  getAuth, 
   onAuthStateChanged, 
   GoogleAuthProvider, 
   signInWithPopup,
@@ -9,10 +8,8 @@ import {
   signOut,
   type User
 } from 'firebase/auth';
-import { app, db } from './firebase';
+import { app, db, auth } from './firebase'; // Import auth from firebase
 import { doc, setDoc, getDoc } from "firebase/firestore";
-
-export const auth = getAuth(app);
 
 const googleProvider = new GoogleAuthProvider();
 
