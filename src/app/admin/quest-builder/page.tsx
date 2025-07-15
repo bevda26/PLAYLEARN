@@ -1,14 +1,34 @@
 // src/app/admin/quest-builder/page.tsx
 'use client';
 
+import { useState } from 'react';
 import { AppHeader } from '@/components/layout/app-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Construction, Wand2, Loader2, Sparkles, FileText } from 'lucide-react';
+import { Construction, Wand2, Loader2, Sparkles, FileText, Bot } from 'lucide-react';
 import Link from 'next/link';
+import { useToast } from '@/hooks/use-toast';
+import type { ProcessModuleOutput } from '@/ai/flows/module-processor-flow';
 
 export default function QuestBuilderPage() {
+  const [learningObjective, setLearningObjective] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+  
+  const [moduleCode, setModuleCode] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [processedData, setProcessedData] = useState<ProcessModuleOutput | null>(null);
+  
+  const { toast } = useToast();
+
+  const handleProcessModule = async () => {
+    // This will be implemented in the next step
+    toast({
+        title: "Processing In Progress...",
+        description: "This feature is not yet fully wired up."
+    })
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/80">
       <AppHeader />
@@ -40,6 +60,8 @@ export default function QuestBuilderPage() {
                             placeholder="Enter a learning objective, e.g., 'Understand the difference between odd and even numbers' or 'Learn about the phases of the moon'"
                             rows={3}
                             className="bg-background/50"
+                            value={learningObjective}
+                            onChange={(e) => setLearningObjective(e.target.value)}
                         />
                         <Button type="submit" className="w-full" disabled>
                             <Wand2 className="mr-2 h-5 w-5" />
@@ -57,15 +79,37 @@ export default function QuestBuilderPage() {
                             Full Module Processing
                         </CardTitle>
                         <CardDescription>
-                            This advanced tool will eventually allow you to process complex data files, like your `class6-math-chapter1` module, into a full quest arc.
+                           Paste the entire code for a quest module (like your `class6-math-chapter1.js` file) and the AI will extract the necessary data.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="p-8 text-center bg-background/50 rounded-lg">
-                            <Construction className="w-16 h-16 mx-auto text-muted-foreground" />
-                            <p className="mt-4 text-muted-foreground">This feature is under construction.</p>
+                        <div className="space-y-4">
+                           <Textarea 
+                                placeholder="Paste your entire module code here..."
+                                rows={10}
+                                className="bg-background/50 font-mono text-xs"
+                                value={moduleCode}
+                                onChange={(e) => setModuleCode(e.target.value)}
+                           />
+                            <Button className="w-full" onClick={handleProcessModule} disabled={isProcessing || !moduleCode}>
+                                {isProcessing ? (
+                                    <><Loader2 className="animate-spin" /> Processing...</>
+                                ) : (
+                                    <><Bot className="mr-2" /> Process Module with AI</>
+                                )}
+                            </Button>
                         </div>
                     </CardContent>
+                    {processedData && (
+                        <CardFooter className="mt-4">
+                           <div className="w-full p-4 bg-primary/10 rounded-lg border border-primary/30">
+                               <h4 className="font-bold text-lg text-accent mb-2">Processed Data:</h4>
+                               <pre className="text-xs whitespace-pre-wrap bg-background/50 p-2 rounded">
+                                   {JSON.stringify(processedData, null, 2)}
+                               </pre>
+                           </div>
+                        </CardFooter>
+                    )}
                 </Card>
 
                 <Card className="bg-card/50 backdrop-blur-sm border-primary/20">
