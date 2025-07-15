@@ -23,9 +23,10 @@ function QuestNotFound() {
 
 
 export default function QuestPlayerPage({ params }: { params: { subject: string, questId: string } }) {
+  const { subject, questId } = params;
   const quest: QuestModule | undefined = React.useMemo(() => 
-    mockQuests.find(q => q.id === params.questId && q.subject === params.subject),
-    [params.questId, params.subject]
+    mockQuests.find(q => q.id === questId && q.subject === subject),
+    [questId, subject]
   );
 
   if (!quest) {
