@@ -2,8 +2,14 @@ import Link from 'next/link';
 import { Crown, BookOpen, ToyBrick, User, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { WizardsChamberIcon } from '@/components/icons/wizards-chamber';
+import { useAuth } from '@/contexts/auth-context';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { signOutUser } from '@/lib/auth';
 
 export const AppHeader = () => {
+  const { user, loading } = useAuth();
+
   return (
     <header className="relative z-20 w-full p-4">
       <div className="max-w-7xl mx-auto flex justify-between items-center bg-black/20 backdrop-blur-md p-2 rounded-lg border border-primary/20">
@@ -36,6 +42,30 @@ export const AppHeader = () => {
             Wizards' Chamber
           </Button>
         </nav>
+        <div className="flex items-center gap-4">
+          {loading ? (
+            <div className="w-8 h-8 bg-gray-600 rounded-full animate-pulse" />
+          ) : user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <Avatar>
+                  <AvatarImage src={user.photoURL || undefined} />
+                  <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>{user.email}</DropdownMenuItem>
+                <DropdownMenuItem onClick={signOutUser}>Sign Out</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Link href="/login">
+              <Button>Login</Button>
+            </Link>
+          )}
+        </div>
       </div>
     </header>
   );
