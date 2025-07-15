@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { KingdomPortal } from "@/components/kingdom/kingdom-portal";
 import { mockQuests } from "@/lib/mock-data";
 import Link from "next/link";
@@ -6,6 +5,8 @@ import { Library, Zap, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppHeader } from "@/components/layout/app-header";
 import { Sparkles } from "lucide-react";
+import { CastleScene } from "@/components/3d/castle-scene";
+import { Suspense } from "react";
 
 const SparklingCrown = () => (
   <div className="relative mb-4">
@@ -27,12 +28,11 @@ export default function CastleHomepage() {
 
   return (
     <div className="relative min-h-screen w-full bg-[#110E1B] flex flex-col" data-ai-hint="fantasy castle night">
-      <Image
-        src="https://images.unsplash.com/photo-1539651044670-315229da9d2f?q=80&w=1920&h=1080&fit=crop"
-        alt="Mystical Castle Background"
-        fill
-        className="absolute inset-0 z-0 object-cover opacity-30"
-      />
+      <div className="absolute inset-0 z-0">
+        <Suspense fallback={<div className="w-full h-full bg-black" />}>
+          <CastleScene />
+        </Suspense>
+      </div>
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#110E1B]/50 to-[#110E1B] z-0"></div>
       
       <AppHeader />
