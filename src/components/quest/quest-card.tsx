@@ -1,4 +1,7 @@
 import Link from 'next/link';
+import { Star, Zap } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
 
 interface QuestCardProps {
   id: string;
@@ -19,44 +22,57 @@ export function QuestCard({
   xpReward,
   isRecommended = false,
 }: QuestCardProps) {
-  const difficultyColors = {
-    beginner: 'from-forest-green/70 to-emerald-600/70',
-    intermediate: 'from-yellow-500/70 to-orange-600/70',
-    advanced: 'from-dragon-red/70 to-royal-purple/70',
+  const difficultyConfig = {
+    beginner: {
+      className: 'from-green-500/70 to-emerald-600/70 border-green-400',
+      label: 'Beginner',
+    },
+    intermediate: {
+      className: 'from-yellow-500/70 to-orange-500/70 border-yellow-400',
+      label: 'Intermediate',
+    },
+    advanced: {
+      className: 'from-red-500/70 to-purple-600/70 border-red-400',
+      label: 'Advanced',
+    },
   };
+  
+  const config = difficultyConfig[difficulty];
 
   return (
-    <Link href={`/${subject}/${id}`}>
+    <Link href={`/${subject}/${id}`} className="group">
       <div
-        className={`
-          relative p-6 rounded-xl cursor-pointer transform transition-all duration-300
-          hover:scale-105 hover:shadow-2xl
-          bg-gradient-to-br ${difficultyColors[difficulty]}
-          border-2 ${isRecommended ? 'border-mystic-gold animate-pulse' : 'border-accent/20'}
+        className={cn(`
+          relative p-5 rounded-xl cursor-pointer transform transition-all duration-300
+          hover:scale-105 hover:shadow-2xl h-full flex flex-col justify-between
+          bg-gradient-to-br from-card/80 to-card/60
+          border-2 border-primary/20
           shadow-lg backdrop-blur-sm
-          before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-br
-          before:from-white/10 before:to-transparent before:opacity-0
-          hover:before:opacity-100 before:transition-opacity
-        `}
+          hover:border-accent
+        `, isRecommended && 'border-mystic-gold ring-2 ring-mystic-gold/50')}
       >
-        <div className="relative z-10">
-          <div className="flex justify-between items-start mb-2">
-            <p className="text-xs text-white/80 uppercase tracking-wide">
-              {questType} Quest
-            </p>
-            {isRecommended && (
-              <div className="px-2 py-0.5 text-xs rounded-full bg-mystic-gold text-shadow-black font-bold">
-                Recommended
-              </div>
-            )}
+        {isRecommended && (
+          <div className="absolute -top-3 right-4 px-3 py-1 text-xs rounded-full bg-mystic-gold text-shadow-black font-bold shadow-lg">
+            <Star className="w-4 h-4 inline-block -mt-1 mr-1" />
+            Recommended
           </div>
-          <h3 className="text-xl font-headline font-bold text-parchment-white mb-4">
+        )}
+        
+        <div className="relative z-10">
+          <p className="text-xs text-accent uppercase tracking-widest font-semibold">
+            {questType} Quest
+          </p>
+          <h3 className="text-xl font-headline font-bold text-parchment-white my-2 group-hover:text-mystic-gold transition-colors">
             {title}
           </h3>
-          <div className="flex justify-between items-center text-sm text-mystic-gold">
-            <span className="capitalize py-1 px-3 rounded-full bg-black/30 text-xs">
-              {difficulty}
-            </span>
+        </div>
+
+        <div className="relative z-10 flex justify-between items-center mt-4">
+          <span className={`capitalize py-1 px-3 rounded-full bg-black/40 text-xs border border-white/20 ${config.label === 'Beginner' ? 'text-green-300' : config.label === 'Intermediate' ? 'text-yellow-300' : 'text-red-300'}`}>
+            {difficulty}
+          </span>
+          <div className="flex items-center gap-1 font-bold text-mystic-gold">
+            <Zap size={16} />
             <span>{xpReward} XP</span>
           </div>
         </div>

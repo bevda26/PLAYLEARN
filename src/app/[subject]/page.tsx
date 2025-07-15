@@ -1,26 +1,49 @@
 
 'use client';
 
-import { useState, useMemo, use } from 'react';
-import { mockQuests } from '@/lib/mock-data';
+import { useState, useMemo, useEffect } from 'react';
 import { QuestCard } from '@/components/quest/quest-card';
 import { QuestRecommendations } from '@/components/quest/quest-recommendations';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import type { NextPage } from 'next';
+import { db } from '@/lib/firebase';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import type { QuestModule } from '@/lib/types';
+import { Skeleton } from '@/components/ui/skeleton';
+
 
 type QuestDiscoveryPageProps = {
   params: { subject: string };
 };
 
-const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params: paramsProp }) => {
-  // Correctly unwrap the params promise with React.use()
-  const params = use(paramsProp);
+const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params }) => {
   const { subject } = params;
-
+  
+  const [availableQuests, setAvailableQuests] = useState<QuestModule[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [recommendedQuestIds, setRecommendedQuestIds] = useState<string[]>([]);
   
-  const availableQuests = useMemo(() => mockQuests.filter(q => q.subject === subject), [subject]);
+  useEffect(() => {
+    const fetchQuests = async () => {
+      setIsLoading(true);
+      try {
+        const questsRef = collection(db, 'quest-modules');
+        const q = query(questsRef, where('subject', '==', subject));
+        const querySnapshot = await getDocs(q);
+        const quests = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as QuestModule));
+        setAvailableQuests(quests);
+      } catch (error) {
+        console.error("Error fetching quests: ", error);
+        // Optionally, handle the error in the UI
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchQuests();
+  }, [subject]);
+
 
   const subjectTitle = useMemo(() => subject.charAt(0).toUpperCase() + subject.slice(1), [subject]);
   
@@ -33,7 +56,7 @@ const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params: paramsP
   
   const theme = subjectThemes[subject] || { from: '#333', to: '#111' };
 
-  if (availableQuests.length === 0) {
+  if (!isLoading && availableQuests.length === 0) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-center p-4" style={{ background: `linear-gradient(to bottom, ${theme.from}, ${theme.to})` }}>
         <h1 className="font-headline text-5xl text-mystic-gold mb-4">The {subjectTitle} Kingdom</h1>
@@ -63,18 +86,27 @@ const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params: paramsP
         <div className="lg:col-span-2">
             <h2 className="font-headline text-3xl text-parchment-white mb-6">Available Quests</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {availableQuests.map(quest => (
-                <QuestCard
-                key={quest.id}
-                id={quest.id}
-                subject={quest.subject}
-                title={quest.title}
-                difficulty={quest.difficulty}
-                questType={quest.questType}
-                xpReward={quest.metadata.xpReward}
-                isRecommended={recommendedQuestIds.includes(quest.id)}
-                />
-            ))}
+            {isLoading ? (
+              <>
+                <Skeleton className="h-[140px] w-full rounded-xl bg-primary/20" />
+                <Skeleton className="h-[140px] w-full rounded-xl bg-primary/20" />
+                <Skeleton className="h-[140px] w-full rounded-xl bg-primary/20" />
+                <Skeleton className="h-[140px] w-full rounded-xl bg-primary/20" />
+              </>
+            ) : (
+              availableQuests.map(quest => (
+                  <QuestCard
+                    key={quest.id}
+                    id={quest.id}
+                    subject={quest.subject}
+                    title={quest.title}
+                    difficulty={quest.difficulty}
+                    questType={quest.questType}
+                    xpReward={quest.metadata.xpReward}
+                    isRecommended={recommendedQuestIds.includes(quest.id)}
+                  />
+              ))
+            )}
             </div>
         </div>
 
