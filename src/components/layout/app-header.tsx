@@ -93,10 +93,12 @@ export const AppHeader = () => {
             <User className="w-4 h-4 mr-2"/>
             Guild Hall
           </Button>
-          <Button variant="ghost" className="text-slate-300 hover:bg-primary/20 hover:text-white">
-            <WizardsChamberIcon className="w-4 h-4 mr-2"/>
-            Wizards' Chamber
-          </Button>
+          <Link href="/wizards-chamber">
+            <Button variant="ghost" className="text-slate-300 hover:bg-primary/20 hover:text-white">
+              <WizardsChamberIcon className="w-4 h-4 mr-2"/>
+              Wizards' Chamber
+            </Button>
+          </Link>
         </nav>
         <div className="flex items-center gap-4">
           {loading ? (
