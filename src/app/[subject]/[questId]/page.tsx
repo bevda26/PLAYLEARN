@@ -26,8 +26,9 @@ type QuestPlayerPageProps = {
   params: { subject: string, questId: string };
 };
 
-const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
-  const { subject, questId } = use(Promise.resolve(params));
+const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params: paramsProp }) => {
+  const params = use(Promise.resolve(paramsProp));
+  const { subject, questId } = params;
 
   const quest: QuestModule | undefined = React.useMemo(() => 
     mockQuests.find(q => q.id === questId && q.subject === subject),

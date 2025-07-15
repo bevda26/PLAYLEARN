@@ -12,8 +12,9 @@ type QuestDiscoveryPageProps = {
   params: { subject: string };
 };
 
-const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params }) => {
-  const { subject } = use(Promise.resolve(params));
+const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params: paramsProp }) => {
+  const params = use(Promise.resolve(paramsProp));
+  const { subject } = params;
   const [recommendedQuestIds, setRecommendedQuestIds] = useState<string[]>([]);
   
   const availableQuests = useMemo(() => mockQuests.filter(q => q.subject === subject), [subject]);
