@@ -2,8 +2,9 @@ import Image from "next/image";
 import { KingdomPortal } from "@/components/kingdom/kingdom-portal";
 import { mockQuests } from "@/lib/mock-data";
 import Link from "next/link";
-import { Hammer } from "lucide-react";
+import { Hammer, Library, Zap, Shield, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AppHeader } from "@/components/layout/app-header";
 
 export default function CastleHomepage() {
   const subjects = ["math", "science", "language", "history"];
@@ -13,30 +14,43 @@ export default function CastleHomepage() {
   }
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-[#110E1B] via-[#0D0C14] to-background flex flex-col items-center justify-center p-4">
+    <div className="relative min-h-screen w-full bg-[#110E1B] flex flex-col">
       <Image
         src="https://placehold.co/1920x1080/000000/FFFFFF.png?text=+"
         alt="Mystical Castle Background"
-        layout="fill"
-        objectFit="cover"
-        className="absolute inset-0 z-0 opacity-20"
+        fill
+        className="absolute inset-0 z-0 object-cover opacity-30"
         data-ai-hint="fantasy castle night"
       />
-      <div className="absolute inset-0 bg-black/30 z-0"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#110E1B]/50 to-[#110E1B] z-0"></div>
+      
+      <AppHeader />
 
-      <main className="relative z-10 flex flex-col items-center justify-center text-center text-parchment-white flex-grow">
-        <h1 className="font-headline text-5xl md:text-7xl font-bold text-mystic-gold drop-shadow-[0_4px_4px_rgba(0,0,0,0.7)] mb-4">
-          Welcome to QuestLearn
+      <main className="relative z-10 flex flex-col items-center justify-center text-center text-parchment-white flex-grow px-4">
+        <div className="flex items-center justify-center gap-4 mb-4">
+          <Wand2 className="w-16 h-16 text-mystic-gold" />
+        </div>
+        <h1 className="text-5xl md:text-7xl font-bold font-headline mb-4 bg-gradient-to-r from-orange-400 via-purple-500 to-indigo-600 bg-clip-text text-transparent drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
+          Kingdom Academy
         </h1>
-        <p className="text-lg md:text-xl max-w-2xl text-slate-300 mb-8">
-          Your epic educational RPG adventure begins now. Choose a realm to explore or forge your own quest!
+        <p className="text-lg md:text-xl max-w-2xl text-slate-300 mb-6">
+          Enter the mystical realm where learning becomes an epic RPG adventure!
+        </p>
+        <p className="text-md md:text-lg max-w-3xl text-slate-400 mb-10">
+          Embark on magical quests, unlock ancient knowledge, and become the hero of your educational journey.
         </p>
 
-        <div className="mb-12">
+        <div className="flex flex-col sm:flex-row items-center gap-4 mb-16">
             <Link href="/forge">
-                <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold text-lg px-8 py-6 rounded-lg shadow-lg hover:shadow-accent/40 transition-shadow">
-                    <Hammer className="mr-3 h-6 w-6" />
-                    Go to the Quest Forge
+                <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg px-8 py-6 rounded-lg shadow-lg hover:shadow-primary/40 transition-shadow">
+                    <Zap className="mr-3 h-5 w-5" />
+                    Begin Your Quest
+                </Button>
+            </Link>
+            <Link href="/language">
+                <Button size="lg" variant="outline" className="font-bold text-lg px-8 py-6 rounded-lg bg-black/30 border-accent/50 hover:bg-accent/10">
+                    <Library className="mr-3 h-5 w-5" />
+                    Explore Library Tower
                 </Button>
             </Link>
         </div>
@@ -68,6 +82,23 @@ export default function CastleHomepage() {
           />
         </div>
       </main>
+
+       <footer className="relative z-10 w-full p-4 mt-12">
+        <div className="max-w-6xl mx-auto flex justify-around items-center bg-black/30 backdrop-blur-sm p-4 rounded-lg border border-primary/20">
+            <div className="text-center">
+                <p className="font-bold text-2xl text-mystic-gold">∞</p>
+                <p className="text-sm uppercase text-slate-400">Magical Quests</p>
+            </div>
+             <div className="text-center">
+                <p className="font-bold text-2xl text-mystic-gold">{subjects.length}</p>
+                <p className="text-sm uppercase text-slate-400">Kingdom Realms</p>
+            </div>
+            <div className="text-center">
+                <p className="font-bold text-2xl text-mystic-gold">{mockQuests.length}</p>
+                <p className="text-sm uppercase text-slate-400">Learning Adventures</p>
+            </div>
+        </div>
+      </footer>
     </div>
   );
 }
