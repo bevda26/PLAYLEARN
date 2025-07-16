@@ -6,3 +6,4 @@ import '@/ai/flows/quest-generation-flow.ts';
 import '@/ai/flows/module-processor-flow.ts';
 import '@/ai/flows/generate-quest-image-flow.ts';
 import '@/ai/flows/generate-quest-narration-flow.ts';
+import '@/ai/flows/quest-smith-flow.ts';
