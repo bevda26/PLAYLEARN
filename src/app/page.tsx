@@ -79,8 +79,10 @@ export default function CastleHomepage() {
 
         <MagicalButton asChild>
           <Link href="/admin/quest-builder">
-            <Construction className="mr-3 h-5 w-5" />
-            Go to the Quest Builder
+            <span className="inline-flex items-center justify-center">
+              <Construction className="mr-3 h-5 w-5" />
+              Go to the Quest Builder
+            </span>
           </Link>
         </MagicalButton>
       </main>
