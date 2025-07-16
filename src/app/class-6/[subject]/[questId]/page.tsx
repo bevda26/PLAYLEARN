@@ -128,7 +128,8 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
             description: "Could not save your progress. Please try again.",
             variant: 'destructive',
         });
-        setIsCompleting(false);
+    } finally {
+      setIsCompleting(false);
     }
   };
   
