@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Crown, BookOpen, ToyBrick, User, Shield, Award, Backpack, LogOut, Grid, TrendingUp } from 'lucide-react';
+import { Crown, BookOpen, ToyBrick, User, Shield, Award, Backpack, LogOut, Grid, TrendingUp, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { WizardsChamberIcon } from '@/components/icons/wizards-chamber';
 import { useAuth } from '@/contexts/auth-context';
@@ -81,10 +81,12 @@ export const AppHeader = () => {
                 Dashboard
             </Button>
           </Link>
-          <Button variant="ghost" className="text-slate-300 hover:bg-primary/20 hover:text-white">
-            <BookOpen className="w-4 h-4 mr-2"/>
-            Library Tower
-          </Button>
+          <Link href="/leaderboard">
+            <Button variant="ghost" className="text-slate-300 hover:bg-primary/20 hover:text-white">
+              <Trophy className="w-4 h-4 mr-2" />
+              Leaderboard
+            </Button>
+          </Link>
           <Button variant="ghost" className="text-slate-300 hover:bg-primary/20 hover:text-white">
             <ToyBrick className="w-4 h-4 mr-2"/>
             Training Grounds
