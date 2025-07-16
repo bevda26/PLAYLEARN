@@ -1,3 +1,4 @@
+
 // src/app/dashboard/page.tsx
 'use client';
 
@@ -6,7 +7,7 @@ import { useUserProgressStore } from '@/stores/user-progress-store';
 import { AppHeader } from '@/components/layout/app-header';
 import { AnalyticsCard } from '@/components/dashboard/analytics-card';
 import { ProgressChart } from '@/components/dashboard/progress-chart';
-import { Award, BookOpen, Star, Swords, TrendingUp, Backpack, Shield } from 'lucide-react';
+import { Award, BookOpen, Star, Swords, TrendingUp, Backpack, Shield, BrainCircuit } from 'lucide-react';
 import Link from 'next/link';
 import { MagicalButton } from '@/components/ui/magical-button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
@@ -45,7 +46,7 @@ export default function DashboardPage() {
           </p>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-10">
           <AnalyticsCard
             title="Current Level"
             value={level}
@@ -69,6 +70,12 @@ export default function DashboardPage() {
             value={userProfile.title}
             icon={BookOpen}
             description="Your official rank."
+          />
+          <AnalyticsCard
+            title="Skill Points"
+            value={userProfile.skillPoints}
+            icon={BrainCircuit}
+            description="Points to spend."
           />
            <Dialog>
               <DialogTrigger asChild>
@@ -101,15 +108,27 @@ export default function DashboardPage() {
                     <ProgressChart completedQuests={questsCompleted} />
                 </div>
             </div>
-            <div className="bg-card/50 border border-primary/20 rounded-lg p-6 backdrop-blur-sm shadow-2xl shadow-primary/10 flex flex-col justify-center items-center text-center">
-                 <Shield className="w-20 h-20 text-accent mb-4" />
-                <h2 className="text-3xl font-headline text-accent mb-4">View Your Achievements</h2>
-                <p className="text-muted-foreground mb-6">See all the great milestones you've accomplished on your journey.</p>
-                 <MagicalButton asChild>
-                    <Link href="/dashboard/achievements">
-                        Go to Hall of Fame
-                    </Link>
-                </MagicalButton>
+            <div className="space-y-8">
+                <div className="bg-card/50 border border-primary/20 rounded-lg p-6 backdrop-blur-sm shadow-2xl shadow-primary/10 flex flex-col justify-center items-center text-center">
+                    <Shield className="w-20 h-20 text-accent mb-4" />
+                    <h2 className="text-3xl font-headline text-accent mb-4">View Your Achievements</h2>
+                    <p className="text-muted-foreground mb-6">See all the great milestones you've accomplished on your journey.</p>
+                    <MagicalButton asChild>
+                        <Link href="/dashboard/achievements">
+                            Go to Hall of Fame
+                        </Link>
+                    </MagicalButton>
+                </div>
+                 <div className="bg-card/50 border border-primary/20 rounded-lg p-6 backdrop-blur-sm shadow-2xl shadow-primary/10 flex flex-col justify-center items-center text-center">
+                    <BrainCircuit className="w-20 h-20 text-accent mb-4" />
+                    <h2 className="text-3xl font-headline text-accent mb-4">Allocate Skill Points</h2>
+                    <p className="text-muted-foreground mb-6">Spend the points you've earned from leveling up to improve your attributes.</p>
+                    <MagicalButton asChild>
+                        <Link href="/dashboard/skills">
+                            Upgrade Skills
+                        </Link>
+                    </MagicalButton>
+                </div>
             </div>
         </div>
       </main>

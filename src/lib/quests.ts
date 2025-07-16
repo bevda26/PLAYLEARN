@@ -6,6 +6,7 @@ import { doc, getDoc, runTransaction, serverTimestamp, arrayUnion, increment } f
 import { db } from './firebase';
 import type { QuestModule, UserProgress, UserProfile } from './types';
 import { checkForNewAchievements } from './achievements';
+import { getItemById } from './items';
 
 // XP needed to advance to the next level (level 1 -> 2 is at index 1)
 const LEVEL_XP_MAP: { [key: number]: number } = {
@@ -22,72 +23,105 @@ const LEVEL_TITLE_MAP: { [key: number]: string } = {
   5: 'Seasoned Explorer',
 };
 
-export async function completeQuest(userId: string, profile: UserProfile, quest: QuestModule): Promise<{ itemsAwarded: string[]; newTitle?: string } | void> {
+// Each point of intellect grants a 2% XP bonus
+const XP_BONUS_PER_INTELLECT = 0.02; 
+// Each point of luck grants a 1% chance for an extra item drop
+const EXTRA_ITEM_CHANCE_PER_LUCK = 0.01;
+
+export async function completeQuest(userId: string, profile: UserProfile, quest: QuestModule): Promise<{ itemsAwarded: string[]; newTitle?: string, bonusXp?: number, bonusItems?: string[] } | void> {
   const progressRef = doc(db, 'user-progress', userId);
   const profileRef = doc(db, 'user-profiles', userId);
   
   let itemsAwarded: string[] = [];
+  let bonusItems: string[] = [];
   let newTitle: string | undefined;
+
+  // Calculate bonuses from attributes
+  const intellectBonus = 1 + (profile.attributes.intellect * XP_BONUS_PER_INTELLECT);
+  const finalXpReward = Math.round(quest.metadata.xpReward * intellectBonus);
+  const bonusXp = finalXpReward - quest.metadata.xpReward;
 
   try {
     await runTransaction(db, async (transaction) => {
       const progressDoc = await transaction.get(progressRef);
-      if (!progressDoc.exists()) {
-        throw new Error("User progress document does not exist!");
+      const profileDoc = await transaction.get(profileRef);
+
+      if (!progressDoc.exists() || !profileDoc.exists()) {
+        throw new Error("User progress or profile document does not exist!");
       }
 
       const oldProgress = progressDoc.data() as Omit<UserProgress, 'userId'>;
+      const oldProfile = profileDoc.data() as UserProfile;
       
-      // We can allow re-doing quests, so we don't block here.
-      // The `questsCompleted` field will now store an array of completion timestamps.
-
-      let newXp = oldProgress.xp + quest.metadata.xpReward;
+      let newXp = oldProgress.xp + finalXpReward;
       let newLevel = oldProgress.level;
       let xpForNextLevel = LEVEL_XP_MAP[newLevel];
+      let skillPointsGained = 0;
 
       // Handle leveling up
       while (xpForNextLevel && newXp >= xpForNextLevel) {
         newLevel++;
         newXp -= xpForNextLevel;
+        skillPointsGained++;
         xpForNextLevel = LEVEL_XP_MAP[newLevel];
       }
 
       const newProgressData: any = {
         xp: newXp,
         level: newLevel,
-        // Add a new timestamp to the array for this quest
         [`questsCompleted.${quest.id}`]: arrayUnion(serverTimestamp()),
       };
       
+      itemsAwarded = quest.metadata.itemRewards || [];
+      
+      // Handle luck for bonus items
+      const luckRoll = Math.random();
+      const luckThreshold = profile.attributes.luck * EXTRA_ITEM_CHANCE_PER_LUCK;
+      if (luckRoll < luckThreshold && itemsAwarded.length > 0) {
+        // Award one of the existing reward items again as a bonus
+        const randomBonusItem = itemsAwarded[Math.floor(Math.random() * itemsAwarded.length)];
+        if (getItemById(randomBonusItem)) {
+            bonusItems.push(randomBonusItem);
+        }
+      }
+      
+      const allItemsToAward = [...itemsAwarded, ...bonusItems];
+
       // Handle item rewards by incrementing their quantity
-      if (quest.metadata.itemRewards && quest.metadata.itemRewards.length > 0) {
-        itemsAwarded = quest.metadata.itemRewards;
-        for (const itemId of itemsAwarded) {
-          // Use dot notation to increment a field within a map
+      if (allItemsToAward.length > 0) {
+        for (const itemId of allItemsToAward) {
           newProgressData[`inventory.${itemId}`] = increment(1);
         }
       }
       
       transaction.update(progressRef, newProgressData);
 
+      const newProfileData: any = {};
+
       // Check for a new title if the user leveled up
       if (newLevel > oldProgress.level) {
         const potentialNewTitle = LEVEL_TITLE_MAP[newLevel];
         if (potentialNewTitle && potentialNewTitle !== profile.title) {
           newTitle = potentialNewTitle;
-          transaction.update(profileRef, { title: newTitle });
+          newProfileData.title = newTitle;
         }
+      }
+
+      if (skillPointsGained > 0) {
+        newProfileData.skillPoints = increment(skillPointsGained);
+      }
+      
+      if(Object.keys(newProfileData).length > 0) {
+        transaction.update(profileRef, newProfileData);
       }
     });
 
-    // After the transaction is successful, check for achievements
-    // This is done outside the transaction to avoid contention
     await checkForNewAchievements(userId);
 
-    return { itemsAwarded, newTitle };
+    return { itemsAwarded, newTitle, bonusXp: bonusXp > 0 ? bonusXp : undefined, bonusItems: bonusItems.length > 0 ? bonusItems : undefined };
 
   } catch (e) {
     console.error("Quest completion transaction failed: ", e);
-    throw e; // Re-throw the error to be caught by the caller
+    throw e;
   }
 }

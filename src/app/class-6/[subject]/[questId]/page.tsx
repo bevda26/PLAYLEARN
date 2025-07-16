@@ -136,9 +136,20 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
     try {
         const result = await completeQuest(user.uid, userProfile, quest);
         
-        let toastDescription = `You earned ${quest.metadata.xpReward} XP!`;
+        let toastDescription = `You earned ${quest.metadata.xpReward} XP.`;
+        if (result?.bonusXp) {
+            toastDescription = `You earned ${quest.metadata.xpReward} + ${result.bonusXp} (Intellect bonus) = ${quest.metadata.xpReward + result.bonusXp} XP!`;
+        }
+
         if (result?.itemsAwarded && result.itemsAwarded.length > 0) {
             toastDescription += ` You received: ${result.itemsAwarded.join(', ')}!`;
+        }
+
+        if (result?.bonusItems && result.bonusItems.length > 0) {
+            toast({
+                title: "Lucky Find!",
+                description: `Your luck granted you extra items: ${result.bonusItems.join(', ')}!`
+            })
         }
 
         toast({

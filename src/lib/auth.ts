@@ -1,3 +1,4 @@
+
 // src/lib/auth.ts
 import { 
   onAuthStateChanged, 
@@ -27,6 +28,11 @@ const createUserDocuments = async (user: User) => {
         title: 'Novice Learner',
         unlockedAchievements: {},
         createdAt: serverTimestamp(),
+        skillPoints: 0,
+        attributes: {
+          intellect: 0,
+          luck: 0,
+        }
       });
     } catch (error) {
       console.error("Error creating user profile: ", error);

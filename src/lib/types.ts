@@ -27,6 +27,11 @@ export interface Achievement {
   description: string;
 }
 
+export interface UserAttributes {
+  intellect: number;
+  luck: number;
+}
+
 export interface UserProfile {
   userId: string;
   email: string | null;
@@ -35,6 +40,8 @@ export interface UserProfile {
   title: string;
   unlockedAchievements: { [achievementId: string]: Timestamp };
   createdAt: Timestamp;
+  attributes: UserAttributes;
+  skillPoints: number;
 }
 
 export interface UserProgress {
