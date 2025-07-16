@@ -35,6 +35,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      setLoading(true); // Start loading when auth state might be changing
       setUser(user);
       if (user) {
         // Check for admin privileges
@@ -48,7 +49,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUserProfile(null);
         setIsAdmin(false);
         resetUserProgress();
-        setLoading(false);
+        setLoading(false); // No user, so we are done loading
       }
     });
 
@@ -56,29 +57,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [subscribeToUserProgress, resetUserProgress]);
 
   useEffect(() => {
-    let unsubscribeProfile: () => void = () => {};
-    if (user) {
-      setLoading(true);
-      const userProfileRef = doc(db, 'user-profiles', user.uid);
-      unsubscribeProfile = onSnapshot(userProfileRef, (docSnap) => {
-        if (docSnap.exists()) {
-          setUserProfile(docSnap.data() as UserProfile);
-        } else {
-          // This case can happen briefly if documents haven't been created yet.
-          setUserProfile(null); 
-        }
-        setLoading(false);
-      }, (error) => {
-          console.error("Error fetching user profile:", error);
-          setLoading(false);
-      });
+    if (!user) {
+      setLoading(false); // If there's no user, we are not loading profile data.
+      return;
     }
+
+    const userProfileRef = doc(db, 'user-profiles', user.uid);
+    const unsubscribeProfile = onSnapshot(userProfileRef, (docSnap) => {
+      if (docSnap.exists()) {
+        setUserProfile(docSnap.data() as UserProfile);
+      } else {
+        // This case can happen briefly if documents haven't been created yet.
+        setUserProfile(null); 
+      }
+      setLoading(false); // Finished loading profile data
+    }, (error) => {
+        console.error("Error fetching user profile:", error);
+        setLoading(false); // Stop loading even if there's an error
+    });
 
     return () => unsubscribeProfile();
   }, [user]);
 
 
-  if (loading && !user) {
+  if (loading) {
     return (
         <div className="flex flex-col space-y-3 p-4">
           <Skeleton className="h-20 w-full rounded-xl" />
