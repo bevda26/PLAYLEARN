@@ -35,7 +35,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
-      setLoading(true); // Start loading when auth state might be changing
       setUser(user);
       if (user) {
         // Check for admin privileges
@@ -62,6 +61,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
+    // Start loading when we have a user and are about to fetch their profile
+    setLoading(true);
+
     const userProfileRef = doc(db, 'user-profiles', user.uid);
     const unsubscribeProfile = onSnapshot(userProfileRef, (docSnap) => {
       if (docSnap.exists()) {
@@ -70,7 +72,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // This case can happen briefly if documents haven't been created yet.
         setUserProfile(null); 
       }
-      setLoading(false); // Finished loading profile data
+      // Finished loading profile data
+      setLoading(false); 
     }, (error) => {
         console.error("Error fetching user profile:", error);
         setLoading(false); // Stop loading even if there's an error
@@ -80,6 +83,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [user]);
 
 
+  // Show loading skeleton until user state is determined.
   if (loading) {
     return (
         <div className="flex flex-col space-y-3 p-4">
