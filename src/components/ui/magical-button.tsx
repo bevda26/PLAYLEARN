@@ -37,15 +37,15 @@ export const MagicalButton = ({ children, onClick, variant = 'primary', classNam
         className
       )}
     >
-      <div 
-        className="
-          absolute top-0 left-0 w-full h-full
-          bg-gradient-to-r from-transparent via-white/20 to-transparent
-          transform -translate-x-full
-          group-hover:translate-x-full transition-transform duration-700 ease-in-out
-        "
-      ></div>
       <span className="relative z-10 flex items-center justify-center w-full gap-2">
+         <div 
+          className="
+            absolute top-0 left-0 w-full h-full
+            bg-gradient-to-r from-transparent via-white/20 to-transparent
+            transform -translate-x-full
+            group-hover:translate-x-full transition-transform duration-700 ease-in-out
+          "
+        ></div>
         {children}
       </span>
     </Comp>
