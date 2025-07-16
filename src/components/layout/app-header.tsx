@@ -15,6 +15,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useUserProgressStore } from '@/stores/user-progress-store';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 export const InventoryDisplay = ({ inventory }: { inventory: { [itemId: string]: number } }) => {
   const inventoryItems = Object.entries(inventory)
@@ -59,8 +61,21 @@ export const InventoryDisplay = ({ inventory }: { inventory: { [itemId: string]:
 export const AppHeader = () => {
   const { user, userProfile, loading, isAdmin } = useAuth();
   const { inventory } = useUserProgressStore();
+  const pathname = usePathname();
 
   const inventoryCount = Object.values(inventory).reduce((sum, q) => sum + q, 0);
+
+  const navLinks = [
+    { href: '/dashboard', label: 'Dashboard', icon: TrendingUp },
+    { href: '/leaderboard', label: 'Leaderboard', icon: Trophy },
+    { href: '/guilds', label: 'Guilds', icon: Swords },
+    { href: '/the-sixth-trial', label: 'The Sixth Trial', icon: Grid },
+    { href: '/wizards-chamber', label: `Wizard's Chamber`, icon: WizardsChamberIcon },
+  ];
+
+  if (isAdmin) {
+    navLinks.push({ href: '/admin/quest-builder', label: 'Quest Builder', icon: Construction });
+  }
 
   return (
     <header className="relative z-20 w-full p-4">
@@ -68,43 +83,19 @@ export const AppHeader = () => {
         <Link href="/" className="flex items-center gap-2">
           <Crown className="w-8 h-8 text-accent" />
           <div className="flex flex-col items-start">
-            <span className="font-headline text-xl font-bold text-white">PLAYLEARN</span>
+            <span className="font-headline text-xl font-bold text-white">QuestLearn</span>
             <span className="text-xs text-slate-400 -mt-1 tracking-widest">RPG LEARNING PLATFORM</span>
           </div>
         </Link>
         <nav className="hidden md:flex items-center gap-2">
-          <Link href="/dashboard">
-            <Button variant="ghost" className="text-slate-300 hover:bg-primary/20 hover:text-white">
-                <TrendingUp className="w-4 h-4 mr-2"/>
-                Dashboard
-            </Button>
-          </Link>
-          <Link href="/leaderboard">
-            <Button variant="ghost" className="text-slate-300 hover:bg-primary/20 hover:text-white">
-              <Trophy className="w-4 h-4 mr-2" />
-              Leaderboard
-            </Button>
-          </Link>
-           <Link href="/guilds">
-             <Button variant="ghost" className="text-slate-300 hover:bg-primary/20 hover:text-white">
-              <Swords className="w-4 h-4 mr-2"/>
-              Guild Hall
-            </Button>
-          </Link>
-          <Link href="/wizards-chamber">
-            <Button variant="ghost" className="text-slate-300 hover:bg-primary/20 hover:text-white">
-              <WizardsChamberIcon className="w-4 h-4 mr-2"/>
-              Wizards' Chamber
-            </Button>
-          </Link>
-          {isAdmin && (
-            <Link href="/admin/quest-builder">
-              <Button variant="ghost" className="text-slate-300 hover:bg-primary/20 hover:text-white">
-                <Construction className="w-4 h-4 mr-2"/>
-                Quest Builder
-              </Button>
+          {navLinks.map(({ href, label, icon: Icon }) => (
+             <Link href={href} key={href}>
+                <Button variant="ghost" className={cn("text-slate-300 hover:bg-primary/20 hover:text-white", pathname === href && "bg-primary/20 text-white")}>
+                    <Icon className="w-4 h-4 mr-2"/>
+                    {label}
+                </Button>
             </Link>
-          )}
+          ))}
         </nav>
         <div className="flex items-center gap-4">
           {loading ? (

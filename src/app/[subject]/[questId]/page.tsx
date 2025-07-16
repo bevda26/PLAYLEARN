@@ -27,9 +27,9 @@ function QuestNotFound() {
         <div className="min-h-screen flex flex-col items-center justify-center text-center p-4 bg-gradient-to-b from-background to-background/80">
             <h1 className="font-headline text-5xl text-destructive mb-4">Quest Not Found</h1>
             <p className="text-xl text-foreground/80 mb-8">The ancient map is misleading. This quest does not exist in our chronicles.</p>
-            <Link href="/" className="flex items-center gap-2 text-accent hover:underline">
+            <Link href="/the-sixth-trial" className="flex items-center gap-2 text-accent hover:underline">
                 <ArrowLeft size={20} />
-                Return to the Hall of Kingdoms
+                Return to The Sixth Trial
             </Link>
         </div>
     )

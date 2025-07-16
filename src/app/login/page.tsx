@@ -34,7 +34,7 @@ export default function LoginPage() {
         try {
             await signInWithGoogle();
             toast({ title: "Successfully signed in with Google!" });
-            router.push('/');
+            router.push('/the-sixth-trial');
         } catch (error: any) {
             toast({ title: "Google Sign-In Failed", description: error.message, variant: "destructive" });
         }
@@ -49,7 +49,7 @@ export default function LoginPage() {
         try {
             await signUpWithEmailAndPassword(email, password);
             toast({ title: "Account created successfully!" });
-            router.push('/');
+            router.push('/the-sixth-trial');
         } catch (error: any) {
             toast({ title: "Sign Up Failed", description: error.message, variant: "destructive" });
         }
@@ -60,7 +60,7 @@ export default function LoginPage() {
         try {
             await signInWithEmailAndPassword(email, password);
             toast({ title: "Successfully signed in!" });
-            router.push('/');
+            router.push('/the-sixth-trial');
         } catch (error: any) {
             toast({ title: "Sign In Failed", description: error.message, variant: "destructive" });
         }
@@ -78,10 +78,10 @@ export default function LoginPage() {
             />
             <Card className="w-full max-w-md z-10 bg-card/60 backdrop-blur-lg border-primary/20 shadow-2xl shadow-primary/10">
                 <CardHeader className="text-center">
-                    <div className="mx-auto mb-2">
+                    <Link href="/" className="mx-auto mb-2">
                         <Crown className="w-12 h-12 text-accent" />
-                    </div>
-                    <CardTitle className="font-headline text-3xl text-accent">Welcome to PlayLearn</CardTitle>
+                    </Link>
+                    <CardTitle className="font-headline text-3xl text-accent">Welcome to QuestLearn</CardTitle>
                     <CardDescription>Your epic learning adventure awaits.</CardDescription>
                 </CardHeader>
                 <CardContent>
