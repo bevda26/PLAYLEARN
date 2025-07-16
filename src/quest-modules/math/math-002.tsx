@@ -12,15 +12,15 @@ import type { QuestModule } from '@/lib/types';
 // Exported metadata for the Drop-and-Go system
 export const questModule: Omit<QuestModule, 'createdAt' | 'componentPath'> = {
   id: 'math-002',
-  title: "Geomancer's Riddle: Shapes of Power",
+  title: "Geomancer's Final Riddle",
   subject: 'math',
   difficulty: 'intermediate',
-  questType: 'investigation',
+  questType: 'boss',
   metadata: {
-    description: 'Unlock the secrets of the Geomancer by identifying powerful geometric shapes in the ancient ruins.',
+    description: 'The Geomancer requires a final test of your knowledge. Prove your mastery to claim the ultimate geometric prize.',
     estimatedTime: 25,
-    xpReward: 250,
-    itemRewards: ['scroll_of_wisdom'],
+    xpReward: 400,
+    itemRewards: ['scroll_of_wisdom', 'golden_key'],
     unlockRequirements: ['math-001'],
   },
 };
@@ -36,16 +36,16 @@ const GeomancerRiddleQuest = () => {
     };
 
     return (
-        <Card className="bg-primary/5 border-primary/20">
+        <Card className="bg-destructive/5 border-destructive/20">
             <CardHeader>
-                <CardTitle className="font-headline text-accent">The Geomancer's Riddle</CardTitle>
+                <CardTitle className="font-headline text-destructive">The Geomancer's Riddle</CardTitle>
                 <CardDescription>
                     "I have six sides and six angles, a shape beloved by bees. What am I?" - The Geomancer
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="p-4 bg-background/50 rounded-lg text-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" className="w-24 h-24 mx-auto fill-accent stroke-primary" strokeWidth="3">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" className="w-24 h-24 mx-auto fill-destructive stroke-primary" strokeWidth="3">
                         <polygon points="50 5, 95 27.5, 95 72.5, 50 95, 5 72.5, 5 27.5" />
                     </svg>
                 </div>
@@ -69,7 +69,7 @@ const GeomancerRiddleQuest = () => {
                     </div>
                 </RadioGroup>
 
-                <Button onClick={checkAnswer} disabled={!answer}>Submit Answer</Button>
+                <Button onClick={checkAnswer} disabled={!answer} variant="destructive">Submit Final Answer</Button>
                 
                 {isCorrect === true && (
                     <div className="flex items-center gap-2 p-3 rounded-md bg-green-500/20 text-green-300">

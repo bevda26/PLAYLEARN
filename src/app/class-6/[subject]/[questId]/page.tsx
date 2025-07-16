@@ -6,7 +6,7 @@ import { RPGInterface } from '@/components/quest/rpg-interface';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { ArrowLeft, Clock, Award, Loader2, AlertTriangle, Gift, Lock } from 'lucide-react';
+import { ArrowLeft, Clock, Award, Loader2, AlertTriangle, Gift, Lock, Swords } from 'lucide-react';
 import type { QuestModule } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import type { NextPage } from 'next';
@@ -19,6 +19,7 @@ import { useToast } from '@/hooks/use-toast';
 import dynamic from 'next/dynamic';
 import { useDevEvents } from '@/hooks/use-dev-events';
 import { useUserProgressStore } from '@/stores/user-progress-store';
+import { cn } from '@/lib/utils';
 
 function QuestNotFound() {
     return (
@@ -208,18 +209,41 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
     "Complete Quest"
   );
 
+  const isBossQuest = quest.questType === 'boss';
+
   return (
-    <div className="relative min-h-screen w-full p-4 sm:p-8 flex flex-col items-center justify-center bg-gradient-to-br from-background via-background to-background/80">
+    <div className={cn(
+        "relative min-h-screen w-full p-4 sm:p-8 flex flex-col items-center justify-center",
+        isBossQuest 
+            ? "bg-gradient-to-br from-destructive/90 via-background to-background/90"
+            : "bg-gradient-to-br from-background via-background to-background/80"
+    )}>
       <RPGInterface />
       <main className="w-full max-w-4xl z-10">
-        <Card className="bg-card/60 backdrop-blur-lg border-2 border-primary/30 shadow-2xl shadow-primary/10">
-          <CardHeader className="text-center border-b-2 border-primary/20">
+        <Card className={cn(
+            "bg-card/60 backdrop-blur-lg border-2 shadow-2xl",
+            isBossQuest
+                ? "border-destructive/50 shadow-destructive/20"
+                : "border-primary/30 shadow-primary/10"
+        )}>
+          <CardHeader className={cn(
+              "text-center border-b-2",
+              isBossQuest ? "border-destructive/30" : "border-primary/20"
+          )}>
             <Link href={`/class-6/${quest.subject}`} className="flex items-center gap-2 text-accent hover:underline mb-4 w-fit mx-auto">
               <ArrowLeft size={16} />
               Return to the {quest.subject.charAt(0).toUpperCase() + quest.subject.slice(1)} Kingdom
             </Link>
-            <p className="text-sm uppercase tracking-widest text-accent">{quest.questType} Quest</p>
-            <CardTitle className="font-headline text-5xl text-accent">{quest.title}</CardTitle>
+            <p className="text-sm uppercase tracking-widest text-accent flex items-center justify-center gap-2">
+                {isBossQuest && <Swords size={16} />}
+                {quest.questType} Quest
+            </p>
+            <CardTitle className={cn(
+                "font-headline text-5xl",
+                isBossQuest ? "text-destructive" : "text-accent"
+            )}>
+                {quest.title}
+            </CardTitle>
             <CardDescription className="text-foreground/80 mt-2 max-w-2xl mx-auto">{quest.metadata.description}</CardDescription>
             <div className="flex justify-center items-center gap-4 flex-wrap mt-4">
               <Badge variant="outline" className="border-accent/50 capitalize text-accent">{quest.difficulty}</Badge>
@@ -244,7 +268,7 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
           </CardContent>
         </Card>
         <div className="mt-8 text-center">
-            <Button onClick={handleCompleteQuest} disabled={isCompleting || !user || !userProfile}>
+            <Button onClick={handleCompleteQuest} disabled={isCompleting || !user || !userProfile} variant={isBossQuest ? 'destructive' : 'default'}>
               {completeButtonContent}
             </Button>
         </div>

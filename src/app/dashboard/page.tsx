@@ -7,7 +7,7 @@ import { useUserProgressStore } from '@/stores/user-progress-store';
 import { AppHeader } from '@/components/layout/app-header';
 import { AnalyticsCard } from '@/components/dashboard/analytics-card';
 import { ProgressChart } from '@/components/dashboard/progress-chart';
-import { Award, BookOpen, Star, Swords, TrendingUp, Backpack, Shield, BrainCircuit } from 'lucide-react';
+import { Award, BookOpen, Star, Swords, TrendingUp, Backpack, Shield, BrainCircuit, BookMarked } from 'lucide-react';
 import Link from 'next/link';
 import { MagicalButton } from '@/components/ui/magical-button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
@@ -109,6 +109,16 @@ export default function DashboardPage() {
                 </div>
             </div>
             <div className="space-y-8">
+                 <div className="bg-card/50 border border-primary/20 rounded-lg p-6 backdrop-blur-sm shadow-2xl shadow-primary/10 flex flex-col justify-center items-center text-center">
+                    <BookMarked className="w-20 h-20 text-accent mb-4" />
+                    <h2 className="text-3xl font-headline text-accent mb-4">Quest Journal</h2>
+                    <p className="text-muted-foreground mb-6">Review your completed quests and relive your heroic deeds.</p>
+                    <MagicalButton asChild>
+                        <Link href="/dashboard/journal">
+                            Open Journal
+                        </Link>
+                    </MagicalButton>
+                </div>
                 <div className="bg-card/50 border border-primary/20 rounded-lg p-6 backdrop-blur-sm shadow-2xl shadow-primary/10 flex flex-col justify-center items-center text-center">
                     <Shield className="w-20 h-20 text-accent mb-4" />
                     <h2 className="text-3xl font-headline text-accent mb-4">View Your Achievements</h2>
