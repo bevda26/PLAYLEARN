@@ -149,6 +149,15 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
   if (!quest) {
     return <QuestNotFound />;
   }
+  
+  const completeButtonContent = isCompleting ? (
+    <>
+        <Loader2 className="animate-spin" />
+        Completing...
+    </>
+  ) : (
+    "Complete Quest"
+  );
 
   return (
     <div className="relative min-h-screen w-full p-4 sm:p-8 flex flex-col items-center justify-center bg-gradient-to-br from-background via-background to-background/80">
@@ -187,14 +196,7 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
         </Card>
         <div className="mt-8 text-center">
             <Button onClick={handleCompleteQuest} disabled={isCompleting || !user || !userProfile}>
-              {isCompleting ? (
-                <>
-                  <Loader2 className="animate-spin" />
-                  Completing...
-                </>
-              ) : (
-                "Complete Quest"
-              )}
+              {completeButtonContent}
             </Button>
         </div>
       </main>
