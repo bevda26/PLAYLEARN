@@ -51,9 +51,9 @@ const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params }) => {
   
   const subjectThemes: Record<string, { from: string; to: string }> = {
       math: { from: 'hsl(var(--primary))', to: 'hsl(var(--accent))' },
-      science: { from: '#0284c7', to: '#e0e7ff' },
-      language: { from: 'hsl(var(--secondary))', to: '#fef3c7' },
-      history: { from: '#a16207', to: 'hsl(var(--border))' },
+      science: { from: 'hsl(var(--secondary))', to: 'hsl(var(--border))' },
+      language: { from: 'hsl(25, 55%, 50%)', to: 'hsl(50, 45%, 80%)' },
+      history: { from: 'hsl(30, 40%, 30%)', to: 'hsl(0, 0%, 20%)' },
   }
   
   const theme = subjectThemes[subject] || { from: 'hsl(var(--background))', to: 'hsl(var(--background))' };
