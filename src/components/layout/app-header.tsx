@@ -83,7 +83,7 @@ export const AppHeader = () => {
         <Link href="/" className="flex items-center gap-2">
           <Crown className="w-8 h-8 text-accent" />
           <div className="flex flex-col items-start">
-            <span className="font-headline text-xl font-bold text-white">QuestLearn</span>
+            <span className="font-headline text-xl font-bold text-white">PlayLearn</span>
             <span className="text-xs text-slate-400 -mt-1 tracking-widest">RPG LEARNING PLATFORM</span>
           </div>
         </Link>

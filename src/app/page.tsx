@@ -49,7 +49,7 @@ export default async function HomePage() {
           </ParallaxLayer>
           <div className="relative z-10 flex flex-col items-center justify-center text-center p-4">
             <h1 className="text-5xl md:text-7xl font-bold font-headline text-accent drop-shadow-[0_4px_4px_rgba(0,0,0,0.7)]">
-              QuestLearn
+              PlayLearn
             </h1>
             <p className="text-lg md:text-xl text-slate-300 mt-4 max-w-2xl">
               Your epic learning adventure awaits.

@@ -81,7 +81,7 @@ export default function LoginPage() {
                     <Link href="/" className="mx-auto mb-2">
                         <Crown className="w-12 h-12 text-accent" />
                     </Link>
-                    <CardTitle className="font-headline text-3xl text-accent">Welcome to QuestLearn</CardTitle>
+                    <CardTitle className="font-headline text-3xl text-accent">Welcome to PlayLearn</CardTitle>
                     <CardDescription>Your epic learning adventure awaits.</CardDescription>
                 </CardHeader>
                 <CardContent>
