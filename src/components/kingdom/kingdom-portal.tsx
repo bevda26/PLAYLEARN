@@ -57,9 +57,11 @@ export const KingdomPortal: FC<KingdomPortalProps> = ({
             {title}
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-0 mt-2 text-center relative z-10">
-          <p className="text-sm text-foreground/80">{questCount} Quests Await</p>
-        </CardContent>
+        {questCount > 0 && (
+          <CardContent className="p-0 mt-2 text-center relative z-10">
+            <p className="text-sm text-foreground/80">{questCount} Quests Await</p>
+          </CardContent>
+        )}
       </Card>
     </Link>
   );

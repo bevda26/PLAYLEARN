@@ -5,9 +5,6 @@ import type { LucideIcon } from "lucide-react";
 import { MagicalButton } from "@/components/ui/magical-button";
 import { AppHeader } from "@/components/layout/app-header";
 import { Sparkles } from "lucide-react";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import type { QuestModule } from "@/lib/types";
 
 const SparklingCrown = () => (
   <div className="relative mb-4">
@@ -20,46 +17,7 @@ const SparklingCrown = () => (
   </div>
 )
 
-const subjectMetadata: { [key: string]: { icon: keyof typeof icons, title: string } } = {
-  math: { icon: "castle", title: "Math Kingdom" },
-  science: { icon: "flask-conical", title: "Science Stronghold" },
-  language: { icon: "book-open", title: "Library of Scribes" },
-  history: { icon: "swords", title: "Chronicle Keep" },
-  default: { icon: "castle", title: "New Realm" },
-};
-
-const icons: Record<string, LucideIcon> = {
-  swords: Swords,
-  "flask-conical": FlaskConical,
-  "book-open": BookOpen,
-  castle: Castle,
-};
-
-async function getKingdoms() {
-    const questSnapshot = await getDocs(collection(db, "quest-modules"));
-    const quests = questSnapshot.docs.map(doc => doc.data() as QuestModule);
-
-    const kingdoms: { [subject: string]: { count: number } } = {};
-
-    quests.forEach(quest => {
-        if (!kingdoms[quest.subject]) {
-            kingdoms[quest.subject] = { count: 0 };
-        }
-        kingdoms[quest.subject].count++;
-    });
-    
-    return Object.entries(kingdoms).map(([subject, data]) => ({
-        subject,
-        questCount: data.count,
-        ...subjectMetadata[subject] || subjectMetadata.default,
-        title: subjectMetadata[subject]?.title || `${subject.charAt(0).toUpperCase() + subject.slice(1)} Realm`,
-    }));
-}
-
-
 export default async function CastleHomepage() {
-  const kingdoms = await getKingdoms();
-  
   return (
     <div className="relative min-h-screen w-full bg-[#110E1B] flex flex-col" data-ai-hint="fantasy castle night">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#110E1B]/50 to-[#110E1B] z-0"></div>
@@ -74,19 +32,16 @@ export default async function CastleHomepage() {
           PLAYLEARN.TECH
         </h1>
         <p className="text-lg md:text-xl max-w-2xl text-slate-300 mb-10">
-          Your learning adventure begins now. Choose a realm to explore.
+          Your learning adventure begins now. The gates to the academy are open.
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto w-full mb-16">
-          {kingdoms.map(kingdom => (
+        <div className="w-full max-w-xs mx-auto">
             <KingdomPortal 
-              key={kingdom.subject}
-              subject={`class-6/${kingdom.subject}`}
-              title={kingdom.title}
-              icon={kingdom.icon}
-              questCount={kingdom.questCount}
+              subject="class-6"
+              title="Enter Class 6"
+              icon="castle"
+              questCount={0}
             />
-          ))}
         </div>
       </main>
     </div>
