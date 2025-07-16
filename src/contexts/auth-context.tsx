@@ -28,27 +28,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const [isProfileLoading, setIsProfileLoading] = useState(true);
 
-  // Zustand store actions
+
   const subscribeToUserProgress = useUserProgressStore(state => state.subscribeToUserProgress);
   const resetUserProgress = useUserProgressStore(state => state.resetProgress);
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       setUser(user);
+      setIsAuthLoading(false);
       if (user) {
-        // Check for admin privileges
         const adminId = process.env.NEXT_PUBLIC_ADMIN_USER_ID;
         setIsAdmin(!!adminId && user.uid === adminId);
-        
-        // When user logs in, subscribe to their progress
         subscribeToUserProgress(user.uid);
       } else {
-        // When user logs out, clear their profile and reset progress store
         setUserProfile(null);
         setIsAdmin(false);
         resetUserProgress();
-        setLoading(false); // No user, so we are done loading
+        setIsProfileLoading(false); 
       }
     });
 
@@ -57,33 +56,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!user) {
-      setLoading(false); // If there's no user, we are not loading profile data.
+      setIsProfileLoading(false);
       return;
     }
 
-    // Start loading when we have a user and are about to fetch their profile
-    setLoading(true);
+    setIsProfileLoading(true);
 
     const userProfileRef = doc(db, 'user-profiles', user.uid);
     const unsubscribeProfile = onSnapshot(userProfileRef, (docSnap) => {
       if (docSnap.exists()) {
         setUserProfile(docSnap.data() as UserProfile);
       } else {
-        // This case can happen briefly if documents haven't been created yet.
         setUserProfile(null); 
       }
-      // Finished loading profile data
-      setLoading(false); 
+      setIsProfileLoading(false); 
     }, (error) => {
         console.error("Error fetching user profile:", error);
-        setLoading(false); // Stop loading even if there's an error
+        setIsProfileLoading(false);
     });
 
     return () => unsubscribeProfile();
   }, [user]);
 
+  useEffect(() => {
+    setLoading(isAuthLoading || isProfileLoading);
+  }, [isAuthLoading, isProfileLoading]);
 
-  // Show loading skeleton until user state is determined.
+
   if (loading) {
     return (
         <div className="flex flex-col space-y-3 p-4">
