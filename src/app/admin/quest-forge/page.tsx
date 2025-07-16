@@ -72,6 +72,18 @@ export default function QuestForgePage() {
       setIsLoading(false);
     }
   };
+  
+  const submitButtonContent = isLoading ? (
+    <>
+      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+      Registering...
+    </>
+  ) : (
+    <>
+      <Hammer className="mr-2 h-5 w-5" />
+      Register Quest
+    </>
+  );
 
   return (
     <div className="relative min-h-screen w-full bg-gradient-to-b from-background to-background/80 text-foreground p-4 sm:p-8 flex justify-center items-start overflow-auto">
@@ -182,17 +194,7 @@ export default function QuestForgePage() {
               </div>
 
               <Button type="submit" disabled={isLoading} size="lg" className="w-full">
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Registering...
-                  </>
-                ) : (
-                  <>
-                    <Hammer className="mr-2 h-5 w-5" />
-                    Register Quest
-                  </>
-                )}
+                {submitButtonContent}
               </Button>
             </form>
           </CardContent>

@@ -187,14 +187,14 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
         </Card>
         <div className="mt-8 text-center">
             <Button onClick={handleCompleteQuest} disabled={isCompleting || !user || !userProfile}>
-                {isCompleting ? (
-                    <>
-                        <Loader2 className="animate-spin" />
-                        Completing...
-                    </>
-                ) : (
-                    "Complete Quest"
-                )}
+              {isCompleting ? (
+                <>
+                  <Loader2 className="animate-spin" />
+                  Completing...
+                </>
+              ) : (
+                "Complete Quest"
+              )}
             </Button>
         </div>
       </main>

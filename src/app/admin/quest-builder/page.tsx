@@ -77,6 +77,26 @@ export default function QuestBuilderPage() {
     }
   };
 
+  const generateButtonContent = isGenerating ? (
+    <>
+      <Loader2 className="animate-spin" /> Generating...
+    </>
+  ) : (
+    <>
+      <Wand2 className="mr-2 h-5 w-5" /> Generate Quest
+    </>
+  );
+
+  const processButtonContent = isProcessing ? (
+    <>
+      <Loader2 className="animate-spin" /> Processing...
+    </>
+  ) : (
+    <>
+      <Bot className="mr-2" /> Process & Register Module
+    </>
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/80">
       <AppHeader />
@@ -112,15 +132,7 @@ export default function QuestBuilderPage() {
                             onChange={(e) => setLearningObjective(e.target.value)}
                         />
                         <Button type="submit" className="w-full" disabled={isGenerating || !learningObjective}>
-                            {isGenerating ? (
-                                <>
-                                    <Loader2 className="animate-spin" /> Generating...
-                                </>
-                            ) : (
-                                <>
-                                    <Wand2 className="mr-2 h-5 w-5" /> Generate Quest
-                                </>
-                            )}
+                            {generateButtonContent}
                         </Button>
                     </form>
                 </CardContent>
@@ -157,15 +169,7 @@ export default function QuestBuilderPage() {
                                 onChange={(e) => setModuleCode(e.target.value)}
                            />
                             <Button className="w-full" onClick={handleProcessModule} disabled={isProcessing || !moduleCode}>
-                                {isProcessing ? (
-                                    <>
-                                        <Loader2 className="animate-spin" /> Processing...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Bot className="mr-2" /> Process & Register Module
-                                    </>
-                                )}
+                                {processButtonContent}
                             </Button>
                         </div>
                     </CardContent>
