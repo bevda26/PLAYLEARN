@@ -1,76 +1,113 @@
 // src/app/leaderboard/page.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { AppHeader } from '@/components/layout/app-header';
 import { Trophy, Loader2 } from 'lucide-react';
 import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import type { UserProfile, UserProgress } from '@/lib/types';
+import type { UserProfile, UserProgress, QuestModule, Achievement } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/auth-context';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { ALL_ACHIEVEMENTS } from '@/lib/achievements';
 
 type LeaderboardEntry = UserProfile & {
   level: number;
   xp: number;
+  rankScore: number;
+  recentAchievements: Achievement[];
 };
+
+const SUBJECTS = ['math', 'science', 'language', 'history'];
 
 export default function LeaderboardPage() {
   const { user } = useAuth();
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [allProgress, setAllProgress] = useState<UserProgress[]>([]);
+  const [allProfiles, setAllProfiles] = useState<{ [id: string]: UserProfile }>({});
+  const [activeTab, setActiveTab] = useState('global');
   const [isLoading, setIsLoading] = useState(true);
 
+  const achievementMap = useMemo(() => new Map(ALL_ACHIEVEMENTS.map(a => [a.id, a])), []);
+
+  // Fetch all data once on component mount
   useEffect(() => {
-    const fetchLeaderboard = async () => {
+    const fetchAllData = async () => {
       setIsLoading(true);
       try {
-        const progressQuery = query(
-          collection(db, 'user-progress'),
-          orderBy('level', 'desc'),
-          orderBy('xp', 'desc'),
-          limit(20)
-        );
+        // Fetch all progress data
+        const progressQuery = query(collection(db, 'user-progress'));
         const progressSnapshot = await getDocs(progressQuery);
         const progressData = progressSnapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as UserProgress) }));
+        setAllProgress(progressData);
 
-        const profileIds = progressData.map(p => p.id);
-        if (profileIds.length === 0) {
-          setLeaderboard([]);
-          setIsLoading(false);
-          return;
-        }
-
+        // Fetch all profile data
         const profilesQuery = query(collection(db, 'user-profiles'));
         const profilesSnapshot = await getDocs(profilesQuery);
         const profilesData: { [id: string]: UserProfile } = {};
         profilesSnapshot.forEach(doc => {
-            profilesData[doc.id] = doc.data() as UserProfile;
+          profilesData[doc.id] = { userId: doc.id, ...doc.data() } as UserProfile;
         });
-        
-        const combinedData = progressData
-          .map(p => {
-            const profile = profilesData[p.id];
-            if (!profile) return null;
-            return {
-              ...profile,
-              level: p.level,
-              xp: p.xp,
-            };
-          })
-          .filter(Boolean) as LeaderboardEntry[];
+        setAllProfiles(profilesData);
 
-        setLeaderboard(combinedData);
       } catch (error) {
-        console.error("Error fetching leaderboard:", error);
+        console.error("Error fetching leaderboard data:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchLeaderboard();
+    fetchAllData();
   }, []);
+
+  // Recalculate leaderboard when tab or data changes
+  useEffect(() => {
+    if (isLoading) return;
+
+    let rankedData: LeaderboardEntry[];
+
+    if (activeTab === 'global') {
+      rankedData = allProgress
+        .map(p => ({ progress: p, profile: allProfiles[p.id] }))
+        .filter(item => item.profile)
+        .sort((a, b) => {
+          if (b.progress.level !== a.progress.level) return b.progress.level - a.progress.level;
+          return b.progress.xp - a.progress.xp;
+        })
+        .slice(0, 20)
+        .map(({ progress, profile }) => ({
+          ...profile,
+          level: progress.level,
+          xp: progress.xp,
+          rankScore: progress.level, // For global, score is level
+          recentAchievements: getRecentAchievements(profile, achievementMap),
+        }));
+    } else {
+      // Subject-specific ranking
+      rankedData = allProgress
+        .map(p => {
+          const questCount = Object.keys(p.questsCompleted).filter(id => id.startsWith(activeTab)).length;
+          return { progress: p, profile: allProfiles[p.id], questCount };
+        })
+        .filter(item => item.profile && item.questCount > 0)
+        .sort((a, b) => b.questCount - a.questCount)
+        .slice(0, 20)
+        .map(({ progress, profile, questCount }) => ({
+          ...profile,
+          level: progress.level,
+          xp: progress.xp,
+          rankScore: questCount,
+          recentAchievements: getRecentAchievements(profile, achievementMap),
+        }));
+    }
+
+    setLeaderboard(rankedData);
+
+  }, [activeTab, allProgress, allProfiles, isLoading, achievementMap]);
 
   const getRankColor = (rank: number) => {
     if (rank === 0) return 'text-yellow-400';
@@ -95,10 +132,19 @@ export default function LeaderboardPage() {
 
         <Card className="bg-card/60 backdrop-blur-md border-primary/20">
           <CardHeader>
-            <CardTitle>Global Rankings</CardTitle>
-            <CardDescription>Top 20 players by Level and Experience Points.</CardDescription>
+            <CardTitle>Rankings</CardTitle>
+            <CardDescription>Top players by global rank or by quests completed in a subject.</CardDescription>
           </CardHeader>
           <CardContent>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-4">
+              <TabsList>
+                <TabsTrigger value="global">Global</TabsTrigger>
+                {SUBJECTS.map(subject => (
+                  <TabsTrigger key={subject} value={subject} className="capitalize">{subject}</TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
+
             {isLoading ? (
               <div className="flex justify-center items-center p-16">
                 <Loader2 className="w-12 h-12 animate-spin text-accent" />
@@ -109,8 +155,8 @@ export default function LeaderboardPage() {
                   <TableRow>
                     <TableHead className="w-[80px] text-center">Rank</TableHead>
                     <TableHead>Player</TableHead>
-                    <TableHead className="text-center">Level</TableHead>
-                    <TableHead className="text-right">XP</TableHead>
+                    <TableHead className="text-center">{activeTab === 'global' ? 'Level' : 'Quests Done'}</TableHead>
+                    <TableHead className="text-right">Recent Feats</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -131,16 +177,50 @@ export default function LeaderboardPage() {
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="font-bold text-xl text-center">{player.level}</TableCell>
-                      <TableCell className="text-right">{player.xp}</TableCell>
+                      <TableCell className="font-bold text-xl text-center">{player.rankScore}</TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          {player.recentAchievements.map(ach => (
+                            <TooltipProvider key={ach.id}>
+                              <Tooltip>
+                                <TooltipTrigger>
+                                  <div className="p-2 rounded-full bg-muted border border-primary/20">
+                                    {ach.id.includes('level') ? '🏆' : ach.id.includes('quest') ? '📜' : '🎖️'}
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p className="font-bold">{ach.name}</p>
+                                  <p>{ach.description}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          ))}
+                        </div>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
+            )}
+            { !isLoading && leaderboard.length === 0 && (
+                <div className="text-center p-8 text-muted-foreground">
+                    <p>No champions have emerged in this category yet.</p>
+                </div>
             )}
           </CardContent>
         </Card>
       </main>
     </div>
   );
+}
+
+function getRecentAchievements(profile: UserProfile, achievementMap: Map<string, Achievement>): Achievement[] {
+  if (!profile.unlockedAchievements) return [];
+  
+  return Object.entries(profile.unlockedAchievements)
+    // @ts-ignore
+    .sort(([, a], [, b]) => b.toMillis() - a.toMillis())
+    .slice(0, 3)
+    .map(([id]) => achievementMap.get(id))
+    .filter(Boolean) as Achievement[];
 }
