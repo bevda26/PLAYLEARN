@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Crown, User, Shield, Award, Backpack, LogOut, Grid, TrendingUp, Trophy, Swords } from 'lucide-react';
+import { Crown, User, Shield, Award, Backpack, LogOut, Grid, TrendingUp, Trophy, Swords, Construction } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { WizardsChamberIcon } from '@/components/icons/wizards-chamber';
 import { useAuth } from '@/contexts/auth-context';
@@ -10,7 +10,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuGroup } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { signOutUser } from '@/lib/auth';
-import { getAchievementById } from '@/lib/achievements';
 import { getItemById, type Item } from '@/lib/items';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useUserProgressStore } from '@/stores/user-progress-store';
@@ -58,10 +57,9 @@ export const InventoryDisplay = ({ inventory }: { inventory: { [itemId: string]:
 }
 
 export const AppHeader = () => {
-  const { user, userProfile, loading } = useAuth();
+  const { user, userProfile, loading, isAdmin } = useAuth();
   const { inventory } = useUserProgressStore();
 
-  const unlockedAchievementIds = userProfile?.unlockedAchievements ? Object.keys(userProfile.unlockedAchievements) : [];
   const inventoryCount = Object.values(inventory).reduce((sum, q) => sum + q, 0);
 
   return (
@@ -99,6 +97,14 @@ export const AppHeader = () => {
               Wizards' Chamber
             </Button>
           </Link>
+          {isAdmin && (
+            <Link href="/admin/quest-builder">
+              <Button variant="ghost" className="text-slate-300 hover:bg-primary/20 hover:text-white">
+                <Construction className="w-4 h-4 mr-2"/>
+                Quest Builder
+              </Button>
+            </Link>
+          )}
         </nav>
         <div className="flex items-center gap-4">
           {loading ? (

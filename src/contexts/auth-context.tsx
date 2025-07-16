@@ -13,18 +13,21 @@ interface AuthContextType {
   user: User | null;
   userProfile: UserProfile | null;
   loading: boolean;
+  isAdmin: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   userProfile: null,
   loading: true,
+  isAdmin: false,
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   // Zustand store actions
   const subscribeToUserProgress = useUserProgressStore(state => state.subscribeToUserProgress);
@@ -34,11 +37,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       setUser(user);
       if (user) {
+        // Check for admin privileges
+        const adminId = process.env.NEXT_PUBLIC_ADMIN_USER_ID;
+        setIsAdmin(!!adminId && user.uid === adminId);
+        
         // When user logs in, subscribe to their progress
         subscribeToUserProgress(user.uid);
       } else {
         // When user logs out, clear their profile and reset progress store
         setUserProfile(null);
+        setIsAdmin(false);
         resetUserProgress();
         setLoading(false);
       }
@@ -83,7 +91,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user, userProfile, loading }}>
+    <AuthContext.Provider value={{ user, userProfile, loading, isAdmin }}>
       {children}
     </AuthContext.Provider>
   );

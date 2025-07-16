@@ -6,7 +6,7 @@ import { AppHeader } from '@/components/layout/app-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Construction, Wand2, Loader2, Sparkles, FileText, Bot, ImageIcon, Code2, Hammer } from 'lucide-react';
+import { Construction, Wand2, Loader2, Sparkles, FileText, Bot, ImageIcon, Code2, Hammer, ShieldAlert } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 import type { ProcessModuleOutput } from '@/ai/flows/module-processor-flow';
@@ -21,9 +21,25 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { QuestModule } from '@/lib/types';
+import { useAuth } from '@/contexts/auth-context';
+import Link from 'next/link';
 
+
+function AdminAccessDenied() {
+    return (
+        <div className="flex flex-col items-center justify-center text-center p-8">
+            <ShieldAlert className="w-24 h-24 text-destructive mb-4" />
+            <h2 className="text-3xl font-headline text-destructive">Access Denied</h2>
+            <p className="text-lg text-foreground/80 mt-2">You do not have the necessary permissions to view this page.</p>
+            <Link href="/" className="mt-6">
+                <Button variant="outline">Return to the Castle</Button>
+            </Link>
+        </div>
+    )
+}
 
 export default function QuestBuilderPage() {
+  const { isAdmin, loading } = useAuth();
   const [learningObjective, setLearningObjective] = useState('');
   const [subject, setSubject] = useState<'math' | 'science' | 'language' | 'history'>('math');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -138,6 +154,25 @@ export default function QuestBuilderPage() {
   const generateImageButtonContent = isGeneratingImage ? <><Loader2 className="animate-spin" /> Generating Image...</> : <><ImageIcon className="mr-2 h-5 w-5" /> Generate Image</>;
   const smithComponentButtonContent = isSmithing ? <><Loader2 className="animate-spin" /> Smithing Code...</> : <><Code2 className="mr-2 h-5 w-5" /> Smith Quest Component</>;
   const processButtonContent = isProcessing ? <><Loader2 className="animate-spin" /> Processing...</> : <><Bot className="mr-2" /> Process & Register Module</>;
+  
+  if (loading) {
+    return (
+        <div className="min-h-screen bg-gradient-to-b from-background to-background/80 flex items-center justify-center">
+            <Loader2 className="w-16 h-16 animate-spin" />
+        </div>
+    )
+  }
+
+  if (!isAdmin) {
+      return (
+        <div className="min-h-screen bg-gradient-to-b from-background to-background/80">
+          <AppHeader />
+          <main className="max-w-4xl mx-auto p-4 sm:p-8">
+            <AdminAccessDenied />
+          </main>
+        </div>
+      )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/80">
