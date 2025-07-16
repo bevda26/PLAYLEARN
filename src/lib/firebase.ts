@@ -1,6 +1,12 @@
 // src/lib/firebase.ts
 import { initializeApp, getApps, getApp, type FirebaseOptions } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { 
+    getFirestore, 
+    initializeFirestore,
+    enableMultiTabIndexedDbPersistence,
+    persistentLocalCache,
+    persistentMultipleTabManager
+} from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig: FirebaseOptions = {
@@ -17,7 +23,23 @@ if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.proj
 }
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const db = getFirestore(app);
+
+// Initialize Firestore with persistence settings, but don't export 'db' directly yet.
+const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+});
+
 const auth = getAuth(app);
 
-export { app, db, auth };
+// A promise that resolves when persistence is enabled.
+const persistenceEnabled = enableMultiTabIndexedDbPersistence(db).then(() => true).catch(err => {
+    if (err.code == 'failed-precondition') {
+        console.warn("Firestore persistence failed (failed-precondition). This happens when multiple tabs are open. Data will not be synced offline in this tab.");
+    } else if (err.code == 'unimplemented') {
+        console.warn("Firestore persistence is not available in this browser. Data will not be synced offline.");
+    }
+    return false; // Still resolve so the app doesn't hang.
+});
+
+
+export { app, db, auth, persistenceEnabled };

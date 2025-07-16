@@ -3,7 +3,7 @@
 
 import React, { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { onAuthStateChanged, type User } from 'firebase/auth';
-import { auth, db } from '@/lib/firebase';
+import { auth, db, persistenceEnabled } from '@/lib/firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { UserProfile } from '@/lib/types';
@@ -28,14 +28,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  
+  // Combine all loading states into one
   const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [isProfileLoading, setIsProfileLoading] = useState(true);
-
+  const [isPersistenceLoading, setIsPersistenceLoading] = useState(true);
 
   const subscribeToUserProgress = useUserProgressStore(state => state.subscribeToUserProgress);
   const resetUserProgress = useUserProgressStore(state => state.resetProgress);
 
   useEffect(() => {
+    // Wait for persistence to be enabled before doing anything else
+    persistenceEnabled.then(() => {
+      setIsPersistenceLoading(false);
+    });
+
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setIsAuthLoading(false);
@@ -47,7 +54,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUserProfile(null);
         setIsAdmin(false);
         resetUserProgress();
-        setIsProfileLoading(false); 
+        setIsProfileLoading(false); // No profile to load if no user
       }
     });
 
@@ -55,8 +62,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [subscribeToUserProgress, resetUserProgress]);
 
   useEffect(() => {
-    if (!user) {
-      setIsProfileLoading(false);
+    if (!user || isPersistenceLoading) {
+      // Don't fetch profile if no user or if persistence isn't ready
+      if (!user) setIsProfileLoading(false);
       return;
     }
 
@@ -76,11 +84,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
 
     return () => unsubscribeProfile();
-  }, [user]);
+  }, [user, isPersistenceLoading]);
 
   useEffect(() => {
-    setLoading(isAuthLoading || isProfileLoading);
-  }, [isAuthLoading, isProfileLoading]);
+    // The overall loading state is true if any of the individual states are true
+    setLoading(isAuthLoading || isProfileLoading || isPersistenceLoading);
+  }, [isAuthLoading, isProfileLoading, isPersistenceLoading]);
 
 
   if (loading) {
