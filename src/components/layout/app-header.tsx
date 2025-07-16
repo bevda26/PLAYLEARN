@@ -17,7 +17,7 @@ import { useUserProgressStore } from '@/stores/user-progress-store';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-const InventoryDisplay = ({ inventory }: { inventory: { [itemId: string]: number } }) => {
+export const InventoryDisplay = ({ inventory }: { inventory: { [itemId: string]: number } }) => {
   const inventoryItems = Object.entries(inventory)
     .map(([id, quantity]) => {
       const item = getItemById(id);
@@ -128,30 +128,12 @@ export const AppHeader = () => {
                   </DialogTrigger>
                   
                   <DropdownMenuGroup>
-                    <DropdownMenuLabel className="text-xs text-muted-foreground">Achievements</DropdownMenuLabel>
-                    <TooltipProvider>
-                      {unlockedAchievementIds.length > 0 ? (
-                        unlockedAchievementIds.map(id => {
-                          const achievement = getAchievementById(id);
-                          if (!achievement) return null;
-                          return (
-                            <Tooltip key={id}>
-                              <TooltipTrigger asChild>
-                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                  <Award className="mr-2 h-4 w-4 text-accent" />
-                                  <span>{achievement.name}</span>
-                                </DropdownMenuItem>
-                              </TooltipTrigger>
-                              <TooltipContent side="left">
-                                <p>{achievement.description}</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          );
-                        })
-                      ) : (
-                        <DropdownMenuItem disabled>No achievements yet</DropdownMenuItem>
-                      )}
-                    </TooltipProvider>
+                     <Link href="/dashboard/achievements">
+                        <DropdownMenuItem>
+                            <Award className="mr-2 h-4 w-4" />
+                            <span>Achievements</span>
+                        </DropdownMenuItem>
+                    </Link>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={signOutUser}>

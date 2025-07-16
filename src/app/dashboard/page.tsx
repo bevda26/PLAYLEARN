@@ -6,12 +6,15 @@ import { useUserProgressStore } from '@/stores/user-progress-store';
 import { AppHeader } from '@/components/layout/app-header';
 import { AnalyticsCard } from '@/components/dashboard/analytics-card';
 import { ProgressChart } from '@/components/dashboard/progress-chart';
-import { Award, BookOpen, Star, Swords, TrendingUp } from 'lucide-react';
+import { Award, BookOpen, Star, Swords, TrendingUp, Backpack, Shield } from 'lucide-react';
 import Link from 'next/link';
+import { MagicalButton } from '@/components/ui/magical-button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
+import { InventoryDisplay } from '@/components/layout/app-header';
 
 export default function DashboardPage() {
   const { user, userProfile } = useAuth();
-  const { level, xp, questsCompleted } = useUserProgressStore();
+  const { level, xp, questsCompleted, inventory } = useUserProgressStore();
 
   if (!user || !userProfile) {
     return (
@@ -26,6 +29,7 @@ export default function DashboardPage() {
   }
 
   const totalQuestsCompleted = Object.keys(questsCompleted).length;
+  const inventoryCount = Object.values(inventory).reduce((sum, q) => sum + q, 0);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/80">
@@ -41,7 +45,7 @@ export default function DashboardPage() {
           </p>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-10">
           <AnalyticsCard
             title="Current Level"
             value={level}
@@ -55,24 +59,57 @@ export default function DashboardPage() {
             description="Experience points earned."
           />
           <AnalyticsCard
-            title="Unique Quests Completed"
+            title="Quests Completed"
             value={totalQuestsCompleted}
             icon={Swords}
             description="Total unique quests conquered."
           />
-           <AnalyticsCard
+          <AnalyticsCard
             title="Current Title"
             value={userProfile.title}
             icon={BookOpen}
             description="Your official rank."
           />
+           <Dialog>
+              <DialogTrigger asChild>
+                <div className="cursor-pointer">
+                    <AnalyticsCard
+                        title="Items Collected"
+                        value={inventoryCount}
+                        icon={Backpack}
+                        description="View your backpack."
+                    />
+                </div>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2"><Backpack /> Your Backpack</DialogTitle>
+                  <DialogDescription>
+                    All the items you have collected on your adventures.
+                  </DialogDescription>
+                </DialogHeader>
+                <InventoryDisplay inventory={inventory} />
+              </DialogContent>
+            </Dialog>
         </div>
 
-        <div className="bg-card/50 border border-primary/20 rounded-lg p-6 backdrop-blur-sm shadow-2xl shadow-primary/10">
-            <h2 className="text-3xl font-headline text-accent mb-4">Quest Progress by Subject</h2>
-            <p className="text-muted-foreground mb-6">Here's a breakdown of the realms you've explored the most.</p>
-            <div className="h-[400px]">
-                <ProgressChart completedQuests={questsCompleted} />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 bg-card/50 border border-primary/20 rounded-lg p-6 backdrop-blur-sm shadow-2xl shadow-primary/10">
+                <h2 className="text-3xl font-headline text-accent mb-4">Quest Progress by Subject</h2>
+                <p className="text-muted-foreground mb-6">Here's a breakdown of the realms you've explored the most.</p>
+                <div className="h-[400px]">
+                    <ProgressChart completedQuests={questsCompleted} />
+                </div>
+            </div>
+            <div className="bg-card/50 border border-primary/20 rounded-lg p-6 backdrop-blur-sm shadow-2xl shadow-primary/10 flex flex-col justify-center items-center text-center">
+                 <Shield className="w-20 h-20 text-accent mb-4" />
+                <h2 className="text-3xl font-headline text-accent mb-4">View Your Achievements</h2>
+                <p className="text-muted-foreground mb-6">See all the great milestones you've accomplished on your journey.</p>
+                 <MagicalButton asChild>
+                    <Link href="/dashboard/achievements">
+                        Go to Hall of Fame
+                    </Link>
+                </MagicalButton>
             </div>
         </div>
       </main>
