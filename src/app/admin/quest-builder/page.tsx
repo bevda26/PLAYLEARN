@@ -7,18 +7,24 @@ import { AppHeader } from '@/components/layout/app-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Construction, Wand2, Loader2, Sparkles, FileText, Bot } from 'lucide-react';
+import { Construction, Wand2, Loader2, Sparkles, FileText, Bot, ImageIcon } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 import type { ProcessModuleOutput } from '@/ai/flows/module-processor-flow';
 import { processModule } from '@/ai/flows/module-processor-flow';
 import { generateQuest, type GeneratedQuest } from '@/ai/flows/quest-generation-flow';
+import { generateQuestImage } from '@/ai/flows/generate-quest-image-flow';
 import { registerQuestModule } from '@/lib/auto-integration/route-generator';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function QuestBuilderPage() {
   const [learningObjective, setLearningObjective] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedQuest, setGeneratedQuest] = useState<GeneratedQuest | null>(null);
+
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
 
   const [moduleCode, setModuleCode] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -31,6 +37,7 @@ export default function QuestBuilderPage() {
     if (!learningObjective) return;
     setIsGenerating(true);
     setGeneratedQuest(null);
+    setGeneratedImageUrl(null);
     try {
       const result = await generateQuest({ learningObjective });
       setGeneratedQuest(result);
@@ -46,6 +53,28 @@ export default function QuestBuilderPage() {
       });
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const handleGenerateImage = async () => {
+    if (!generatedQuest) return;
+    setIsGeneratingImage(true);
+    setGeneratedImageUrl(null);
+    try {
+      const result = await generateQuestImage({ questDescription: generatedQuest.description });
+      setGeneratedImageUrl(result.imageUrl);
+      toast({
+        title: "Image Generated!",
+        description: "The AI has created a visual for your quest.",
+      });
+    } catch (error: any) {
+       toast({
+        title: "Image Generation Failed",
+        description: error.message || "Could not generate image.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGeneratingImage(false);
     }
   };
 
@@ -84,6 +113,16 @@ export default function QuestBuilderPage() {
   ) : (
     <>
       <Wand2 className="mr-2 h-5 w-5" /> Generate Quest
+    </>
+  );
+
+  const generateImageButtonContent = isGeneratingImage ? (
+    <>
+      <Loader2 className="animate-spin" /> Generating Image...
+    </>
+  ) : (
+    <>
+      <ImageIcon className="mr-2 h-5 w-5" /> Generate Image
     </>
   );
 
@@ -137,13 +176,36 @@ export default function QuestBuilderPage() {
                     </form>
                 </CardContent>
                  {generatedQuest && (
-                    <CardFooter className="mt-4">
+                    <CardFooter className="mt-4 flex-col items-start gap-4">
                         <div className="w-full p-4 bg-primary/10 rounded-lg border border-primary/30">
                             <h4 className="font-bold text-lg text-accent mb-2">Generated Quest Outline:</h4>
                             <pre className="text-xs whitespace-pre-wrap bg-background/50 p-2 rounded">
                                 {JSON.stringify(generatedQuest, null, 2)}
                             </pre>
+                             <Button onClick={handleGenerateImage} className="w-full mt-4" disabled={isGeneratingImage}>
+                                {generateImageButtonContent}
+                            </Button>
                         </div>
+
+                        {isGeneratingImage && (
+                          <div className="w-full space-y-3">
+                            <h4 className="font-bold text-lg text-accent">Generating Quest Image...</h4>
+                            <Skeleton className="aspect-video w-full" />
+                          </div>
+                        )}
+
+                        {generatedImageUrl && (
+                           <div className="w-full p-4 bg-primary/10 rounded-lg border border-primary/30">
+                                <h4 className="font-bold text-lg text-accent mb-2">Generated Quest Image:</h4>
+                                <Image
+                                    src={generatedImageUrl}
+                                    alt="Generated quest image"
+                                    width={500}
+                                    height={281}
+                                    className="rounded-md object-cover aspect-video"
+                                />
+                           </div>
+                        )}
                     </CardFooter>
                 )}
             </Card>

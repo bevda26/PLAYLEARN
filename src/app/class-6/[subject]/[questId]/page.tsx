@@ -6,7 +6,7 @@ import { RPGInterface } from '@/components/quest/rpg-interface';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { ArrowLeft, Clock, Award, Loader2, AlertTriangle, Gift, Lock, Swords } from 'lucide-react';
+import { ArrowLeft, Clock, Award, Loader2, AlertTriangle, Gift, Lock, Swords, Volume2 } from 'lucide-react';
 import type { QuestModule } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import type { NextPage } from 'next';
@@ -20,6 +20,7 @@ import dynamic from 'next/dynamic';
 import { useDevEvents } from '@/hooks/use-dev-events';
 import { useUserProgressStore } from '@/stores/user-progress-store';
 import { cn } from '@/lib/utils';
+import { generateQuestNarration } from '@/ai/flows/generate-quest-narration-flow';
 
 function QuestNotFound() {
     return (
@@ -99,6 +100,9 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
   const [loading, setLoading] = useState(true);
   const [isCompleting, setIsCompleting] = useState(false);
 
+  const [isNarrating, setIsNarrating] = useState(false);
+  const [narrationUrl, setNarrationUrl] = useState<string | null>(null);
+
   const fetchQuest = useCallback(async () => {
     setLoading(true);
     const questRef = doc(db, 'quest-modules', questId);
@@ -175,6 +179,24 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
       setIsCompleting(false);
     }
   };
+
+  const handleGenerateNarration = async () => {
+    if (!quest) return;
+    setIsNarrating(true);
+    setNarrationUrl(null);
+    try {
+      const result = await generateQuestNarration({ textToNarrate: quest.metadata.description });
+      setNarrationUrl(result.audioUrl);
+    } catch (error: any) {
+       toast({
+        title: "Narration Failed",
+        description: error.message || "Could not generate audio narration.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsNarrating(false);
+    }
+  };
   
   const QuestContentComponent = useMemo(() => {
     if (!quest || !quest.componentPath) return () => <QuestModuleError />;
@@ -207,6 +229,18 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
     </>
   ) : (
     "Complete Quest"
+  );
+
+  const narrateButtonContent = isNarrating ? (
+    <>
+      <Loader2 className="animate-spin" />
+      Narrating...
+    </>
+  ) : (
+    <>
+      <Volume2 className="mr-2" />
+      Narrate Description
+    </>
   );
 
   const isBossQuest = quest.questType === 'boss';
@@ -264,6 +298,17 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
             </div>
           </CardHeader>
           <CardContent className="p-6 md:p-8">
+            <div className="mb-6 space-y-4">
+              <Button variant="secondary" onClick={handleGenerateNarration} disabled={isNarrating}>
+                {narrateButtonContent}
+              </Button>
+              {narrationUrl && (
+                <audio controls className="w-full">
+                  <source src={narrationUrl} type="audio/wav" />
+                  Your browser does not support the audio element.
+                </audio>
+              )}
+            </div>
             <QuestContentComponent />
           </CardContent>
         </Card>
