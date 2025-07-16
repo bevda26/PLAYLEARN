@@ -5,7 +5,7 @@ import { AuthProvider } from '@/contexts/auth-context';
 import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
-  title: 'PlayLearn.tech - Epic RPG Learning Platform',
+  title: 'QuestLearn - Epic RPG Learning Platform',
   description: 'A revolutionary educational RPG platform where learning is an adventure.',
 };
 

@@ -67,3 +67,11 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* For Parallax Scrolling */
+.perspective-\[1px\] {
+    perspective: 1px;
+}
+.preserve-3d {
+    transform-style: preserve-3d;
+}

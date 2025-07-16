@@ -57,12 +57,12 @@ export default async function SubjectSelectionPage() {
       
       <AppHeader />
 
-      <main className="relative z-10 flex flex-col items-center justify-center text-center text-parchment-white flex-grow px-4">
+      <main className="relative z-10 flex flex-col items-center justify-center text-center text-white flex-grow px-4">
         
         <header className="mb-12 text-center relative w-full max-w-5xl mx-auto">
-             <Link href="/" className="absolute top-0 left-0 flex items-center gap-2 text-accent hover:underline transition-all hover:text-mystic-gold">
+             <Link href="/" className="absolute top-0 left-0 flex items-center gap-2 text-accent hover:underline transition-all hover:text-yellow-400">
                 <ArrowLeft size={20} />
-                Back to Castle
+                Back to Castle Gates
             </Link>
             <h1 className="text-5xl md:text-7xl font-bold font-headline text-accent drop-shadow-[0_4px_4px_rgba(0,0,0,0.7)]">
                 The Sixth Trial
