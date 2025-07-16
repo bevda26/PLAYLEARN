@@ -12,6 +12,7 @@ import { signInWithGoogle, signUpWithEmailAndPassword, signInWithEmailAndPasswor
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import { Crown } from 'lucide-react';
+import Link from 'next/link';
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid" viewBox="0 0 256 262" {...props}>
@@ -72,8 +73,7 @@ export default function LoginPage() {
                 src="https://placehold.co/1920x1080/000000/FFFFFF.png?text=+"
                 alt="Fantasy background"
                 fill
-                objectFit="cover"
-                className="absolute inset-0 z-0 opacity-10"
+                className="object-cover absolute inset-0 z-0 opacity-10"
                 data-ai-hint="fantasy library scrolls"
             />
             <Card className="w-full max-w-md z-10 bg-card/60 backdrop-blur-lg border-primary/20 shadow-2xl shadow-primary/10">
