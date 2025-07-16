@@ -1,13 +1,11 @@
 // src/lib/firebase.ts
 import { initializeApp, getApps, getApp, type FirebaseOptions } from "firebase/app";
 import { 
-    getFirestore, 
-    initializeFirestore,
+    getFirestore,
     enableMultiTabIndexedDbPersistence,
-    persistentLocalCache,
-    persistentMultipleTabManager
+    Firestore
 } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { getAuth, Auth } from "firebase/auth";
 
 const firebaseConfig: FirebaseOptions = {
   apiKey: "AIzaSyATWWAiPE6fabMRwSb6UiZbON1o5kfzMaE",
@@ -18,29 +16,33 @@ const firebaseConfig: FirebaseOptions = {
   appId: "1:136336171335:web:883d5de4d230cde3606c62"
 };
 
-if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.projectId || firebaseConfig.apiKey.startsWith("YOUR_")) {
-  console.error('Firebase config is not set. Please add your Firebase credentials to your environment.');
-}
-
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
 
-// This promise will resolve when persistence is enabled, or immediately if on the server.
-export let persistenceEnabled: Promise<void>;
+// Firestore instance, will be initialized differently on client vs server
+let db: Firestore;
+
+// A promise that resolves when persistence is enabled on the client.
+// On the server, it resolves immediately.
+let persistenceEnabled: Promise<void>;
 
 if (typeof window !== 'undefined') {
-  // Client-side execution
+  // We are on the client
+  db = getFirestore(app);
   persistenceEnabled = enableMultiTabIndexedDbPersistence(db).catch((err) => {
     if (err.code == 'failed-precondition') {
-        console.warn("Firestore persistence failed (failed-precondition). This happens when multiple tabs are open. Data will not be synced offline in this tab.");
+        console.warn("Firestore persistence failed (failed-precondition). This can happen with multiple tabs open. Data will not be synced offline in this tab.");
     } else if (err.code == 'unimplemented') {
         console.warn("Firestore persistence is not available in this browser. Data will not be synced offline.");
     }
+    // We can still continue with a non-persistent Firestore instance.
+    return Promise.resolve();
   });
 } else {
-  // Server-side execution - no persistence
+  // We are on the server
+  db = getFirestore(app);
   persistenceEnabled = Promise.resolve();
 }
 
-export { app, db, auth };
+
+export { app, db, auth, persistenceEnabled };

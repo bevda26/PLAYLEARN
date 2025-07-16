@@ -26,70 +26,62 @@ const AuthContext = createContext<AuthContextType>({
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
+  
+  // This state now tracks the overall readiness of Firebase + Auth + Profile
+  const [loading, setLoading] = useState(true); 
   const [isAdmin, setIsAdmin] = useState(false);
   
-  // Combine all loading states into one
-  const [isAuthLoading, setIsAuthLoading] = useState(true);
-  const [isProfileLoading, setIsProfileLoading] = useState(true);
-  const [isPersistenceLoading, setIsPersistenceLoading] = useState(true);
-
   const subscribeToUserProgress = useUserProgressStore(state => state.subscribeToUserProgress);
   const resetUserProgress = useUserProgressStore(state => state.resetProgress);
 
   useEffect(() => {
-    // Wait for persistence to be enabled before doing anything else
-    persistenceEnabled.then(() => {
-      setIsPersistenceLoading(false);
+    // This function will run once persistence is enabled and auth state is known.
+    const initializeApp = async () => {
+      // 1. Wait for persistence to be settled.
+      await persistenceEnabled;
+
+      // 2. Subscribe to auth changes.
+      const unsubscribeAuth = onAuthStateChanged(auth, (authUser) => {
+        setUser(authUser);
+        
+        if (authUser) {
+          const adminId = process.env.NEXT_PUBLIC_ADMIN_USER_ID;
+          setIsAdmin(!!adminId && authUser.uid === adminId);
+          
+          // Subscribe to user progress and profile stores
+          subscribeToUserProgress(authUser.uid);
+          const unsubscribeProfile = onSnapshot(doc(db, 'user-profiles', authUser.uid), (docSnap) => {
+            setUserProfile(docSnap.exists() ? (docSnap.data() as UserProfile) : null);
+            setLoading(false); // We are ready once the profile is loaded (or confirmed non-existent)
+          });
+
+          // Return a cleanup function for the profile listener
+          return () => unsubscribeProfile();
+        } else {
+          // No user, so reset stores and finish loading.
+          setIsAdmin(false);
+          setUserProfile(null);
+          resetUserProgress();
+          setLoading(false); // Ready to show the app in a logged-out state
+        }
+      });
+
+      // Return the auth cleanup function
+      return unsubscribeAuth;
+    };
+
+    let unsubscribe: (() => void) | undefined;
+    initializeApp().then(unsub => {
+      unsubscribe = unsub;
     });
 
-    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setIsAuthLoading(false);
-      if (user) {
-        const adminId = process.env.NEXT_PUBLIC_ADMIN_USER_ID;
-        setIsAdmin(!!adminId && user.uid === adminId);
-        subscribeToUserProgress(user.uid);
-      } else {
-        setUserProfile(null);
-        setIsAdmin(false);
-        resetUserProgress();
-        setIsProfileLoading(false); // No profile to load if no user
+    // Cleanup on component unmount
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
       }
-    });
-
-    return () => unsubscribeAuth();
+    };
   }, [subscribeToUserProgress, resetUserProgress]);
-
-  useEffect(() => {
-    if (!user || isPersistenceLoading) {
-      // Don't fetch profile if no user or if persistence isn't ready
-      if (!user) setIsProfileLoading(false);
-      return;
-    }
-
-    setIsProfileLoading(true);
-
-    const userProfileRef = doc(db, 'user-profiles', user.uid);
-    const unsubscribeProfile = onSnapshot(userProfileRef, (docSnap) => {
-      if (docSnap.exists()) {
-        setUserProfile(docSnap.data() as UserProfile);
-      } else {
-        setUserProfile(null); 
-      }
-      setIsProfileLoading(false); 
-    }, (error) => {
-        console.error("Error fetching user profile:", error);
-        setIsProfileLoading(false);
-    });
-
-    return () => unsubscribeProfile();
-  }, [user, isPersistenceLoading]);
-
-  useEffect(() => {
-    // The overall loading state is true if any of the individual states are true
-    setLoading(isAuthLoading || isProfileLoading || isPersistenceLoading);
-  }, [isAuthLoading, isProfileLoading, isPersistenceLoading]);
 
 
   if (loading) {
