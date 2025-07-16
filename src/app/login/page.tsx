@@ -71,7 +71,7 @@ export default function LoginPage() {
             <Image
                 src="https://placehold.co/1920x1080/000000/FFFFFF.png?text=+"
                 alt="Fantasy background"
-                layout="fill"
+                fill
                 objectFit="cover"
                 className="absolute inset-0 z-0 opacity-10"
                 data-ai-hint="fantasy library scrolls"

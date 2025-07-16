@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Crown, BookOpen, ToyBrick, User, Shield, Award, Backpack, LogOut, Grid, TrendingUp, Trophy, Swords } from 'lucide-react';
+import { Crown, User, Shield, Award, Backpack, LogOut, Grid, TrendingUp, Trophy, Swords } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { WizardsChamberIcon } from '@/components/icons/wizards-chamber';
 import { useAuth } from '@/contexts/auth-context';
@@ -87,10 +87,6 @@ export const AppHeader = () => {
               Leaderboard
             </Button>
           </Link>
-          <Button variant="ghost" className="text-slate-300 hover:bg-primary/20 hover:text-white">
-            <ToyBrick className="w-4 h-4 mr-2"/>
-            Training Grounds
-          </Button>
            <Link href="/guilds">
              <Button variant="ghost" className="text-slate-300 hover:bg-primary/20 hover:text-white">
               <Swords className="w-4 h-4 mr-2"/>
@@ -112,7 +108,7 @@ export const AppHeader = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Avatar className="cursor-pointer">
-                    <AvatarImage src={userProfile.avatar} />
+                    <AvatarImage src={userProfile.avatar} unoptimized/>
                     <AvatarFallback>{userProfile.displayName?.[0].toUpperCase()}</AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
@@ -120,7 +116,15 @@ export const AppHeader = () => {
                   <DropdownMenuLabel>{userProfile.displayName}</DropdownMenuLabel>
                   <DropdownMenuLabel className="text-sm font-normal text-muted-foreground -mt-2">Title: {userProfile.title}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-
+                  <DropdownMenuGroup>
+                    <Link href="/dashboard/profile">
+                        <DropdownMenuItem>
+                            <User className="mr-2 h-4 w-4" />
+                            <span>Edit Profile</span>
+                        </DropdownMenuItem>
+                    </Link>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
                   <DialogTrigger asChild>
                     <DropdownMenuItem>
                       <>

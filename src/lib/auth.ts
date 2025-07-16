@@ -10,7 +10,7 @@ import {
   type User
 } from 'firebase/auth';
 import { app, db, auth } from './firebase'; 
-import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
+import { doc, setDoc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 
 // Function to create user documents if they don't exist
 const createUserDocuments = async (user: User) => {
@@ -24,7 +24,7 @@ const createUserDocuments = async (user: User) => {
         userId: user.uid,
         email: user.email,
         displayName: user.displayName || 'New Adventurer',
-        avatar: user.photoURL || `https://placehold.co/128x128/5534A5/FFFFFF.png?text=${(user.email || 'A')[0].toUpperCase()}`,
+        avatar: user.photoURL || `https://api.dicebear.com/8.x/adventurer/svg?seed=${user.uid}`,
         title: 'Novice Learner',
         unlockedAchievements: {},
         createdAt: serverTimestamp(),
@@ -98,3 +98,13 @@ export const signOutUser = async () => {
 export const onAuth = (callback: (user: User | null) => void) => {
   return onAuthStateChanged(auth, callback);
 };
+
+export async function updateUserProfile(userId: string, data: { displayName?: string; avatar?: string }) {
+    const profileRef = doc(db, 'user-profiles', userId);
+    try {
+        await updateDoc(profileRef, data);
+    } catch (error) {
+        console.error("Error updating user profile:", error);
+        throw error;
+    }
+}

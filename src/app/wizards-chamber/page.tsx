@@ -1,15 +1,27 @@
 // src/app/wizards-chamber/page.tsx
 'use client';
 
+import { useTheme } from 'next-themes';
 import { AppHeader } from '@/components/layout/app-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { WizardsChamberIcon, Moon, Sun } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export default function WizardsChamberPage() {
-  // In a real implementation, this would come from a theme context
-  const currentTheme = 'dark';
+  const { theme, setTheme, systemTheme } = useTheme();
+  // We need to wait for the component to mount to know the current theme.
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) {
+    // Return a placeholder or skeleton while waiting for mount
+    return null;
+  }
+  
+  const currentTheme = theme === 'system' ? systemTheme : theme;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/80">
@@ -22,7 +34,7 @@ export default function WizardsChamberPage() {
           </h1>
           <p className="text-lg text-foreground/80 mt-2">
             Configure the mystical arts and settings of your realm.
-          p>
+          </p>
         </header>
 
         <Card className="bg-card/50 backdrop-blur-sm border-primary/20">
@@ -35,12 +47,12 @@ export default function WizardsChamberPage() {
           <CardContent>
             <div className="space-y-4">
               <Label className="text-lg">Theme</Label>
-              <RadioGroup defaultValue={currentTheme} className="grid grid-cols-2 gap-4">
+              <RadioGroup defaultValue={currentTheme} onValueChange={setTheme} className="grid grid-cols-2 gap-4">
                 <div>
                   <RadioGroupItem value="light" id="light" className="peer sr-only" />
                   <Label
                     htmlFor="light"
-                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
                   >
                     <Sun className="mb-3 h-6 w-6" />
                     Light
@@ -50,7 +62,7 @@ export default function WizardsChamberPage() {
                   <RadioGroupItem value="dark" id="dark" className="peer sr-only" />
                   <Label
                     htmlFor="dark"
-                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
                   >
                     <Moon className="mb-3 h-6 w-6" />
                     Dark
