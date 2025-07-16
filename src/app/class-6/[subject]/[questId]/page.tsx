@@ -6,7 +6,7 @@ import { RPGInterface } from '@/components/quest/rpg-interface';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { ArrowLeft, Clock, Award, Loader2, AlertTriangle, Gift } from 'lucide-react';
+import { ArrowLeft, Clock, Award, Loader2, AlertTriangle, Gift, Lock } from 'lucide-react';
 import type { QuestModule } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import type { NextPage } from 'next';
@@ -18,6 +18,7 @@ import { completeQuest } from '@/lib/quests';
 import { useToast } from '@/hooks/use-toast';
 import dynamic from 'next/dynamic';
 import { useDevEvents } from '@/hooks/use-dev-events';
+import { useUserProgressStore } from '@/stores/user-progress-store';
 
 function QuestNotFound() {
     return (
@@ -67,6 +68,21 @@ function QuestModuleError() {
     )
 }
 
+function QuestLocked({ quest }: { quest: QuestModule }) {
+    const requiredQuests = quest.metadata.unlockRequirements?.join(', ') || 'previous quests';
+    return (
+        <div className="min-h-screen flex flex-col items-center justify-center text-center p-4 bg-gradient-to-b from-background to-background/80">
+            <Lock className="w-24 h-24 text-accent mb-8" />
+            <h1 className="font-headline text-5xl text-accent mb-4">Quest Locked</h1>
+            <p className="text-xl text-foreground/80 mb-8">You must prove your worth before undertaking this challenge. Complete {requiredQuests} to unlock.</p>
+            <Link href={`/class-6/${quest.subject}`} className="flex items-center gap-2 text-accent hover:underline">
+                <ArrowLeft size={20} />
+                Return to the {quest.subject.charAt(0).toUpperCase() + quest.subject.slice(1)} Kingdom
+            </Link>
+        </div>
+    )
+}
+
 
 type QuestPlayerPageProps = {
   params: { subject: string, questId: string };
@@ -75,6 +91,7 @@ type QuestPlayerPageProps = {
 const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
   const { questId } = params;
   const { user, userProfile } = useAuth();
+  const { questsCompleted } = useUserProgressStore();
   const { toast } = useToast();
 
   const [quest, setQuest] = useState<QuestModule | null>(null);
@@ -162,6 +179,13 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
   
   if (!quest) {
     return <QuestNotFound />;
+  }
+
+  const completedQuestIds = Object.keys(questsCompleted);
+  const isLocked = quest.metadata?.unlockRequirements?.some(reqId => !completedQuestIds.includes(reqId)) ?? false;
+
+  if (isLocked) {
+      return <QuestLocked quest={quest} />;
   }
   
   const completeButtonContent = isCompleting ? (

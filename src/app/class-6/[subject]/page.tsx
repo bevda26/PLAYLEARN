@@ -11,6 +11,7 @@ import { db } from '@/lib/firebase';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import type { QuestModule } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useUserProgressStore } from '@/stores/user-progress-store';
 
 
 type QuestDiscoveryPageProps = {
@@ -23,6 +24,7 @@ const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params }) => {
   const [availableQuests, setAvailableQuests] = useState<QuestModule[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [recommendedQuestIds, setRecommendedQuestIds] = useState<string[]>([]);
+  const { questsCompleted } = useUserProgressStore();
   
   useEffect(() => {
     const fetchQuests = async () => {
@@ -69,6 +71,8 @@ const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params }) => {
     )
   }
 
+  const completedQuestIds = Object.keys(questsCompleted);
+
   return (
     <div className="min-h-screen w-full p-4 sm:p-8" style={{ background: `linear-gradient(to bottom, ${theme.from}, ${theme.to})` }}>
       <header className="mb-12 text-center relative">
@@ -94,18 +98,23 @@ const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params }) => {
                 <Skeleton className="h-[140px] w-full rounded-xl bg-primary/20" />
               </>
             ) : (
-              availableQuests.map(quest => (
-                  <QuestCard
-                    key={quest.id}
-                    id={quest.id}
-                    subject={`class-6/${quest.subject}`}
-                    title={quest.title}
-                    difficulty={quest.difficulty}
-                    questType={quest.questType}
-                    xpReward={quest.metadata.xpReward}
-                    isRecommended={recommendedQuestIds.includes(quest.id)}
-                  />
-              ))
+              availableQuests.map(quest => {
+                  const isLocked = quest.metadata?.unlockRequirements?.some(reqId => !completedQuestIds.includes(reqId)) ?? false;
+
+                  return (
+                    <QuestCard
+                        key={quest.id}
+                        id={quest.id}
+                        subject={`class-6/${quest.subject}`}
+                        title={quest.title}
+                        difficulty={quest.difficulty}
+                        questType={quest.questType}
+                        xpReward={quest.metadata.xpReward}
+                        isRecommended={recommendedQuestIds.includes(quest.id)}
+                        isLocked={isLocked}
+                    />
+                  )
+              })
             )}
             </div>
         </div>
