@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Crown, User, Shield, Award, Backpack, LogOut, Grid, TrendingUp, Trophy, Swords, Construction } from 'lucide-react';
+import { Crown, User, Shield, Award, Backpack, LogOut, Castle, Map, Settings, Trophy, Swords, Construction, BookMarked, BrainCircuit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { WizardsChamberIcon } from '@/components/icons/wizards-chamber';
 import { useAuth } from '@/contexts/auth-context';
@@ -15,8 +15,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useUserProgressStore } from '@/stores/user-progress-store';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { BarChart } from 'lucide-react';
 
 export const InventoryDisplay = ({ inventory }: { inventory: { [itemId: string]: number } }) => {
   const inventoryItems = Object.entries(inventory)
@@ -62,19 +63,28 @@ export const AppHeader = () => {
   const { user, userProfile, loading, isAdmin } = useAuth();
   const { inventory } = useUserProgressStore();
   const pathname = usePathname();
+  const router = useRouter();
 
   const inventoryCount = Object.values(inventory).reduce((sum, q) => sum + q, 0);
 
-  const navLinks = [
-    { href: '/dashboard', label: 'Dashboard', icon: TrendingUp },
-    { href: '/leaderboard', label: 'Leaderboard', icon: Trophy },
-    { href: '/guilds', label: 'Guilds', icon: Swords },
-    { href: '/the-sixth-trial', label: 'The Sixth Trial', icon: Grid },
-    { href: '/wizards-chamber', label: `Wizard's Chamber`, icon: WizardsChamberIcon },
+  const primaryNav = [
+    { name: "Castle Home", href: "/", icon: Castle },
+    { name: "Quest Kingdoms", href: "/the-sixth-trial", icon: Map },
+    { name: "Dashboard", href: "/dashboard", icon: BarChart },
+    { name: "Leaderboard", href: "/leaderboard", icon: Trophy },
+    { name: "Guilds", href: "/guilds", icon: Swords },
+    { name: "Settings", href: "/wizards-chamber", icon: Settings },
+  ];
+
+  const userMenu = [
+      { name: "Profile", href: "/dashboard/profile", icon: User },
+      { name: "Achievements", href: "/dashboard/achievements", icon: Award },
+      { name: "Quest Journal", href: "/dashboard/journal", icon: BookMarked },
+      { name: "Skills", href: "/dashboard/skills", icon: BrainCircuit },
   ];
 
   if (isAdmin) {
-    navLinks.push({ href: '/admin/quest-builder', label: 'Quest Builder', icon: Construction });
+    primaryNav.push({ name: "Quest Builder", href: "/admin/quest-builder", icon: Construction });
   }
 
   return (
@@ -87,12 +97,12 @@ export const AppHeader = () => {
             <span className="text-xs text-slate-400 -mt-1 tracking-widest">RPG LEARNING PLATFORM</span>
           </div>
         </Link>
-        <nav className="hidden md:flex items-center gap-2">
-          {navLinks.map(({ href, label, icon: Icon }) => (
+        <nav className="hidden md:flex items-center gap-1">
+          {primaryNav.map(({ href, name, icon: Icon }) => (
              <Link href={href} key={href}>
                 <Button variant="ghost" className={cn("text-slate-300 hover:bg-primary/20 hover:text-white", pathname === href && "bg-primary/20 text-white")}>
                     <Icon className="w-4 h-4 mr-2"/>
-                    {label}
+                    {name}
                 </Button>
             </Link>
           ))}
@@ -114,32 +124,25 @@ export const AppHeader = () => {
                   <DropdownMenuLabel className="text-sm font-normal text-muted-foreground -mt-2">Title: {userProfile.title}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
-                    <Link href="/dashboard/profile">
-                        <DropdownMenuItem>
-                            <User className="mr-2 h-4 w-4" />
-                            <span>Edit Profile</span>
+                    {userMenu.map(({name, href, icon: Icon}) => (
+                         <DropdownMenuItem key={name} onClick={() => router.push(href)}>
+                            <Icon className="mr-2 h-4 w-4" />
+                            <span>{name}</span>
                         </DropdownMenuItem>
-                    </Link>
+                    ))}
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DialogTrigger asChild>
-                    <DropdownMenuItem>
-                      <>
+                     <DropdownMenuItem>
                         <Backpack className="mr-2 h-4 w-4" />
-                        <span>Backpack</span>
+                        <span>Inventory</span>
                         <span className="ml-auto text-xs text-muted-foreground">{inventoryCount} items</span>
-                      </>
                     </DropdownMenuItem>
                   </DialogTrigger>
-                  
-                  <DropdownMenuGroup>
-                     <Link href="/dashboard/achievements">
-                        <DropdownMenuItem>
-                            <Award className="mr-2 h-4 w-4" />
-                            <span>Achievements</span>
-                        </DropdownMenuItem>
-                    </Link>
-                  </DropdownMenuGroup>
+                  <DropdownMenuItem onClick={() => router.push('/wizards-chamber')}>
+                     <Settings className="mr-2 h-4 w-4" />
+                     <span>Settings</span>
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={signOutUser}>
                     <LogOut className="mr-2 h-4 w-4" />
@@ -150,7 +153,7 @@ export const AppHeader = () => {
 
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle className="flex items-center gap-2"><Backpack /> Your Backpack</DialogTitle>
+                  <DialogTitle className="flex items-center gap-2"><Backpack /> Your Inventory</DialogTitle>
                   <DialogDescription>
                     All the items you have collected on your adventures.
                   </DialogDescription>

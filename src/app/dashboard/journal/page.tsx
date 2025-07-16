@@ -12,6 +12,7 @@ import { db } from '@/lib/firebase';
 import { collection, getDocs, query, where, documentId } from 'firebase/firestore';
 import type { QuestModule } from '@/lib/types';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
 
 type CompletedQuestDetails = QuestModule & { completedAt: Date };
 
@@ -83,7 +84,7 @@ export default function JournalPage() {
                         </CardHeader>
                         <CardContent>
                             <CardDescription>Your journal is empty. Embark on a quest to begin your story!</CardDescription>
-                            <Link href="/">
+                            <Link href="/the-sixth-trial">
                                 <Button variant="link" className="text-accent text-lg mt-4">Find a Quest</Button>
                             </Link>
                         </CardContent>

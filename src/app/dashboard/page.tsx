@@ -12,10 +12,13 @@ import Link from 'next/link';
 import { MagicalButton } from '@/components/ui/magical-button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { InventoryDisplay } from '@/components/layout/app-header';
+import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 export default function DashboardPage() {
   const { user, userProfile } = useAuth();
   const { level, xp, questsCompleted, inventory } = useUserProgressStore();
+  const router = useRouter();
 
   if (!user || !userProfile) {
     return (
@@ -23,7 +26,7 @@ export default function DashboardPage() {
         <h2 className="text-2xl font-headline mb-4">Access Denied</h2>
         <p className="text-muted-foreground mb-8">You must be logged in to view the dashboard.</p>
         <Link href="/login">
-          <button className="bg-primary text-primary-foreground px-4 py-2 rounded-md">Login</button>
+          <Button>Login</Button>
         </Link>
       </div>
     );
@@ -113,40 +116,32 @@ export default function DashboardPage() {
                     <User className="w-20 h-20 text-accent mb-4" />
                     <h2 className="text-3xl font-headline text-accent mb-4">Edit Your Profile</h2>
                     <p className="text-muted-foreground mb-6">Change your display name and customize your adventurer's avatar.</p>
-                    <MagicalButton asChild>
-                        <Link href="/dashboard/profile">
-                            Go to Profile
-                        </Link>
+                    <MagicalButton onClick={() => router.push('/dashboard/profile')}>
+                        Go to Profile
                     </MagicalButton>
                 </div>
                  <div className="bg-card/50 border border-primary/20 rounded-lg p-6 backdrop-blur-sm shadow-2xl shadow-primary/10 flex flex-col justify-center items-center text-center">
                     <BrainCircuit className="w-20 h-20 text-accent mb-4" />
                     <h2 className="text-3xl font-headline text-accent mb-4">Allocate Skill Points</h2>
                     <p className="text-muted-foreground mb-6">Spend the points you've earned from leveling up to improve your attributes.</p>
-                    <MagicalButton asChild>
-                        <Link href="/dashboard/skills">
-                            Upgrade Skills
-                        </Link>
+                    <MagicalButton onClick={() => router.push('/dashboard/skills')}>
+                        Upgrade Skills
                     </MagicalButton>
                 </div>
                  <div className="bg-card/50 border border-primary/20 rounded-lg p-6 backdrop-blur-sm shadow-2xl shadow-primary/10 flex flex-col justify-center items-center text-center">
                     <Shield className="w-20 h-20 text-accent mb-4" />
                     <h2 className="text-3xl font-headline text-accent mb-4">View Your Achievements</h2>
                     <p className="text-muted-foreground mb-6">See all the great milestones you've accomplished on your journey.</p>
-                    <MagicalButton asChild>
-                        <Link href="/dashboard/achievements">
-                            Go to Hall of Fame
-                        </Link>
+                    <MagicalButton onClick={() => router.push('/dashboard/achievements')}>
+                        Go to Hall of Fame
                     </MagicalButton>
                 </div>
                  <div className="bg-card/50 border border-primary/20 rounded-lg p-6 backdrop-blur-sm shadow-2xl shadow-primary/10 flex flex-col justify-center items-center text-center">
                     <BookMarked className="w-20 h-20 text-accent mb-4" />
                     <h2 className="text-3xl font-headline text-accent mb-4">Quest Journal</h2>
                     <p className="text-muted-foreground mb-6">Review your completed quests and relive your heroic deeds.</p>
-                    <MagicalButton asChild>
-                        <Link href="/dashboard/journal">
-                            Open Journal
-                        </Link>
+                    <MagicalButton onClick={() => router.push('/dashboard/journal')}>
+                        Open Journal
                     </MagicalButton>
                 </div>
             </div>
