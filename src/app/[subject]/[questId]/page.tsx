@@ -29,7 +29,7 @@ function QuestNotFound() {
             <p className="text-xl text-foreground/80 mb-8">The ancient map is misleading. This quest does not exist in our chronicles.</p>
             <Link href="/" className="flex items-center gap-2 text-accent hover:underline">
                 <ArrowLeft size={20} />
-                Return to the Castle
+                Return to the Hall of Kingdoms
             </Link>
         </div>
     )
@@ -77,7 +77,7 @@ function QuestLocked({ quest }: { quest: QuestModule }) {
             <Lock className="w-24 h-24 text-accent mb-8" />
             <h1 className="font-headline text-5xl text-accent mb-4">Quest Locked</h1>
             <p className="text-xl text-foreground/80 mb-8">You must prove your worth before undertaking this challenge. Complete {requiredQuests} to unlock.</p>
-            <Link href={`/class-6/${quest.subject}`} className="flex items-center gap-2 text-accent hover:underline">
+            <Link href={`/${quest.subject}`} className="flex items-center gap-2 text-accent hover:underline">
                 <ArrowLeft size={20} />
                 Return to the {quest.subject.charAt(0).toUpperCase() + quest.subject.slice(1)} Kingdom
             </Link>
@@ -264,7 +264,7 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
               "text-center border-b-2",
               isBossQuest ? "border-destructive/30" : "border-primary/20"
           )}>
-            <Link href={`/class-6/${quest.subject}`} className="flex items-center gap-2 text-accent hover:underline mb-4 w-fit mx-auto">
+            <Link href={`/${quest.subject}`} className="flex items-center gap-2 text-accent hover:underline mb-4 w-fit mx-auto">
               <ArrowLeft size={16} />
               Return to the {quest.subject.charAt(0).toUpperCase() + quest.subject.slice(1)} Kingdom
             </Link>
