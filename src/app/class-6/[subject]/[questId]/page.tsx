@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { RPGInterface } from '@/components/quest/rpg-interface';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -17,6 +17,7 @@ import { useAuth } from '@/contexts/auth-context';
 import { completeQuest } from '@/lib/quests';
 import { useToast } from '@/hooks/use-toast';
 import dynamic from 'next/dynamic';
+import { useDevEvents } from '@/hooks/use-dev-events';
 
 function QuestNotFound() {
     return (
@@ -80,24 +81,37 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
   const [loading, setLoading] = useState(true);
   const [isCompleting, setIsCompleting] = useState(false);
 
+  const fetchQuest = useCallback(async () => {
+    setLoading(true);
+    const questRef = doc(db, 'quest-modules', questId);
+    const docSnap = await getDoc(questRef);
+
+    if (docSnap.exists()) {
+      setQuest({ id: docSnap.id, ...docSnap.data() } as QuestModule);
+    } else {
+      setQuest(null);
+    }
+    setLoading(false);
+  }, [questId]);
+
+
   useEffect(() => {
     if (!questId) return;
-
-    const fetchQuest = async () => {
-      setLoading(true);
-      const questRef = doc(db, 'quest-modules', questId);
-      const docSnap = await getDoc(questRef);
-
-      if (docSnap.exists()) {
-        setQuest({ id: docSnap.id, ...docSnap.data() } as QuestModule);
-      } else {
-        setQuest(null);
-      }
-      setLoading(false);
-    };
-
     fetchQuest();
-  }, [questId]);
+  }, [questId, fetchQuest]);
+
+  // Listen for real-time quest updates in development
+  useDevEvents('quest-updated', (updatedQuestId) => {
+    if (updatedQuestId === questId) {
+        console.log(`Quest ${questId} was updated. Refetching...`);
+        toast({
+            title: "Quest Updated!",
+            description: "The quest content has been hot-reloaded."
+        });
+        fetchQuest();
+    }
+  });
+
 
   const handleCompleteQuest = async () => {
     if (!user || !quest || !userProfile) return;

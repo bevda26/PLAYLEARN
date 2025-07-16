@@ -19,6 +19,7 @@ export async function syncQuestsWithFilesystem() {
   console.log('Starting quest sync from filesystem...');
   let syncedCount = 0;
   let errorCount = 0;
+  const syncedQuests: string[] = [];
 
   try {
     const subjects = await fs.readdir(questsDirectory, { withFileTypes: true });
@@ -31,7 +32,8 @@ export async function syncQuestsWithFilesystem() {
         for (const questFile of questFiles) {
           if (questFile.endsWith('.tsx')) {
             const relativePath = `${subject.name}/${questFile}`;
-            const modulePath = `../quest-modules/${relativePath}`;
+            // Add a cache-busting query param to ensure we get the latest version
+            const modulePath = `../quest-modules/${relativePath}?v=${Date.now()}`;
             
             try {
               const module = await import(modulePath);
@@ -45,6 +47,7 @@ export async function syncQuestsWithFilesystem() {
                 await registerQuestModule(fullQuestData);
                 console.log(`Successfully synced quest: ${fullQuestData.id}`);
                 syncedCount++;
+                syncedQuests.push(fullQuestData.id);
               } else {
                 console.warn(`Skipping ${relativePath}: No 'questModule' export found.`);
               }
@@ -62,5 +65,5 @@ export async function syncQuestsWithFilesystem() {
   }
   
   console.log(`Sync complete. Synced: ${syncedCount}, Errors: ${errorCount}`);
-  return { syncedCount, errorCount };
+  return { syncedCount, errorCount, syncedQuests };
 }
