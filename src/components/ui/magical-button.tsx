@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { ReactNode, MouseEventHandler } from 'react';
@@ -44,7 +45,7 @@ export const MagicalButton = ({ children, onClick, variant = 'primary', classNam
           group-hover:translate-x-full transition-transform duration-700 ease-in-out
         "
       ></div>
-      <span className="relative z-10 flex items-center justify-center gap-2">
+      <span className="relative z-10 flex items-center justify-center w-full gap-2">
         {children}
       </span>
     </Comp>
