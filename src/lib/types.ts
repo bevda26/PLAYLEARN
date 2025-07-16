@@ -42,6 +42,7 @@ export interface UserProfile {
   createdAt: Timestamp;
   attributes: UserAttributes;
   skillPoints: number;
+  guildId?: string;
 }
 
 export interface UserProgress {
@@ -53,4 +54,15 @@ export interface UserProgress {
   questsCompleted: { [questId: string]: Timestamp[] }; 
   // Track item quantities
   inventory: { [itemId: string]: number };
+}
+
+export interface Guild {
+    id: string;
+    name: string;
+    description: string;
+    emblem: string; // Emoji
+    leader: string; // userId of the leader
+    members: string[]; // array of userIds
+    createdAt: Timestamp;
+    memberCount: number;
 }
