@@ -36,7 +36,7 @@ export default async function HomePage() {
         <ParallaxSection className="bg-[#110E1B]">
           <ParallaxLayer depth={-2}>
             <Image
-              src="https://placehold.co/1920x1080/000000/FFFFFF.png?text=+"
+              src="https://placehold.co/1920x1080.png"
               alt="Kingdom Academy background"
               fill
               className="object-cover opacity-30"
@@ -91,7 +91,7 @@ export default async function HomePage() {
         {/* Section 3: Unearth Ancient Tomes */}
         <ParallaxSection>
           <ParallaxLayer depth={-1.5}>
-              <Image src="https://placehold.co/1200x800/000000/FFFFFF.png?text=+" alt="Magical Library" fill className="object-cover opacity-20" data-ai-hint="fantasy library scrolls" />
+              <Image src="https://placehold.co/1200x800.png" alt="Magical Library" fill className="object-cover opacity-20" data-ai-hint="fantasy library scrolls" />
           </ParallaxLayer>
            <div className="relative z-10 text-center max-w-4xl mx-auto p-4">
               <h2 className="text-4xl md:text-6xl font-headline text-accent mb-4">Where Every Chapter is a Quest.</h2>
@@ -102,7 +102,7 @@ export default async function HomePage() {
         {/* Section 4: Heed the Call of the Guilds */}
         <ParallaxSection className="bg-gradient-to-t from-[#110E1B] to-[#1a1529]">
             <ParallaxLayer depth={-1}>
-              <Image src="https://placehold.co/1200x800/000000/FFFFFF.png?text=+" alt="Guild Hall" fill className="object-cover opacity-10" data-ai-hint="fantasy guild hall" />
+              <Image src="https://placehold.co/1200x800.png" alt="Guild Hall" fill className="object-cover opacity-10" data-ai-hint="fantasy guild hall" />
             </ParallaxLayer>
            <div className="relative z-10 text-center max-w-4xl mx-auto p-4">
               <h2 className="text-4xl md:text-6xl font-headline text-accent mb-4">Adventure Together.</h2>
