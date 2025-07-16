@@ -24,22 +24,34 @@ if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.proj
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-// Initialize Firestore with persistence settings, but don't export 'db' directly yet.
-const db = initializeFirestore(app, {
-  localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
-});
-
 const auth = getAuth(app);
+let db = getFirestore(app);
+let persistenceEnabled: Promise<boolean>;
 
-// A promise that resolves when persistence is enabled.
-const persistenceEnabled = enableMultiTabIndexedDbPersistence(db).then(() => true).catch(err => {
-    if (err.code == 'failed-precondition') {
-        console.warn("Firestore persistence failed (failed-precondition). This happens when multiple tabs are open. Data will not be synced offline in this tab.");
-    } else if (err.code == 'unimplemented') {
-        console.warn("Firestore persistence is not available in this browser. Data will not be synced offline.");
-    }
-    return false; // Still resolve so the app doesn't hang.
-});
+if (typeof window !== 'undefined') {
+  // Client-side execution
+  try {
+    persistenceEnabled = enableMultiTabIndexedDbPersistence(db).then(() => true, (err) => {
+      if (err.code == 'failed-precondition') {
+          console.warn("Firestore persistence failed (failed-precondition). This happens when multiple tabs are open. Data will not be synced offline in this tab.");
+      } else if (err.code == 'unimplemented') {
+          console.warn("Firestore persistence is not available in this browser. Data will not be synced offline.");
+      }
+      return false;
+    });
+    
+    // Re-initialize Firestore with persistence settings.
+    db = initializeFirestore(app, {
+      localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+    });
 
+  } catch (error) {
+    console.error("Error enabling Firestore persistence", error);
+    persistenceEnabled = Promise.resolve(false);
+  }
+} else {
+  // Server-side execution
+  persistenceEnabled = Promise.resolve(false);
+}
 
 export { app, db, auth, persistenceEnabled };
