@@ -4,6 +4,8 @@ import { Toaster } from "@/components/ui/toaster"
 import { AuthProvider } from '@/contexts/auth-context';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Cinzel, Crimson_Text } from 'next/font/google';
+import { RPGHud } from '@/components/ui/rpg-hud';
+
 
 const cinzel = Cinzel({
   subsets: ['latin'],
@@ -46,4 +48,5 @@ export default function RootLayout({
       </body>
     </html>
   );
+  
 }
