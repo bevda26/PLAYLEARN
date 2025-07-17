@@ -13,7 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/auth-context';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { ALL_ACHIEVEMENTS } from '@/lib/achievements';
+import { ALL_ACHIEVEMENTS } from '@/lib/data/achievements';
 
 type LeaderboardEntry = UserProfile & {
   level: number;

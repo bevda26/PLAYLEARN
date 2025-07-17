@@ -4,15 +4,9 @@
 import { doc, updateDoc, serverTimestamp, getDoc } from 'firebase/firestore';
 import { db } from './firebase';
 import type { Achievement, UserProgress, UserProfile } from './types';
+import { ALL_ACHIEVEMENTS } from '@/lib/data/achievements';
 
-// Master list of all possible achievements in the game
-export const ALL_ACHIEVEMENTS: Achievement[] = [
-  { id: 'first_quest', name: 'First Step', description: 'Complete your very first quest.' },
-  { id: 'math_novice', name: 'Math Novice', description: 'Complete 1 math quest.' },
-  { id: 'level_2', name: 'Level Up!', description: 'Reach level 2.' },
-];
-
-// A map for quick lookups
+// A map for quick lookups, created from the imported data array
 const achievementMap = new Map(ALL_ACHIEVEMENTS.map(a => [a.id, a]));
 
 /**
