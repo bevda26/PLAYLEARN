@@ -154,7 +154,7 @@ export default function ProfilePage() {
                         <CardContent>
                             <div className="space-y-4">
                             <Label className="text-lg">Theme</Label>
-                            <RadioGroup defaultValue={currentTheme} onValueChange={setTheme} className="grid grid-cols-2 gap-4">
+                            <RadioGroup value={theme} onValueChange={setTheme} className="grid grid-cols-2 gap-4">
                                 <div>
                                 <RadioGroupItem value="light" id="light" className="peer sr-only" />
                                 <Label
