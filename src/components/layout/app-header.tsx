@@ -81,7 +81,7 @@ export const AppHeader = () => {
   ];
   
   const settingsMenu = [
-      { name: "Settings", href: "/wizards-chamber", icon: Settings },
+      { name: "Settings", href: "/dashboard/profile", icon: Settings },
   ]
 
   if (isAdmin) {
