@@ -1,4 +1,3 @@
-
 import type { ComponentType } from 'react';
 import type { Timestamp } from 'firebase/firestore';
 
@@ -12,7 +11,7 @@ export interface QuestModule {
   sagaId: string; // e.g., 'geometry-basics'
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   questType: 'investigation' | 'experiment' | 'challenge' | 'mastery' | 'boss';
-  componentPath: string; // Path to the quest module component, e.g., 'trial-6/math/geometry/quest-001.tsx'
+  componentPath: string; // Path to the quest module component
   metadata: {
     description: string;
     estimatedTime: number; // in minutes
@@ -45,7 +44,7 @@ export interface UserProfile {
   attributes: UserAttributes;
   skillPoints: number;
   guildId?: string;
-  currentTrial?: string;
+  currentTrial?: string; // The user's selected grade level
 }
 
 export interface UserProgress {
@@ -53,17 +52,17 @@ export interface UserProgress {
   xp: number;
   level: number;
   health: number;
-  // Track multiple completions with timestamps
+  // Deprecated flat map, use trialProgress instead
   questsCompleted: { [questId: string]: Timestamp[] }; 
-  // Track item quantities
   inventory: { [itemId: string]: number };
-  // Track progress in a nested structure
+  // New nested progress tracking
   trialProgress?: {
     [trialId: string]: {
       [kingdomId: string]: {
         [sagaId: string]: {
           completedQuests: string[];
           isCompleted: boolean;
+          lastCompletedTimestamp: Timestamp;
         }
       }
     }
@@ -96,4 +95,5 @@ export interface Saga {
   id: string; // e.g., 'geometry-basics'
   name: string; // e.g., 'The Geometry Saga'
   description: string;
+  questIds: string[]; // List of quest IDs in this saga
 }

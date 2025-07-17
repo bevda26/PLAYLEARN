@@ -19,7 +19,7 @@ export type ProcessModuleInput = z.infer<typeof ProcessModuleInputSchema>;
 const ProcessModuleOutputSchema = z.object({
   id: z.string().describe('The unique identifier for the quest (e.g., "math-001").'),
   title: z.string().describe('The title of the quest.'),
-  subject: z.enum(['math', 'science', 'language', 'history']).describe('The subject category of the quest.'),
+  kingdomId: z.enum(['math', 'science', 'language', 'history']).describe('The subject category of the quest.'),
   difficulty: z.enum(['beginner', 'intermediate', 'advanced']).describe('The difficulty level of the quest.'),
   questType: z.enum(['investigation', 'experiment', 'challenge', 'mastery', 'boss']).describe('The type of quest.'),
   componentPath: z.string().describe('The automatically determined file path for the component, e.g., "math/math-001.tsx".'),
@@ -45,9 +45,9 @@ const prompt = ai.definePrompt({
   **Instructions:**
   1.  Read the provided 'moduleCode'.
   2.  Identify the main metadata object. It might be called 'chapterModule', 'questData', or something similar.
-  3.  From this object, extract the following fields: id, title, subject, difficulty, questType, description, estimatedTime, and xpReward.
+  3.  From this object, extract the following fields: id, title, kingdomId, difficulty, questType, description, estimatedTime, and xpReward.
   4.  For 'itemRewards', find the list of item IDs. If it doesn't exist, omit the field.
-  5.  For 'componentPath', automatically generate the correct path based on the 'subject' and 'id'. The format should be 'subject/id.tsx'. For example, a math quest with id 'math-005' should have a componentPath of 'math/math-005.tsx'.
+  5.  For 'componentPath', automatically generate the correct path based on the 'kingdomId' and 'id'. The format should be 'kingdomId/id.tsx'. For example, a math quest with id 'math-005' should have a componentPath of 'math/math-005.tsx'.
   6.  Map the input data precisely to the output schema. Ensure all data types are correct. For example, 'estimatedTime' and 'xpReward' must be numbers.
 
   **Important:** Only extract data from the first quest defined in the file (e.g., 'investigationQuest' if multiple exist). Do not try to combine all quests in a multi-quest file.

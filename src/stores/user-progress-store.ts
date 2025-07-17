@@ -1,4 +1,3 @@
-
 import { create } from 'zustand';
 import { onSnapshot, doc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -30,6 +29,7 @@ export const useUserProgressStore = create<UserProgressState>((set) => ({
   health: 100,
   questsCompleted: {},
   inventory: {},
+  trialProgress: {},
   xpToNextLevel: LEVEL_XP_MAP[1],
 
   subscribeToUserProgress: (uid: string) => {
@@ -46,8 +46,9 @@ export const useUserProgressStore = create<UserProgressState>((set) => ({
         set({
           userId: uid,
           ...progress,
-          inventory: progress.inventory || {}, // Ensure inventory is at least an empty object
+          inventory: progress.inventory || {},
           questsCompleted: progress.questsCompleted || {},
+          trialProgress: progress.trialProgress || {},
           xpToNextLevel: LEVEL_XP_MAP[progress.level] || Infinity,
         });
       }
@@ -70,6 +71,7 @@ export const useUserProgressStore = create<UserProgressState>((set) => ({
       health: 100,
       questsCompleted: {},
       inventory: {},
+      trialProgress: {},
     });
   },
 }));

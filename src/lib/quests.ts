@@ -1,4 +1,3 @@
-
 // src/lib/quests.ts
 'use server';
 
@@ -51,7 +50,6 @@ export async function completeQuest(userId: string, profile: UserProfile, quest:
       }
 
       const oldProgress = progressDoc.data() as Omit<UserProgress, 'userId'>;
-      const oldProfile = profileDoc.data() as UserProfile;
       
       let newXp = oldProgress.xp + finalXpReward;
       let newLevel = oldProgress.level;
@@ -71,6 +69,12 @@ export async function completeQuest(userId: string, profile: UserProfile, quest:
         level: newLevel,
         [`questsCompleted.${quest.id}`]: arrayUnion(serverTimestamp()),
       };
+      
+      // New logic for trialProgress
+      const { trialId, kingdomId, sagaId, id: questId } = quest;
+      const progressPath = `trialProgress.${trialId}.${kingdomId}.${sagaId}`;
+      newProgressData[`${progressPath}.completedQuests`] = arrayUnion(questId);
+      newProgressData[`${progressPath}.lastCompletedTimestamp`] = serverTimestamp();
       
       itemsAwarded = quest.metadata.itemRewards || [];
       
@@ -116,6 +120,7 @@ export async function completeQuest(userId: string, profile: UserProfile, quest:
       }
     });
 
+    // We can enhance this later to check for saga/kingdom/trial completion achievements
     await checkForNewAchievements(userId);
 
     return { itemsAwarded, newTitle, bonusXp: bonusXp > 0 ? bonusXp : undefined, bonusItems: bonusItems.length > 0 ? bonusItems : undefined };
