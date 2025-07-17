@@ -36,7 +36,7 @@ export default async function HomePage() {
         <ParallaxSection className="bg-[#110E1B]">
           <ParallaxLayer depth={-2}>
             <Image
-              src="https://placehold.co/1920x1080.png"
+              src="https://placehold.co/1200x800.png"
               alt="Kingdom Academy background"
               fill
               className="object-cover opacity-30"

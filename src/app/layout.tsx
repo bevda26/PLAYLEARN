@@ -3,6 +3,21 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { AuthProvider } from '@/contexts/auth-context';
 import { ThemeProvider } from '@/components/theme-provider';
+import { Cinzel, Crimson_Text } from 'next/font/google';
+
+const cinzel = Cinzel({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-cinzel',
+  weight: ['700', '900'],
+});
+
+const crimsonText = Crimson_Text({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-crimson-text',
+  weight: ['400', '700'],
+});
 
 export const metadata: Metadata = {
   title: 'PlayLearn - Epic RPG Learning Platform',
@@ -15,12 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Crimson+Text:wght@400;700&display=swap" rel="stylesheet" />
-      </head>
+    <html lang="en" suppressHydrationWarning className={`${cinzel.variable} ${crimsonText.variable}`}>
       <body className="font-body antialiased">
         <ThemeProvider
           attribute="class"
