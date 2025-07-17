@@ -8,12 +8,12 @@ import { getAuth, Auth } from "firebase/auth";
 
 // Direct configuration - replace with your actual values
 const firebaseConfig: FirebaseOptions = {
-  apiKey: "AIzaSyATWWAiPE6fabMRwSb6UiZbON1o5kfzMaE",
-  authDomain: "questlearn-4s8sl.firebaseapp.com",
-  projectId: "questlearn-4s8sl",
-  storageBucket: "questlearn-4s8sl.appspot.com",
-  messagingSenderId: "136336171335",
-  appId: "1:136336171335:web:883d5de4d230cde3606c62"
+    apiKey: "AIzaSyB-xR0k_e_k_123456", // This is a placeholder, will be replaced by the actual project key
+    authDomain: "playlearn-tech.firebaseapp.com",
+    projectId: "playlearn-tech",
+    storageBucket: "playlearn-tech.appspot.com",
+    messagingSenderId: "1234567890", // This is a placeholder
+    appId: "1:1234567890:web:1234567890abcdef" // This is a placeholder
 };
 
 let app;
