@@ -9,7 +9,7 @@ import {
   connectAuthEmulator,
   type User
 } from 'firebase/auth';
-import { app, db, auth } from './firebase'; 
+import { app, db, auth, persistenceEnabled } from './firebase'; 
 import { doc, setDoc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 
 // Initialize Auth Emulator in development (optional)
@@ -23,6 +23,9 @@ const createUserDocuments = async (user: User) => {
   console.log('Creating user documents for:', user.uid);
   
   try {
+    // This is crucial: wait for persistence to be enabled before trying to access Firestore.
+    await persistenceEnabled;
+
     // Create public user profile
     const profileRef = doc(db, 'user-profiles', user.uid);
     const profileSnap = await getDoc(profileRef);
