@@ -4,12 +4,12 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 // import { AppHeader } from '@/components/layout/app-header'; // Removed as RPGHud is persistent
 import { Trophy, Loader2, MessageSquareText, Swords } from 'lucide-react';
-import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
+import { collection, query, orderBy, limit, getDocs, DocumentData } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { UserProfile, UserProgress, Achievement } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/auth-context';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ALL_ACHIEVEMENTS } from '@/lib/data/achievements';
 
@@ -63,13 +63,13 @@ export default function LeaderboardPage() {
         
         rankedData = progressSnapshot.docs
           .map(doc => {
-            const progress = { id: doc.id, ...doc.data() } as UserProgress;
-            const profile = allProfiles[progress.id];
+            const progress = doc.data() as UserProgress;
+            const profile = allProfiles[doc.id];
             if (!profile) return null;
 
             return {
               ...profile,
-              id: progress.id,
+              id: doc.id,
               level: progress.level,
               xp: progress.xp,
               rankScore: progress.level, // Global rank by level
@@ -81,7 +81,7 @@ export default function LeaderboardPage() {
       } else {
         const progressQuery = query(collection(db, 'user-progress'));
         const progressSnapshot = await getDocs(progressQuery);
-        const allProgress = progressSnapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as UserProgress) }));
+        const allProgress = progressSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() as UserProgress }));
 
         rankedData = allProgress
           .map(p => {
@@ -93,7 +93,7 @@ export default function LeaderboardPage() {
           .slice(0, 20)
           .map(({ progress, profile, questCount }) => ({
             ...profile,
-            id: progress.id,
+            id: progress.userId,
             level: progress.level,
             xp: progress.xp,
             rankScore: questCount, // Subject rank by quests completed
@@ -219,7 +219,8 @@ export default function LeaderboardPage() {
                                 <p>{ach.description}</p>
                               </TooltipContent>
                             </Tooltip>
-                          ))}
+                          </TooltipProvider>
+                        ))}
                       </div>
                       <button 
                         onClick={() => handleChallenge(player)}
@@ -333,4 +334,3 @@ function getRecentAchievements(profile: UserProfile, achievementMap: Map<string,
     .map(([id]) => achievementMap.get(id))
     .filter(Boolean) as Achievement[];
 }
-
