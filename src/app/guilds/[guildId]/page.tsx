@@ -17,6 +17,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 type GuildMemberProfile = UserProfile & { id: string };
 
@@ -70,8 +71,7 @@ export default function GuildDetailPage({ params }: { params: { guildId: string 
       router.push('/guilds');
     } catch (error: any) {
       toast({ title: 'Failed to leave guild', description: error.message, variant: 'destructive' });
-    } finally {
-      setIsLeaving(false);
+      setIsLeaving(false); // Reset loading state on error
     }
   };
 
@@ -145,10 +145,28 @@ export default function GuildDetailPage({ params }: { params: { guildId: string 
 
         <div className="mt-8 text-center">
             {isMember && !isLeader && (
-                <Button variant="destructive" onClick={handleLeaveGuild} disabled={isLeaving}>
-                     {isLeaving ? <Loader2 className="animate-spin" /> : <LogOut className="mr-2" />}
-                    Leave Guild
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" disabled={isLeaving}>
+                      {isLeaving ? <Loader2 className="animate-spin" /> : <LogOut className="mr-2" />}
+                      Leave Guild
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you sure you want to leave {guild.name}?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. You will lose your membership and will have to be invited back or rejoin.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleLeaveGuild}>
+                        Yes, Leave Guild
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
             )}
             {isLeader && (
                  <Button variant="destructive" disabled>
