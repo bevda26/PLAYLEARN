@@ -42,6 +42,7 @@ export default function KingdomSelectionPage({ params }: { params: { trialId: st
 
     useEffect(() => {
         const getKingdoms = async () => {
+            if (!trialId) return;
             setIsLoading(true);
             const questSnapshot = await getDocs(query(collection(db, "quest-modules"), where("trialId", "==", trialId)));
             const quests = questSnapshot.docs.map(doc => doc.data() as QuestModule);
