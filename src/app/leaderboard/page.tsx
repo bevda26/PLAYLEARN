@@ -6,7 +6,7 @@ import { AppHeader } from '@/components/layout/app-header';
 import { Trophy, Loader2 } from 'lucide-react';
 import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import type { UserProfile, UserProgress, QuestModule, Achievement } from '@/lib/types';
+import type { UserProfile, UserProgress, Achievement } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';

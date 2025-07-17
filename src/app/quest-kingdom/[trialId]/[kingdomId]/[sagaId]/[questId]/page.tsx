@@ -91,7 +91,7 @@ type QuestPlayerPageProps = {
 };
 
 const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
-  const { trialId, kingdomId, questId } = params;
+  const { trialId, kingdomId, sagaId, questId } = params;
   const { user, userProfile } = useAuth();
   const { questsCompleted } = useUserProgressStore();
   const { toast } = useToast();

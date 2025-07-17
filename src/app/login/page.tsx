@@ -35,7 +35,7 @@ export default function LoginPage() {
         try {
             await signInWithGoogle();
             toast({ title: "Successfully signed in with Google!" });
-            router.push('/the-sixth-trial');
+            router.push('/quest-kingdom');
         } catch (error: any) {
             toast({ title: "Google Sign-In Failed", description: error.message, variant: "destructive" });
         }
@@ -50,7 +50,7 @@ export default function LoginPage() {
         try {
             await signUpWithEmailAndPassword(email, password);
             toast({ title: "Account created successfully!" });
-            router.push('/the-sixth-trial');
+            router.push('/quest-kingdom');
         } catch (error: any) {
             toast({ title: "Sign Up Failed", description: error.message, variant: "destructive" });
         }
@@ -61,7 +61,7 @@ export default function LoginPage() {
         try {
             await signInWithEmailAndPassword(email, password);
             toast({ title: "Successfully signed in!" });
-            router.push('/the-sixth-trial');
+            router.push('/quest-kingdom');
         } catch (error: any) {
             toast({ title: "Sign In Failed", description: error.message, variant: "destructive" });
         }
