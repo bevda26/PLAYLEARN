@@ -1,3 +1,4 @@
+
 // EduQuest Chapter Module: A Bottle of Dew
 // Grade 6 English - Unit 1: Fables and Folk Tales
 
@@ -7,6 +8,7 @@ export const chapterModule = {
     id: "class6_english_bottle_of_dew",
     title: "A Bottle of Dew",
     class: 6,
+    trialId: "trial-6", // Corrected trialId
     stream: "general",
     subjects: ["english", "literature", "language_arts"],
     description: "Explore the timeless folk tale about Rama Natha's journey from seeking magic solutions to discovering the value of hard work through an engaging story adventure.",
@@ -102,11 +104,7 @@ export const chapterModule = {
                 correctAnswer: "sage",
                 explanation: "This depicts a wise, learned person who offers guidance and wisdom."
               }
-            ],
-            feedback: {
-              correct: "Perfect! Your visual recognition skills are growing stronger!",
-              incorrect: "Look more carefully at the details in the image and try again!"
-            }
+            ]
           },
           uiComponent: "VisualAssociationGame"
         }
@@ -862,3 +860,5 @@ export const chapterModule = {
     ]
   }
 };
+
+    

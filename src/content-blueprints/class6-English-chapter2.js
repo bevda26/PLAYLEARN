@@ -1,3 +1,4 @@
+
 // EduQuest Chapter Module: Friendship (Class 6 English)
 export const chapterModule = {
   // === CHAPTER METADATA ===
@@ -5,6 +6,7 @@ export const chapterModule = {
     id: "class6_english_friendship_unit2",
     title: "Friendship",
     class: 6,
+    trialId: "trial-6", // Corrected trialId
     stream: "general",
     subjects: ["english", "language_arts", "social_emotional_learning"],
     description: "Explore the beautiful bonds of friendship through heartwarming stories and poetry, learning about loyalty, kindness, and what makes true friends.",
@@ -1088,3 +1090,5 @@ export const friendshipChapterUtils = {
 // Export utility functions for platform integration
 export default chapterModule;
         
+
+    
