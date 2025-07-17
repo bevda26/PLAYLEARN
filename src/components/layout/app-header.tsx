@@ -2,9 +2,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Crown, User, Shield, Award, Backpack, LogOut, Castle, Map, Settings, Trophy, Swords, Construction, BookMarked, BrainCircuit } from 'lucide-react';
+import { Crown, User, Shield, Award, Backpack, LogOut, Castle, Map, Settings, Trophy, Swords, Construction, BookMarked, BrainCircuit, BarChart, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { WizardsChamberIcon } from '@/components/icons/wizards-chamber';
 import { useAuth } from '@/contexts/auth-context';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuGroup } from '@/components/ui/dropdown-menu';
@@ -17,7 +16,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { BarChart } from 'lucide-react';
 
 export const InventoryDisplay = ({ inventory }: { inventory: { [itemId: string]: number } }) => {
   const inventoryItems = Object.entries(inventory)
@@ -68,12 +66,11 @@ export const AppHeader = () => {
   const inventoryCount = Object.values(inventory).reduce((sum, q) => sum + q, 0);
 
   const primaryNav = [
-    { name: "Castle Home", href: "/", icon: Castle },
-    { name: "Quest Kingdoms", href: "/the-sixth-trial", icon: Map },
+    { name: "Home", href: "/", icon: Home },
+    { name: "Quest Kingdom", href: "/quest-kingdom", icon: Map },
     { name: "Dashboard", href: "/dashboard", icon: BarChart },
     { name: "Leaderboard", href: "/leaderboard", icon: Trophy },
     { name: "Guilds", href: "/guilds", icon: Swords },
-    { name: "Settings", href: "/wizards-chamber", icon: Settings },
   ];
 
   const userMenu = [
@@ -82,9 +79,13 @@ export const AppHeader = () => {
       { name: "Quest Journal", href: "/dashboard/journal", icon: BookMarked },
       { name: "Skills", href: "/dashboard/skills", icon: BrainCircuit },
   ];
+  
+  const settingsMenu = [
+      { name: "Settings", href: "/wizards-chamber", icon: Settings },
+  ]
 
   if (isAdmin) {
-    primaryNav.push({ name: "Quest Builder", href: "/admin/quest-builder", icon: Construction });
+    settingsMenu.push({ name: "Quest Builder", href: "/admin/quest-builder", icon: Construction });
   }
 
   return (
@@ -132,17 +133,21 @@ export const AppHeader = () => {
                     ))}
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
-                  <DialogTrigger asChild>
+                   <DialogTrigger asChild>
                      <DropdownMenuItem>
                         <Backpack className="mr-2 h-4 w-4" />
                         <span>Inventory</span>
                         <span className="ml-auto text-xs text-muted-foreground">{inventoryCount} items</span>
                     </DropdownMenuItem>
                   </DialogTrigger>
-                  <DropdownMenuItem onClick={() => router.push('/wizards-chamber')}>
-                     <Settings className="mr-2 h-4 w-4" />
-                     <span>Settings</span>
-                  </DropdownMenuItem>
+                   <DropdownMenuGroup>
+                    {settingsMenu.map(({name, href, icon: Icon}) => (
+                         <DropdownMenuItem key={name} onClick={() => router.push(href)}>
+                            <Icon className="mr-2 h-4 w-4" />
+                            <span>{name}</span>
+                        </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={signOutUser}>
                     <LogOut className="mr-2 h-4 w-4" />

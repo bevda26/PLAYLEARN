@@ -27,9 +27,9 @@ function QuestNotFound() {
         <div className="min-h-screen flex flex-col items-center justify-center text-center p-4 bg-gradient-to-b from-background to-background/80">
             <h1 className="font-headline text-5xl text-destructive mb-4">Quest Not Found</h1>
             <p className="text-xl text-foreground/80 mb-8">The ancient map is misleading. This quest does not exist in our chronicles.</p>
-            <Link href="/the-sixth-trial" className="flex items-center gap-2 text-accent hover:underline">
+            <Link href="/quest-kingdom" className="flex items-center gap-2 text-accent hover:underline">
                 <ArrowLeft size={20} />
-                Return to The Sixth Trial
+                Return to the Quest Kingdom
             </Link>
         </div>
     )
@@ -77,9 +77,9 @@ function QuestLocked({ quest }: { quest: QuestModule }) {
             <Lock className="w-24 h-24 text-accent mb-8" />
             <h1 className="font-headline text-5xl text-accent mb-4">Quest Locked</h1>
             <p className="text-xl text-foreground/80 mb-8">You must prove your worth before undertaking this challenge. Complete {requiredQuests} to unlock.</p>
-            <Link href={`/${quest.subject}`} className="flex items-center gap-2 text-accent hover:underline">
+            <Link href={`/${quest.kingdomId}`} className="flex items-center gap-2 text-accent hover:underline">
                 <ArrowLeft size={20} />
-                Return to the {quest.subject.charAt(0).toUpperCase() + quest.subject.slice(1)} Kingdom
+                Return to the {quest.kingdomId.charAt(0).toUpperCase() + quest.kingdomId.slice(1)} Kingdom
             </Link>
         </div>
     )
@@ -264,9 +264,9 @@ const QuestPlayerPage: NextPage<QuestPlayerPageProps> = ({ params }) => {
               "text-center border-b-2",
               isBossQuest ? "border-destructive/30" : "border-primary/20"
           )}>
-            <Link href={`/${quest.subject}`} className="flex items-center gap-2 text-accent hover:underline mb-4 w-fit mx-auto">
+            <Link href={`/${quest.kingdomId}`} className="flex items-center gap-2 text-accent hover:underline mb-4 w-fit mx-auto">
               <ArrowLeft size={16} />
-              Return to the {quest.subject.charAt(0).toUpperCase() + quest.subject.slice(1)} Kingdom
+              Return to the {quest.kingdomId.charAt(0).toUpperCase() + quest.kingdomId.slice(1)} Kingdom
             </Link>
             <p className="text-sm uppercase tracking-widest text-accent flex items-center justify-center gap-2">
                 {isBossQuest && <Swords size={16} />}

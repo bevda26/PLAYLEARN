@@ -31,7 +31,7 @@ const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params }) => {
       setIsLoading(true);
       try {
         const questsRef = collection(db, 'quest-modules');
-        const q = query(questsRef, where('subject', '==', subject));
+        const q = query(questsRef, where('kingdomId', '==', subject));
         const querySnapshot = await getDocs(q);
         const quests = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as QuestModule));
         setAvailableQuests(quests);
@@ -63,9 +63,9 @@ const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params }) => {
       <div className="min-h-screen flex flex-col items-center justify-center text-center p-4" style={{ background: `linear-gradient(to bottom, ${theme.from}, ${theme.to})` }}>
         <h1 className="font-headline text-5xl text-accent mb-4">The {subjectTitle} Kingdom</h1>
         <p className="text-xl text-foreground/80 mb-8">This realm is still shrouded in mist. No quests are available yet.</p>
-        <Link href="/the-sixth-trial" className="flex items-center gap-2 text-accent hover:underline">
+        <Link href="/quest-kingdom" className="flex items-center gap-2 text-accent hover:underline">
           <ArrowLeft size={20} />
-          Return to The Sixth Trial
+          Return to the Quest Kingdom
         </Link>
       </div>
     )
@@ -76,9 +76,9 @@ const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params }) => {
   return (
     <div className="min-h-screen w-full p-4 sm:p-8" style={{ background: `linear-gradient(to bottom, ${theme.from}, ${theme.to})` }}>
       <header className="mb-12 text-center relative">
-        <Link href="/the-sixth-trial" className="absolute top-0 left-0 flex items-center gap-2 text-accent hover:underline transition-all hover:text-mystic-gold">
+        <Link href="/quest-kingdom" className="absolute top-0 left-0 flex items-center gap-2 text-accent hover:underline transition-all hover:text-mystic-gold">
           <ArrowLeft size={20} />
-          Back to The Sixth Trial
+          Back to Quest Kingdom
         </Link>
         <h1 className="font-headline text-6xl font-bold text-accent drop-shadow-[0_4px_4px_rgba(0,0,0,0.7)]">
           The {subjectTitle} Kingdom
@@ -105,7 +105,7 @@ const QuestDiscoveryPage: NextPage<QuestDiscoveryPageProps> = ({ params }) => {
                     <QuestCard
                         key={quest.id}
                         id={quest.id}
-                        subject={quest.subject}
+                        subject={quest.kingdomId}
                         title={quest.title}
                         difficulty={quest.difficulty}
                         questType={quest.questType}

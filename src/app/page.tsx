@@ -56,10 +56,10 @@ export default async function HomePage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mt-8">
               <MagicalButton asChild variant="primary" className="px-12 py-6 text-lg">
-                <Link href="/the-sixth-trial">Begin Your Quest</Link>
+                <Link href="/quest-kingdom">Begin Your Quest</Link>
               </MagicalButton>
               <MagicalButton asChild variant="outline" className="px-12 py-6 text-lg">
-                <Link href="/the-sixth-trial">Explore the Kingdoms</Link>
+                <Link href="/quest-kingdom">Explore the Kingdoms</Link>
               </MagicalButton>
             </div>
             <div className="absolute bottom-[-10rem] flex flex-col items-center gap-2 animate-bounce">
