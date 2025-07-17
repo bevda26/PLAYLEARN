@@ -10,11 +10,46 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
-import { GeneratedQuestSchema } from './quest-generation-flow';
+
+// More detailed activity schema to match the new blueprint format
+const ActivitySchema = z.object({
+  type: z.enum(['multiple_choice', 'text_input', 'informational', 'drag_and_drop']),
+  content: z.object({
+    prompt: z.string().describe('The primary text, question, or instruction for the student.'),
+    options: z.array(z.string()).optional().describe('An array of choices for multiple_choice activities.'),
+    correctAnswer: z.union([z.string(), z.number()]).optional().describe('The correct answer for the activity.'),
+    feedback: z.object({
+      correct: z.string().optional(),
+      incorrect: z.string().optional(),
+    }).optional(),
+    uiComponent: z.string().optional().describe('A hint for which ShadCN UI component to use (e.g., "RadioGroup", "Input", "Card", "Alert").'),
+  }),
+});
+
+// Updated Quest Outline Schema to match the rich blueprint
+const QuestOutlineSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  subjects: z.array(z.string()),
+  description: z.string(),
+  type: z.string(),
+  rewards: z.object({
+    xp: z.number(),
+    items: z.array(z.string()).optional(),
+    unlocks: z.array(z.string()).optional(),
+  }),
+  prerequisites: z.array(z.string()).optional(),
+  activities: z.array(ActivitySchema),
+  // Chapter-level context added for better AI understanding
+  chapterTitle: z.string(),
+  chapterDescription: z.string(),
+  sagaId: z.string(),
+  trialId: z.string(),
+});
 
 const SmithQuestComponentInputSchema = z.object({
-  questOutline: GeneratedQuestSchema,
-  subject: z.enum(['math', 'science', 'language', 'history']),
+  questOutline: QuestOutlineSchema,
+  subject: z.string(), // The primary subject to determine the folder path
 });
 export type SmithQuestComponentInput = z.infer<typeof SmithQuestComponentInputSchema>;
 
@@ -33,32 +68,31 @@ const prompt = ai.definePrompt({
   output: { schema: SmithQuestComponentOutputSchema },
   prompt: `You are an expert React and Next.js developer creating educational RPG quests. Your task is to write the complete code for a new quest component file (.tsx) based on a provided JSON outline.
 
-**Instructions:**
-1.  **File Structure:** Create a complete, standalone .tsx file. It must start with \`'use client';\` and include all necessary imports from React, Lucide, and '@/components/ui/*'.
-2.  **Metadata Export:** The file MUST export a \`questModule\` constant containing all the necessary metadata (id, title, subject, etc.).
-    *   The \`id\` should be formatted as \`subject-timestamp\`, e.g., \`math-1678886400000\`. Use a unique placeholder timestamp.
-    *   The \`componentPath\` field should NOT be included in this export.
-    *   Use the provided subject to fill in the 'subject' field.
-    *   Hardcode difficulty to 'beginner', questType to 'challenge', estimatedTime to 15, and xpReward to 150 for this generated component.
+**CRITICAL INSTRUCTIONS:**
+
+1.  **File Structure:** Create a complete, standalone .tsx file. It MUST start with \`'use client';\` and include all necessary imports from React, Lucide, and '@/components/ui/*'.
+2.  **Metadata Export:** The file MUST export a \`questModule\` constant containing all the necessary quest metadata.
+    *   Use the data from the \`questOutline\` to populate the fields: \`id\`, \`title\`, \`subjects\`, \`description\`, \`questType\`, \`metadata.xpReward\`, \`metadata.itemRewards\`, etc.
+    *   Use the provided \`sagaId\` and \`trialId\` from the outline.
+    *   Set the \`difficulty\` based on the quest type or title, or default to 'beginner'. 'mastery' or 'boss' types should be 'advanced'.
+    *   Do NOT include a \`componentPath\` field in the exported metadata; the system handles this.
 3.  **Component Logic:**
-    *   Create a default exported React component named appropriately (e.g., \`QuestTitleComponent\`).
-    *   The component should be a single, self-contained interactive quiz or challenge based on the quest outline's activities.
-    *   Use React hooks (\`useState\`) to manage the state of the interactive elements.
-    *   Use ShadCN components (\`Card\`, \`Button\`, \`RadioGroup\`, \`Input\`, etc.) to build the UI.
-    *   Provide feedback to the user (e.g., "Correct!" or "Try Again") using components like \`Alert\` or by rendering text conditionally.
+    *   Create a default exported React component named appropriately based on the quest title (e.g., \`PatternDiscoveryQuest\`).
+    *   The component should be a single, self-contained interactive module that implements ALL activities from the \`questOutline.activities\` array.
+    *   Use React hooks (\`useState\`) to manage state for answers, feedback, and progression through the activities.
+    *   Use the specified \`uiComponent\` hint from each activity to build the UI. For \`multiple_choice\`, use \`RadioGroup\`. For \`text_input\`, use \`Input\`. For \`informational\`, use \`Card\` or \`Alert\`.
+    *   Structure the component logically. If there are multiple activities, render them sequentially or within a container like a \`Card\`.
+    *   Provide feedback to the user (e.g., "Correct!" or "Try Again") using the feedback text from the blueprint.
 4.  **Content:**
-    *   Use the \`title\` from the quest outline for the main component title.
-    *   Use the \`description\` for the quest's descriptive text.
-    *   Implement the \`activities\` as interactive steps. For a 'multiple_choice' activity, use a \`RadioGroup\`. For 'problem_solving', use an \`Input\` and a 'Check Answer' button.
+    *   Use the \`title\` and \`description\` from the outline for the main component's text.
+    *   Implement each activity in the \`activities\` array as an interactive step.
 
-**Crucial:** The output must be ONLY the raw code for the .tsx file, enclosed in the \`componentCode\` field. Do not add any explanatory text outside of the code. Ensure the code is complete and free of syntax errors.
+**Crucial:** The output must be ONLY the raw code for the .tsx file, enclosed in the \`componentCode\` field. Do not add any explanatory text or markdown formatting. Ensure the code is complete and free of syntax errors.
 
-**Quest Outline:**
+**Quest Outline (JSON):**
 \`\`\`json
 {{{json questOutline}}}
 \`\`\`
-
-**Subject:** {{{subject}}}
 `,
 });
 
@@ -70,6 +104,9 @@ const smithQuestComponentFlow = ai.defineFlow(
   },
   async (input) => {
     const { output } = await prompt(input);
-    return output!;
+    if (!output?.componentCode) {
+      throw new Error('AI failed to generate component code.');
+    }
+    return output;
   }
 );
