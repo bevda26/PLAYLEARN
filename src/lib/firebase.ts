@@ -6,25 +6,15 @@ import {
 } from "firebase/firestore";
 import { getAuth, Auth } from "firebase/auth";
 
-// Direct configuration - replace with your actual values
+// Environment variables are loaded from next.config.js
 const firebaseConfig: FirebaseOptions = {
-  apiKey: "AIzaSyATWWAiPE6fabMRwSb6UiZbON1o5kfzMaE",
-  authDomain: "questlearn-4s8sl.firebaseapp.com",
-  projectId: "questlearn-4s8sl",
-  storageBucket: "questlearn-4s8sl.firebasestorage.app",
-  messagingSenderId: "136336171335",
-  appId: "1:136336171335:web:883d5de4d230cde3606c62"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET!,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!
 };
-
-// Alternative: Environment variables (recommended for production)
-// const firebaseConfig: FirebaseOptions = {
-//   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
-//   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
-//   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
-//   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET!,
-//   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
-//   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!
-// };
 
 let app;
 if (!getApps().length) {
