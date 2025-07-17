@@ -107,7 +107,6 @@ export default function ProfilePage() {
                                         width={128} 
                                         height={128} 
                                         className="rounded-full bg-primary/20 border-4 border-accent"
-                                        unoptimized
                                     />
                                 </div>
                                 <div className="grid grid-cols-4 sm:grid-cols-8 gap-4">
@@ -123,7 +122,7 @@ export default function ProfilePage() {
                                                     selectedAvatar === avatarUrl ? 'border-accent scale-110' : 'border-transparent hover:border-accent'
                                                 )}
                                             >
-                                                <Image src={avatarUrl} alt={seed} width={64} height={64} unoptimized/>
+                                                <Image src={avatarUrl} alt={seed} width={64} height={64} />
                                             </button>
                                         )
                                     })}
