@@ -73,7 +73,7 @@ const prompt = ai.definePrompt({
 1.  **File Structure:** Create a complete, standalone .tsx file. It MUST start with \`'use client';\` and include all necessary imports from React, Lucide, and '@/components/ui/*'.
 2.  **Metadata Export:** The file MUST export a \`questModule\` constant containing all the necessary quest metadata.
     *   Use the data from the \`questOutline\` to populate the fields: \`id\`, \`title\`, \`subjects\`, \`description\`, \`questType\`, \`metadata.xpReward\`, \`metadata.itemRewards\`, etc.
-    *   Use the provided \`sagaId\` and \`trialId\` from the outline.
+    *   **Crucially, use the exact \`sagaId\` and \`trialId\` provided in the outline for the metadata export.** Do not derive them from other fields.
     *   Set the \`difficulty\` based on the quest type or title, or default to 'beginner'. 'mastery' or 'boss' types should be 'advanced'.
     *   Do NOT include a \`componentPath\` field in the exported metadata; the system handles this.
 3.  **Component Logic:**
