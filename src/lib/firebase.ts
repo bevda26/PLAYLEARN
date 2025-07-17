@@ -1,4 +1,3 @@
-
 // src/lib/firebase.ts
 import { initializeApp, getApps, getApp, type FirebaseOptions } from "firebase/app";
 import { 
@@ -9,12 +8,12 @@ import {
 import { getAuth, Auth } from "firebase/auth";
 
 const firebaseConfig: FirebaseOptions = {
-  apiKey: "AIzaSyC7t7A7G-253A7A5A7-r7A6A75r7A6A57A",
-  authDomain: "questlearn-4s8sl.firebaseapp.com",
-  projectId: "questlearn-4s8sl",
-  storageBucket: "questlearn-4s8sl.appspot.com",
-  messagingSenderId: "136336171335",
-  appId: "1:136336171335:web:883d5de4d230cde3606c62"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
 
 
