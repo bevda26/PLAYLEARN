@@ -1,3 +1,4 @@
+
 // src/lib/firebase.ts
 import { initializeApp, getApps, getApp, type FirebaseOptions } from "firebase/app";
 import { 
@@ -8,7 +9,7 @@ import {
 import { getAuth, Auth } from "firebase/auth";
 
 const firebaseConfig: FirebaseOptions = {
-  apiKey: "AIzaSyATWWAiPE6fabMRwSb6UiZbON1o5kfzMaE",
+  apiKey: "AIzaSyC7t7A7G-253A7A5A7-r7A6A75r7A6A57A",
   authDomain: "questlearn-4s8sl.firebaseapp.com",
   projectId: "questlearn-4s8sl",
   storageBucket: "questlearn-4s8sl.appspot.com",
@@ -16,11 +17,16 @@ const firebaseConfig: FirebaseOptions = {
   appId: "1:136336171335:web:883d5de4d230cde3606c62"
 };
 
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-const auth = getAuth(app);
 
-// Firestore instance, will be initialized differently on client vs server
-let db: Firestore;
+let app;
+if (!getApps().length) {
+  app = initializeApp(firebaseConfig);
+} else {
+  app = getApp();
+}
+
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 // A promise that resolves when persistence is enabled on the client.
 // On the server, it resolves immediately.
@@ -28,7 +34,6 @@ let persistenceEnabled: Promise<void>;
 
 if (typeof window !== 'undefined') {
   // We are on the client
-  db = getFirestore(app);
   persistenceEnabled = enableMultiTabIndexedDbPersistence(db).catch((err) => {
     if (err.code == 'failed-precondition') {
         console.warn("Firestore persistence failed (failed-precondition). This can happen with multiple tabs open. Data will not be synced offline in this tab.");
@@ -40,7 +45,6 @@ if (typeof window !== 'undefined') {
   });
 } else {
   // We are on the server
-  db = getFirestore(app);
   persistenceEnabled = Promise.resolve();
 }
 
