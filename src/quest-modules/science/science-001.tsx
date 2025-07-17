@@ -13,9 +13,10 @@ import type { QuestModule } from '@/lib/types';
 export const questModule: Omit<QuestModule, 'createdAt' | 'componentPath'> = {
   id: 'science-001',
   title: "Alchemist's Apprentice: Potion Brewing",
-  trialId: 'trial-6', // Added for new structure
+  trialId: 'trial-6',
   kingdomId: 'science',
-  sagaId: 'chemistry-basics', // Added for new structure
+  sagaId: 'chemistry-basics',
+  subjects: ['science', 'chemistry'],
   difficulty: 'beginner',
   questType: 'experiment',
   metadata: {

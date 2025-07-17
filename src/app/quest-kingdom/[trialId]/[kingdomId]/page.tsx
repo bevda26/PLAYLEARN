@@ -1,4 +1,3 @@
-
 // This is the new page for selecting Sagas, which was previously the subject page
 'use client';
 
@@ -125,7 +124,7 @@ const SagaPage: NextPage<SagaPageProps> = ({ params }) => {
                                     <QuestCard
                                         key={quest.id}
                                         id={quest.id}
-                                        subject={quest.kingdomId}
+                                        subjects={quest.subjects}
                                         title={quest.title}
                                         difficulty={quest.difficulty}
                                         questType={quest.questType}

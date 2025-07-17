@@ -15,6 +15,7 @@ export const questModule: Omit<QuestModule, 'createdAt' | 'componentPath'> = {
   trialId: 'trial-6', // Added for new structure
   kingdomId: 'math',
   sagaId: 'arithmetic-basics', // Added for new structure
+  subjects: ['math', 'arithmetic'],
   difficulty: 'beginner',
   questType: 'challenge',
   metadata: {

@@ -72,9 +72,11 @@ export async function completeQuest(userId: string, profile: UserProfile, quest:
       
       // New logic for trialProgress
       const { trialId, kingdomId, sagaId, id: questId } = quest;
-      const progressPath = `trialProgress.${trialId}.${kingdomId}.${sagaId}`;
-      newProgressData[`${progressPath}.completedQuests`] = arrayUnion(questId);
-      newProgressData[`${progressPath}.lastCompletedTimestamp`] = serverTimestamp();
+      if (trialId && kingdomId && sagaId && questId) {
+        const progressPath = `trialProgress.${trialId}.${kingdomId}.${sagaId}`;
+        newProgressData[`${progressPath}.completedQuests`] = arrayUnion(questId);
+        newProgressData[`${progressPath}.lastCompletedTimestamp`] = serverTimestamp();
+      }
       
       itemsAwarded = quest.metadata.itemRewards || [];
       

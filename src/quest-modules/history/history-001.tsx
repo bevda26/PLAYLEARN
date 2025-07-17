@@ -15,6 +15,7 @@ export const questModule: Omit<QuestModule, 'createdAt' | 'componentPath'> = {
   trialId: 'trial-6',
   kingdomId: 'history',
   sagaId: 'ancient-civilizations',
+  subjects: ['history', 'world-history'],
   difficulty: 'beginner',
   questType: 'investigation',
   metadata: {

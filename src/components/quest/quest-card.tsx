@@ -6,7 +6,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 interface QuestCardProps {
   id: string;
-  subject: string;
+  subjects: string[];
   title: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   questType: string;
@@ -18,7 +18,7 @@ interface QuestCardProps {
 
 export function QuestCard({
   id,
-  subject,
+  subjects,
   title,
   difficulty,
   questType,

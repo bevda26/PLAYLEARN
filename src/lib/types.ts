@@ -7,8 +7,9 @@ export interface QuestModule {
   id: string;
   title: string;
   trialId: string; // e.g., 'grade-6'
-  kingdomId: 'math' | 'science' | 'language' | 'history'; // was 'subject'
+  kingdomId: string; // The primary subject category, e.g. 'math'
   sagaId: string; // e.g., 'geometry-basics'
+  subjects: string[]; // e.g., ['math', 'visual-reasoning']
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   questType: 'investigation' | 'experiment' | 'challenge' | 'mastery' | 'boss';
   componentPath: string; // Path to the quest module component
@@ -87,7 +88,7 @@ export interface Trial {
 }
 
 export interface Kingdom {
-  id: 'math' | 'science' | 'language' | 'history';
+  id: string; // e.g., 'math', 'science', 'history'
   name: string; // e.g., 'The Math Kingdom'
 }
 
