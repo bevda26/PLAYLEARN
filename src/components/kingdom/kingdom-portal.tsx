@@ -1,3 +1,4 @@
+// This file is being renamed to trial-portal.tsx
 "use client";
 
 import Link from "next/link";
@@ -12,15 +13,15 @@ const icons: Record<string, LucideIcon> = {
   castle: Castle,
 };
 
-interface KingdomPortalProps {
-  subject: string;
+interface TrialPortalProps {
+  trialId: string;
   title: string;
   icon: keyof typeof icons;
   questCount: number;
 }
 
-export const KingdomPortal: FC<KingdomPortalProps> = ({
-  subject,
+export const TrialPortal: FC<TrialPortalProps> = ({
+  trialId,
   title,
   icon,
   questCount,
@@ -28,7 +29,7 @@ export const KingdomPortal: FC<KingdomPortalProps> = ({
   const Icon = icons[icon];
 
   return (
-    <Link href={`/${subject}`} className="group w-full">
+    <Link href={`/quest-kingdom/${trialId}`} className="group w-full">
       <Card className="relative overflow-hidden h-full bg-card/50 backdrop-blur-sm border-2 border-accent/30 hover:border-accent transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-accent/20 flex flex-col justify-center items-center p-6">
         
         {/* Particle Effect */}

@@ -1,4 +1,4 @@
-
+// This is the new page for selecting Sagas, which was previously the subject page
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -14,11 +14,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useUserProgressStore } from '@/stores/user-progress-store';
 
 
-type KingdomPageProps = {
-  params: { trialId: string, kingdomId: string };
+type SagaPageProps = {
+  params: { trialId: string; kingdomId: string };
 };
 
-const KingdomPage: NextPage<KingdomPageProps> = ({ params }) => {
+const SagaPage: NextPage<SagaPageProps> = ({ params }) => {
   const { trialId, kingdomId } = params;
   
   const [availableQuests, setAvailableQuests] = useState<QuestModule[]>([]);
@@ -63,15 +63,32 @@ const KingdomPage: NextPage<KingdomPageProps> = ({ params }) => {
       <div className="min-h-screen flex flex-col items-center justify-center text-center p-4" style={{ background: `linear-gradient(to bottom, ${theme.from}, ${theme.to})` }}>
         <h1 className="font-headline text-5xl text-accent mb-4">The {kingdomTitle} Kingdom</h1>
         <p className="text-xl text-foreground/80 mb-8">This realm is still shrouded in mist. No sagas or quests are available yet.</p>
-        <Link href="/quest-kingdom" className="flex items-center gap-2 text-accent hover:underline">
+        <Link href={`/quest-kingdom/${trialId}`} className="flex items-center gap-2 text-accent hover:underline">
           <ArrowLeft size={20} />
-          Return to the Trial selection
+          Return to Kingdom Selection
         </Link>
       </div>
     )
   }
 
   const completedQuestIds = Object.keys(questsCompleted);
+  
+  // Group quests by sagaId
+  const sagas = useMemo(() => {
+    const sagaMap: { [sagaId: string]: QuestModule[] } = {};
+    availableQuests.forEach(quest => {
+      if (!sagaMap[quest.sagaId]) {
+        sagaMap[quest.sagaId] = [];
+      }
+      sagaMap[quest.sagaId].push(quest);
+    });
+    return sagaMap;
+  }, [availableQuests]);
+  
+  const getSagaTitle = (sagaId: string) => {
+      return sagaId.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  }
+
 
   return (
     <div className="min-h-screen w-full p-4 sm:p-8" style={{ background: `linear-gradient(to bottom, ${theme.from}, ${theme.to})` }}>
@@ -83,43 +100,45 @@ const KingdomPage: NextPage<KingdomPageProps> = ({ params }) => {
         <h1 className="font-headline text-6xl font-bold text-accent drop-shadow-[0_4px_4px_rgba(0,0,0,0.7)]">
           The {kingdomTitle} Kingdom
         </h1>
-        <p className="text-lg text-foreground/80 mt-2">Embark on a quest to master the secrets of this realm.</p>
+        <p className="text-lg text-foreground/80 mt-2">Choose a Saga to begin your adventure.</p>
       </header>
       
       <main className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2">
-            <h2 className="font-headline text-3xl text-foreground mb-6">Available Sagas & Quests</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="lg:col-span-2 space-y-12">
             {isLoading ? (
-              <>
-                <Skeleton className="h-[140px] w-full rounded-xl bg-primary/20" />
-                <Skeleton className="h-[140px] w-full rounded-xl bg-primary/20" />
-                <Skeleton className="h-[140px] w-full rounded-xl bg-primary/20" />
-                <Skeleton className="h-[140px] w-full rounded-xl bg-primary/20" />
-              </>
+                <div>
+                    <Skeleton className="h-8 w-1/3 mb-6" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <Skeleton className="h-[140px] w-full rounded-xl bg-primary/20" />
+                        <Skeleton className="h-[140px] w-full rounded-xl bg-primary/20" />
+                    </div>
+                </div>
             ) : (
-              // TODO: Group quests by Saga
-              availableQuests.map(quest => {
-                  const isLocked = quest.metadata?.unlockRequirements?.some(reqId => !completedQuestIds.includes(reqId)) ?? false;
-
-                  return (
-                    <QuestCard
-                        key={quest.id}
-                        id={quest.id}
-                        subject={quest.kingdomId}
-                        title={quest.title}
-                        difficulty={quest.difficulty}
-                        questType={quest.questType}
-                        xpReward={quest.metadata.xpReward}
-                        isRecommended={recommendedQuestIds.includes(quest.id)}
-                        isLocked={isLocked}
-                        // Pass full route params for link generation
-                        routeParams={{ trialId, kingdomId: quest.kingdomId, sagaId: quest.sagaId, questId: quest.id }}
-                    />
-                  )
-              })
+                Object.entries(sagas).map(([sagaId, quests]) => (
+                    <div key={sagaId}>
+                         <h2 className="font-headline text-3xl text-foreground mb-6">{getSagaTitle(sagaId)}</h2>
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {quests.map(quest => {
+                                const isLocked = quest.metadata?.unlockRequirements?.some(reqId => !completedQuestIds.includes(reqId)) ?? false;
+                                return (
+                                    <QuestCard
+                                        key={quest.id}
+                                        id={quest.id}
+                                        subject={quest.kingdomId}
+                                        title={quest.title}
+                                        difficulty={quest.difficulty}
+                                        questType={quest.questType}
+                                        xpReward={quest.metadata.xpReward}
+                                        isRecommended={recommendedQuestIds.includes(quest.id)}
+                                        isLocked={isLocked}
+                                        routeParams={{ trialId, kingdomId, sagaId, questId: quest.id }}
+                                    />
+                                )
+                            })}
+                         </div>
+                    </div>
+                ))
             )}
-            </div>
         </div>
 
         <aside className="lg:col-span-1">
@@ -134,4 +153,4 @@ const KingdomPage: NextPage<KingdomPageProps> = ({ params }) => {
   );
 }
 
-export default KingdomPage;
+export default SagaPage;

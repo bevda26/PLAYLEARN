@@ -13,7 +13,9 @@ import type { QuestModule } from '@/lib/types';
 export const questModule: Omit<QuestModule, 'createdAt' | 'componentPath'> = {
   id: 'science-001',
   title: "Alchemist's Apprentice: Potion Brewing",
-  subject: 'science',
+  trialId: 'trial-6', // Added for new structure
+  kingdomId: 'science',
+  sagaId: 'chemistry-basics', // Added for new structure
   difficulty: 'beginner',
   questType: 'experiment',
   metadata: {
@@ -27,8 +29,8 @@ export const questModule: Omit<QuestModule, 'createdAt' | 'componentPath'> = {
 const quizQuestions = [
     {
         question: "What is the result of mixing a strong acid and a strong base?",
-        options: ["A bigger acid", "A newtral solution (salt and water)", "An explosion", "They don't mix"],
-        correctAnswer: "A newtral solution (salt and water)",
+        options: ["A bigger acid", "A neutral solution (salt and water)", "An explosion", "They don't mix"],
+        correctAnswer: "A neutral solution (salt and water)",
     },
 ];
 

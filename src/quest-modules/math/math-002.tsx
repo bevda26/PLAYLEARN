@@ -13,7 +13,9 @@ import type { QuestModule } from '@/lib/types';
 export const questModule: Omit<QuestModule, 'createdAt' | 'componentPath'> = {
   id: 'math-002',
   title: "Geomancer's Final Riddle",
-  subject: 'math',
+  trialId: 'trial-6', // Added for new structure
+  kingdomId: 'math',
+  sagaId: 'geometry-basics', // Added for new structure
   difficulty: 'intermediate',
   questType: 'boss',
   metadata: {

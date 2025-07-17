@@ -13,6 +13,7 @@ interface QuestCardProps {
   xpReward: number;
   isRecommended?: boolean;
   isLocked?: boolean;
+  routeParams: { trialId: string; kingdomId: string; sagaId: string; questId: string; }
 }
 
 export function QuestCard({
@@ -24,6 +25,7 @@ export function QuestCard({
   xpReward,
   isRecommended = false,
   isLocked = false,
+  routeParams,
 }: QuestCardProps) {
   const difficultyConfig = {
     beginner: {
@@ -100,8 +102,11 @@ export function QuestCard({
     )
   }
 
+  const { trialId, kingdomId, sagaId, questId } = routeParams;
+  const href = `/quest-kingdom/${trialId}/${kingdomId}/${sagaId}/${questId}`;
+
   return (
-    <Link href={`/${subject}/${id}`} className="group">
+    <Link href={href} className="group">
       {cardContent}
     </Link>
   );

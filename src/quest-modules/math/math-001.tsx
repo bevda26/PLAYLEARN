@@ -12,7 +12,9 @@ import type { QuestModule } from '@/lib/types';
 export const questModule: Omit<QuestModule, 'createdAt' | 'componentPath'> = {
   id: 'math-001',
   title: "The Dragon's Hoard: Counting Gold",
-  subject: 'math',
+  trialId: 'trial-6', // Added for new structure
+  kingdomId: 'math',
+  sagaId: 'arithmetic-basics', // Added for new structure
   difficulty: 'beginner',
   questType: 'challenge',
   metadata: {

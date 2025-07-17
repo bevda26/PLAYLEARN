@@ -1,55 +1,28 @@
-import { KingdomPortal } from "@/components/kingdom/kingdom-portal";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import type { QuestModule } from "@/lib/types";
+import { TrialPortal } from "@/components/kingdom/trial-portal";
 import { AppHeader } from "@/components/layout/app-header";
-import { Swords, FlaskConical, BookOpen, Castle, type LucideIcon, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
-
-const subjectMetadata: { [key: string]: { icon: keyof typeof icons, title: string } } = {
-  math: { icon: "castle", title: "Math Kingdom" },
-  science: { icon: "flask-conical", title: "Science Stronghold" },
-  language: { icon: "book-open", title: "Library of Scribes" },
-  history: { icon: "swords", title: "Chronicle Keep" },
-  default: { icon: "castle", title: "New Realm" },
-};
-
-const icons: Record<string, LucideIcon> = {
-  swords: Swords,
-  "flask-conical": FlaskConical,
-  "book-open": BookOpen,
-  castle: Castle,
-};
-
-async function getKingdoms() {
-    const questSnapshot = await getDocs(collection(db, "quest-modules"));
-    const quests = questSnapshot.docs.map(doc => doc.data() as QuestModule);
-
-    const kingdoms: { [subject: string]: { count: number } } = {};
-
-    // Filter quests to only include those for this "Trial" or class level, if applicable
-    // For now, we assume all quests belong to this trial
-    quests.forEach(quest => {
-        // This logic will need to be updated to support trials, sagas, etc.
-        const kingdomId = quest.kingdomId;
-        if (!kingdoms[kingdomId]) {
-            kingdoms[kingdomId] = { count: 0 };
-        }
-        kingdoms[kingdomId].count++;
-    });
-    
-    return Object.entries(kingdoms).map(([subject, data]) => ({
-        subject,
-        questCount: data.count,
-        ...subjectMetadata[subject] || subjectMetadata.default,
-        title: subjectMetadata[subject]?.title || `${subject.charAt(0).toUpperCase() + subject.slice(1)} Realm`,
-    }));
-}
+// Mock data for trials. In the future, this would come from Firestore.
+const MOCK_TRIALS = [
+    {
+        id: 'trial-6',
+        name: 'The Sixth Trial',
+        description: 'Challenges for the 6th grade level.',
+        questCount: 5, // This would be calculated dynamically
+        icon: 'castle'
+    },
+    {
+        id: 'trial-7',
+        name: 'The Seventh Trial',
+        description: 'Challenges for the 7th grade level.',
+        questCount: 0, // Not yet available
+        icon: 'castle'
+    }
+]
 
 
 export default async function QuestKingdomPage() {
-  const kingdoms = await getKingdoms();
   
   return (
     <div className="relative min-h-screen w-full bg-[#110E1B] flex flex-col">
@@ -68,22 +41,22 @@ export default async function QuestKingdomPage() {
                 The Quest Kingdom
             </h1>
             <p className="text-lg md:text-xl text-slate-300 mt-4">
-                Choose a realm of knowledge to begin your learning quest.
+                Choose a Trial to begin your learning quest.
             </p>
         </header>
 
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto w-full mb-16">
-          {kingdoms.map(kingdom => (
-            <KingdomPortal 
-              key={kingdom.subject}
-              subject={kingdom.subject}
-              title={kingdom.title}
-              icon={kingdom.icon}
-              questCount={kingdom.questCount}
+          {MOCK_TRIALS.map(trial => (
+            <TrialPortal 
+              key={trial.id}
+              trialId={trial.id}
+              title={trial.name}
+              icon={trial.icon as any}
+              questCount={trial.questCount}
             />
           ))}
-           {kingdoms.length === 0 && (
+           {MOCK_TRIALS.length === 0 && (
             <div className="sm:col-span-2 lg:col-span-4 text-center text-foreground/80 p-8 bg-black/20 rounded-lg">
                 <p>The realms of knowledge are still forming. Check back soon!</p>
             </div>
