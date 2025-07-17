@@ -156,15 +156,23 @@ export default function GuildsPage() {
                         <form onSubmit={handleCreateGuild} className="space-y-4">
                             <div>
                                 <Label htmlFor="guild-name">Guild Name</Label>
-                                <Input id="guild-name" value={newGuildName} onChange={(e) => setNewGuildName(e.target.value)} required />
+                                <Input id="guild-name" value={newGuildName} onChange={(e) => setNewGuildName(e.target.value)} required minLength={3} />
                             </div>
                             <div>
                                 <Label htmlFor="guild-desc">Description</Label>
                                 <Input id="guild-desc" value={newGuildDesc} onChange={(e) => setNewGuildDesc(e.target.value)} required />
                             </div>
                              <div>
-                                <Label htmlFor="guild-emblem">Emblem (Emoji)</Label>
-                                <Input id="guild-emblem" value={newGuildEmblem} onChange={(e) => setNewGuildEmblem(e.target.value)} maxLength={2} required />
+                                <Label htmlFor="guild-emblem">Emblem (Single Emoji)</Label>
+                                <Input 
+                                  id="guild-emblem" 
+                                  value={newGuildEmblem} 
+                                  onChange={(e) => setNewGuildEmblem(e.target.value)} 
+                                  required 
+                                  maxLength={2}
+                                  pattern="(\p{Emoji_Presentation}|\p{Extended_Pictographic})"
+                                  title="Please enter a single emoji."
+                                />
                             </div>
                             <Button type="submit" disabled={isCreating} className="w-full">
                                 {isCreating ? <Loader2 className="animate-spin" /> : "Create Guild"}
