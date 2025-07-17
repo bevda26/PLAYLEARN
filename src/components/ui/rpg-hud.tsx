@@ -13,6 +13,7 @@ export function RPGHud() {
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 p-4">
+      {/* TODO: Add ambient sound effects for HUD interactions (e.g., button clicks, item pick-up) */}
       <div className="max-w-7xl mx-auto">
         
         {/* Top HUD Bar */}

@@ -84,7 +84,7 @@ export default function KingdomSelectionPage({ params }: { params: { trialId: st
                 Back to Trials
             </Link>
             <h1 className="text-5xl md:text-7xl font-bold font-headline text-accent drop-shadow-[0_4px_4px_rgba(0,0,0,0.7)]">
-                The Sixth Trial
+                {trialId.replace(/-/g, ' ').replace(/\w/g, l => l.toUpperCase())}
             </h1>
             <p className="text-lg md:text-xl text-slate-300 mt-4">
                 Choose a Kingdom to explore within this trial.

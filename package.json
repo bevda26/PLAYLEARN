@@ -16,7 +16,7 @@
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
     "watch:quests": "node --loader ts-node/esm scripts/watch-quests.mjs",
-    "import:saga": "node scripts/import-saga.mjs",
+    "sync": "node --loader ts-node/esm scripts/sync.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
