@@ -16,6 +16,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { ALL_ACHIEVEMENTS } from '@/lib/data/achievements';
 
 type LeaderboardEntry = UserProfile & {
+  id: string; // Ensure id is part of the type
   level: number;
   xp: number;
   rankScore: number;
@@ -27,87 +28,99 @@ const SUBJECTS = ['math', 'science', 'language', 'history'];
 export default function LeaderboardPage() {
   const { user } = useAuth();
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
-  const [allProgress, setAllProgress] = useState<UserProgress[]>([]);
   const [allProfiles, setAllProfiles] = useState<{ [id: string]: UserProfile }>({});
   const [activeTab, setActiveTab] = useState('global');
   const [isLoading, setIsLoading] = useState(true);
 
   const achievementMap = useMemo(() => new Map(ALL_ACHIEVEMENTS.map(a => [a.id, a])), []);
 
-  // Fetch all data once on component mount
+  // Fetch all profile data once, as it's small and needed for display.
+  // In a very large-scale app, we might only fetch profiles for the top users.
   useEffect(() => {
-    const fetchAllData = async () => {
-      setIsLoading(true);
-      try {
-        // Fetch all progress data
-        const progressQuery = query(collection(db, 'user-progress'));
-        const progressSnapshot = await getDocs(progressQuery);
-        const progressData = progressSnapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as UserProgress) }));
-        setAllProgress(progressData);
-
-        // Fetch all profile data
-        const profilesQuery = query(collection(db, 'user-profiles'));
-        const profilesSnapshot = await getDocs(profilesQuery);
-        const profilesData: { [id: string]: UserProfile } = {};
-        profilesSnapshot.forEach(doc => {
-          profilesData[doc.id] = { userId: doc.id, ...doc.data() } as UserProfile;
-        });
-        setAllProfiles(profilesData);
-
-      } catch (error) {
-        console.error("Error fetching leaderboard data:", error);
-      } finally {
-        setIsLoading(false);
-      }
+    const fetchAllProfiles = async () => {
+      const profilesQuery = query(collection(db, 'user-profiles'));
+      const profilesSnapshot = await getDocs(profilesQuery);
+      const profilesData: { [id: string]: UserProfile } = {};
+      profilesSnapshot.forEach(doc => {
+        profilesData[doc.id] = { userId: doc.id, ...doc.data() } as UserProfile;
+      });
+      setAllProfiles(profilesData);
     };
-
-    fetchAllData();
+    fetchAllProfiles();
   }, []);
 
-  // Recalculate leaderboard when tab or data changes
-  useEffect(() => {
-    if (isLoading) return;
+  const fetchLeaderboard = useCallback(async (tab: string) => {
+    setIsLoading(true);
+    try {
+      let rankedData: LeaderboardEntry[] = [];
 
-    let rankedData: LeaderboardEntry[];
+      if (tab === 'global') {
+        const progressQuery = query(
+          collection(db, 'user-progress'),
+          orderBy('level', 'desc'),
+          orderBy('xp', 'desc'),
+          limit(20)
+        );
+        const progressSnapshot = await getDocs(progressQuery);
+        
+        rankedData = progressSnapshot.docs
+          .map(doc => {
+            const progress = { id: doc.id, ...doc.data() } as UserProgress;
+            const profile = allProfiles[progress.id];
+            if (!profile) return null;
 
-    if (activeTab === 'global') {
-      rankedData = allProgress
-        .map(p => ({ progress: p, profile: allProfiles[p.id] }))
-        .filter(item => item.profile)
-        .sort((a, b) => {
-          if (b.progress.level !== a.progress.level) return b.progress.level - a.progress.level;
-          return b.progress.xp - a.progress.xp;
-        })
-        .slice(0, 20)
-        .map(({ progress, profile }) => ({
-          ...profile,
-          level: progress.level,
-          xp: progress.xp,
-          rankScore: progress.level, // For global, score is level
-          recentAchievements: getRecentAchievements(profile, achievementMap),
-        }));
-    } else {
-      // Subject-specific ranking
-      rankedData = allProgress
-        .map(p => {
-          const questCount = Object.keys(p.questsCompleted).filter(id => id.startsWith(activeTab)).length;
-          return { progress: p, profile: allProfiles[p.id], questCount };
-        })
-        .filter(item => item.profile && item.questCount > 0)
-        .sort((a, b) => b.questCount - a.questCount)
-        .slice(0, 20)
-        .map(({ progress, profile, questCount }) => ({
-          ...profile,
-          level: progress.level,
-          xp: progress.xp,
-          rankScore: questCount,
-          recentAchievements: getRecentAchievements(profile, achievementMap),
-        }));
+            return {
+              ...profile,
+              id: progress.id,
+              level: progress.level,
+              xp: progress.xp,
+              rankScore: progress.level,
+              recentAchievements: getRecentAchievements(profile, achievementMap),
+            };
+          })
+          .filter((item): item is LeaderboardEntry => item !== null);
+
+      } else {
+        // For subject-specific ranks, we still need to fetch all progress
+        // because Firestore doesn't support ordering by computed values (quests in a category).
+        // In a production app, this would be handled with a denormalized counter in the user-progress doc.
+        const progressQuery = query(collection(db, 'user-progress'));
+        const progressSnapshot = await getDocs(progressQuery);
+        const allProgress = progressSnapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as UserProgress) }));
+
+        rankedData = allProgress
+          .map(p => {
+            const questCount = Object.keys(p.questsCompleted).filter(id => id.startsWith(tab)).length;
+            return { progress: p, profile: allProfiles[p.id], questCount };
+          })
+          .filter(item => item.profile && item.questCount > 0)
+          .sort((a, b) => b.questCount - a.questCount)
+          .slice(0, 20)
+          .map(({ progress, profile, questCount }) => ({
+            ...profile,
+            id: progress.id,
+            level: progress.level,
+            xp: progress.xp,
+            rankScore: questCount,
+            recentAchievements: getRecentAchievements(profile, achievementMap),
+          }));
+      }
+
+      setLeaderboard(rankedData);
+    } catch (error) {
+      console.error("Error fetching leaderboard data:", error);
+    } finally {
+      setIsLoading(false);
     }
+  }, [allProfiles, achievementMap]);
 
-    setLeaderboard(rankedData);
 
-  }, [activeTab, allProgress, allProfiles, isLoading, achievementMap]);
+  // Re-fetch leaderboard when tab or profiles change
+  useEffect(() => {
+    if (Object.keys(allProfiles).length > 0) {
+      fetchLeaderboard(activeTab);
+    }
+  }, [activeTab, allProfiles, fetchLeaderboard]);
 
   const getRankColor = (rank: number) => {
     if (rank === 0) return 'text-yellow-400';
