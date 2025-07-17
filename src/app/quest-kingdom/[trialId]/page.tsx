@@ -1,3 +1,4 @@
+
 // src/app/quest-kingdom/[trialId]/page.tsx
 'use client';
 
@@ -8,7 +9,7 @@ import type { QuestModule } from "@/lib/types";
 import { AppHeader } from "@/components/layout/app-header";
 import { Swords, FlaskConical, BookOpen, Castle, type LucideIcon, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const subjectMetadata: { [key: string]: { icon: keyof typeof icons, title: string } } = {
@@ -34,8 +35,8 @@ type KingdomData = {
     title: string;
 }
 
-export default function KingdomSelectionPage({ params }: { params: { trialId: string } }) {
-    const { trialId } = params;
+export default function KingdomSelectionPage({ params }: { params: Promise<{ trialId: string }> }) {
+    const { trialId } = use(params);
     const [kingdoms, setKingdoms] = useState<KingdomData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
