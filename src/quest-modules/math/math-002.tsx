@@ -1,4 +1,4 @@
-// src-quest-modules/math/math-002.tsx
+// src/quest-modules/math/math-002.tsx
 'use client';
 
 import { useState } from 'react';

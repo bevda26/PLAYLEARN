@@ -15,7 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 const subjectMetadata: { [key: string]: { icon: keyof typeof icons, title: string } } = {
   math: { icon: "castle", title: "Math Kingdom" },
   science: { icon: "flask-conical", title: "Science Stronghold" },
-  language: { icon: "book-open", title: "Library of Scribes" },
+  english: { icon: "book-open", title: "Library of Scribes" },
   history: { icon: "swords", title: "Chronicle Keep" },
   default: { icon: "castle", title: "New Realm" },
 };
@@ -35,7 +35,7 @@ type KingdomData = {
     title: string;
 }
 
-export default function KingdomSelectionPage({ params }: { params: Promise<{ trialId: string }> }) {
+export default function KingdomSelectionPage({ params }: { params: { trialId: string } }) {
     const { trialId } = use(params);
     const [kingdoms, setKingdoms] = useState<KingdomData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
