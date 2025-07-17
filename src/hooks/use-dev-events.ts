@@ -39,11 +39,14 @@ function initializeEventSource() {
   eventSource = new EventSource('/api/dev-events');
 
   eventSource.onmessage = (event) => {
-    try {
-      const { event: eventName, data } = JSON.parse(event.data);
-      Emitter.emit(eventName, data);
-    } catch (e) {
-      console.error('Failed to parse dev event:', e);
+    // FIX: Only parse if event.data is not empty
+    if (event.data) {
+        try {
+            const { event: eventName, data } = JSON.parse(event.data);
+            Emitter.emit(eventName, data);
+        } catch (e) {
+            console.error('Failed to parse dev event:', e);
+        }
     }
   };
 
