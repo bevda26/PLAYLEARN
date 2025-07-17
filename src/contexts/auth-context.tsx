@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     // This function will run once persistence is enabled and auth state is known.
     const initializeApp = async () => {
-      // 1. Wait for persistence to be settled.
+      // 1. Wait for persistence to be settled. This is crucial to avoid "offline" errors.
       await persistenceEnabled;
 
       // 2. Subscribe to auth changes.

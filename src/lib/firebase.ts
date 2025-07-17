@@ -6,7 +6,7 @@ import {
 } from "firebase/firestore";
 import { getAuth, Auth } from "firebase/auth";
 
-// Direct configuration using your provided values to ensure a stable connection.
+// Direct configuration - replace with your actual values
 const firebaseConfig: FirebaseOptions = {
   apiKey: "AIzaSyATWWAiPE6fabMRwSb6UiZbON1o5kfzMaE",
   authDomain: "questlearn-4s8sl.firebaseapp.com",
