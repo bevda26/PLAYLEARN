@@ -84,7 +84,7 @@ export default function JournalPage() {
                         </CardHeader>
                         <CardContent>
                             <CardDescription>Your journal is empty. Embark on a quest to begin your story!</CardDescription>
-                            <Link href="/the-sixth-trial">
+                            <Link href="/quest-kingdom">
                                 <Button variant="link" className="text-accent text-lg mt-4">Find a Quest</Button>
                             </Link>
                         </CardContent>

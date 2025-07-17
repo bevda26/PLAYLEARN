@@ -1,4 +1,3 @@
-
 // src/app/dashboard/skills/page.tsx
 'use client';
 

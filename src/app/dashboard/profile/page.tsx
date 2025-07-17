@@ -32,6 +32,13 @@ export default function ProfilePage() {
     const [selectedAvatar, setSelectedAvatar] = useState(userProfile?.avatar || '');
     const [isLoading, setIsLoading] = useState(false);
 
+    useEffect(() => {
+        if (userProfile) {
+            setDisplayName(userProfile.displayName);
+            setSelectedAvatar(userProfile.avatar);
+        }
+    }, [userProfile]);
+    
     useEffect(() => setMounted(true), []);
 
     const handleSaveChanges = async (e: React.FormEvent) => {
@@ -51,7 +58,19 @@ export default function ProfilePage() {
         }
     };
     
-    if (!userProfile || !mounted) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="w-12 h-12 animate-spin"/></div>;
+    if (!mounted) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="w-12 h-12 animate-spin"/></div>;
+
+    if (!userProfile) {
+        return (
+             <div className="min-h-screen bg-gradient-to-b from-background to-background/80">
+                <AppHeader />
+                <main className="max-w-4xl mx-auto p-4 sm:p-8 text-center">
+                    <Loader2 className="w-12 h-12 animate-spin mx-auto" />
+                    <p>Loading your profile...</p>
+                </main>
+            </div>
+        )
+    }
 
     const currentTheme = theme === 'system' ? systemTheme : theme;
 
