@@ -2,64 +2,75 @@
 import chokidar from 'chokidar';
 import { exec } from 'child_process';
 import path from 'path';
-import 'dotenv/config'; // To load NEXT_PUBLIC_ADMIN_USER_ID
+import 'dotenv/config';
 
-console.log('--- PlayLearn Quest Watcher ---');
-console.log('Watching for changes in src/content-blueprints...');
-console.log('Any new or modified blueprint file will be automatically imported.');
-console.log('---');
+const blueprintsDir = 'src/content-blueprints';
 
-const blueprintsDir = path.join(process.cwd(), 'src/content-blueprints');
+console.log(`[Watcher] Starting to watch for changes in: ${blueprintsDir}`);
 
 const watcher = chokidar.watch(blueprintsDir, {
   ignored: /(^|[\/\\])\../, // ignore dotfiles
   persistent: true,
-  ignoreInitial: true, // Don't run on initial scan
+  ignoreInitial: true, // Don't run on startup for existing files
 });
 
-const processFile = (filePath) => {
-  const fileName = path.basename(filePath);
-  console.log(`[Watcher] Detected change in: ${fileName}`);
-  
-  // We use the import:saga script to process the file
-  const command = `npm run import:saga ${fileName}`;
-  
-  console.log(`[Watcher] Executing: ${command}`);
+// A simple debounce mechanism
+const debounce = (func, delay) => {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), delay);
+  };
+};
 
-  exec(command, (error, stdout, stderr) => {
+const handleFileChange = async (filePath) => {
+  const fileName = path.basename(filePath);
+  console.log(`[Watcher] File change detected: ${fileName}`);
+
+  // 1. Run the Saga Importer to generate .tsx files
+  console.log(`[Watcher] Running Saga Importer for ${fileName}...`);
+  exec(`npm run import:saga ${fileName}`, (error, stdout, stderr) => {
     if (error) {
-      console.error(`[Watcher] Error processing ${fileName}:`, error.message);
-      if (stderr) console.error(`[Watcher] Stderr:`, stderr);
+      console.error(`[Importer ERROR] exec error: ${error}`);
       return;
     }
-    
-    // Log standard output from the import script
-    if (stdout) console.log(`[Watcher] Import Log for ${fileName}:\n${stdout}`);
+    console.log(`[Importer STDOUT] ${stdout}`);
+    if (stderr) {
+      console.error(`[Importer STDERR] ${stderr}`);
+    }
 
-    // After successful import, send an SSE event to the dev server
-    // to notify the client to refetch data. We extract the questId from the blueprint
-    // id to make the event specific. This is a bit of a hack.
-     const questId = fileName.replace('.js', '').replace(/\./g, '_');
-     
-     // Note: The syncQuestsWithFilesystem() function is more robust for a full sync.
-     // This event is for more targeted real-time updates during development.
-     fetch('http://localhost:9002/api/dev-events', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ event: 'quest-updated', data: questId }),
-     }).then(res => {
-        if(res.ok) console.log(`[Watcher] Sent 'quest-updated' event for ${questId}`);
-        else console.error(`[Watcher] Failed to send 'quest-updated' event.`);
-     }).catch(err => console.error(`[Watcher] Error sending event:`, err));
+    // 2. Trigger the sync with Firestore database
+    console.log('[Watcher] Importer finished. Triggering database sync...');
+    const syncUrl = `http://localhost:${process.env.PORT || 9002}/api/sync-quests`;
+    fetch(syncUrl)
+      .then(res => res.json())
+      .then(json => {
+        console.log(`[Sync API Response]`, json);
+        if (json.synced > 0) {
+            // 3. Notify the client to refetch data if sync was successful
+            console.log('[Watcher] Sync successful. Notifying client to update...');
+            const eventUrl = `http://localhost:${process.env.PORT || 9002}/api/dev-events`;
+            fetch(eventUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ event: 'quest-updated', data: 'all' }),
+            }).catch(e => console.error('[Watcher] Failed to notify client:', e));
+        }
+      })
+      .catch(err => console.error('[Watcher] Failed to trigger sync API:', err));
   });
 };
 
+const debouncedHandler = debounce(handleFileChange, 500);
+
 watcher
-  .on('add', processFile)
-  .on('change', processFile);
+  .on('add', (filePath) => debouncedHandler(filePath))
+  .on('change', (filePath) => debouncedHandler(filePath))
+  .on('unlink', (filePath) => console.log(`[Watcher] File ${path.basename(filePath)} has been removed. Manual cleanup may be needed.`))
+  .on('error', (error) => console.error(`[Watcher] Error: ${error}`));
 
 process.on('SIGINT', () => {
-  console.log('--- Shutting down Quest Watcher ---');
+  console.log('[Watcher] Shutting down...');
   watcher.close();
   process.exit();
 });
